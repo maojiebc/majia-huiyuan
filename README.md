@@ -1,6 +1,8 @@
 # majia-huiyuan · 会员运营家底（开源样板间）
 
+[![Skill Version](https://img.shields.io/badge/skill-v1.3.0-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
 [![AI Agent Friendly](https://img.shields.io/badge/AI_Agent-friendly-1abc9c)](./AGENTS.md)
 [![Data](https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-%E5%85%A8%E6%A8%A1%E6%8B%9F%E7%94%9F%E6%88%90-orange)](#数据说明必读)
@@ -11,7 +13,7 @@
 
 **谁适合看**：做会员、做私域的业务同学；做数据分析、数据建设的同学；想给自己公司从零搭一套会员数据体系的人。**不需要会写代码。**
 
-**AI 也适合看**：如果你是 AI Agent（WorkBuddy / Claude / Codex / Cursor …），你的入口在 [llms.txt](./llms.txt) 和 [AGENTS.md](./AGENTS.md)，那里有任务导航和命名约定。
+**AI 也适合看**：如果你是 AI Agent（WorkBuddy / Claude / Codex / Cursor …），你的入口在 [llms.txt](./llms.txt) 和 [AGENTS.md](./AGENTS.md)；本仓库同时是一个可安装的 **Agent Skill**（[SKILL.md](./SKILL.md)），装法见[下方](#-当-agent-skill-用)。
 
 ---
 
@@ -191,6 +193,25 @@ ETL/
 
 AI 会自己顺着 [llms.txt](./llms.txt) 和 [AGENTS.md](./AGENTS.md) 找到路，不用你解释仓库结构。
 
+## 🎛 当 Agent Skill 用
+
+本仓库同时是一个 **Agent Skill**（[SKILL.md](./SKILL.md) 在仓库根部）——装进任何支持 SKILL.md 的 agent（Claude Code / OpenClaw / Codex / WorkBuddy …），它就变成一个随叫随到的**会员数据顾问**，能干八类活：口径与公式咨询、从零设计会员数据体系、现有体系缺口诊断、生成建表 DDL、按角色规划看板、数据质量排障、方法论内训、观远整套复刻。
+
+```bash
+# ClawHub / OpenClaw
+clawhub install majia-huiyuan
+openclaw skills install majia-huiyuan
+
+# GitHub CLI（gh 2.90+）
+gh skill install maojiebc/majia-huiyuan majia-huiyuan --agent claude-code --scope user
+
+# 手动 clone 到对应 agent 的 skills 目录
+git clone https://github.com/maojiebc/majia-huiyuan.git ~/.claude/skills/majia-huiyuan   # Claude Code
+git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-huiyuan    # Codex
+```
+
+装完试一句："帮我看看我们公司的会员数据体系缺什么"，或者"复购率的口径给我几种标准算法"。
+
 ## 数据说明（必读）
 
 - **全部数据由程序模拟生成**，与任何真实企业无关；手机号等个人标识列已打码（形如 `156****0925`）
@@ -213,6 +234,16 @@ AI 会自己顺着 [llms.txt](./llms.txt) 和 [AGENTS.md](./AGENTS.md) 找到路
 - [ ] 字段词典中英对照
 
 想看哪个先做，[提个 issue](https://github.com/maojiebc/majia-huiyuan/issues) 投票。
+
+## 📋 版本记录
+
+**最新：V1.3.0** (2026-07-12) — **Skill 化**：新增 SKILL.md + manifest.json，仓库本体即 Agent Skill，可经 ClawHub / gh skill / git clone 安装；顾问型定位（八类活任务路由 + 五条硬约束），上架 ClawHub。
+
+**V1.2.0** (2026-07-12) — 新增《区域运营的一天》获奖直播书面实录（34 页插画长文：五步动作链 / 可信四件套 / 三案例现场实录 / 落地 FAQ）。
+
+**V1.1.0** (2026-07-12) — 餐饮 BI 公式实战库（9 册约 2900 行）从 majia-guanyuan 整体迁入 `公式库/`。
+
+完整历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
 
 ## FAQ
 
