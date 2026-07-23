@@ -1,15 +1,19 @@
 # majia-huiyuan · 会员运营家底（开源样板间）
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.3.0-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.3.1-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
 [![AI Agent Friendly](https://img.shields.io/badge/AI_Agent-friendly-1abc9c)](./AGENTS.md)
 [![Data](https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-%E5%85%A8%E6%A8%A1%E6%8B%9F%E7%94%9F%E6%88%90-orange)](#数据说明必读)
 
-> 一套**完整的、可以照着抄的**连锁会员数据体系。以一家虚构的咖啡连锁为例，从会员注册的第一行数据，到老板看的经营驾驶舱：**54 个数据集、25 条数据加工链、12 张看板，外加约 2900 行的实战公式库**，全部摊开。
+> **会员运营 · 马甲实战版** — 一套**完整的、可以照着抄的**连锁会员数据体系。以一家虚构的咖啡连锁为例，从会员注册的第一行数据，到老板看的经营驾驶舱：**54 个数据集、25 条数据加工链、12 张看板，外加约 2900 行的实战公式库**，全部摊开。
 >
 > 数据全部模拟生成，与任何真实企业无关。MIT 协议，个人用、公司用、商用，都随便。
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.3.1 功能架构：三大资产（样板间 54 数据集/25 ETL/12 看板 · 公式库 9 册 2900 行 · 方法论实录 34 页直播）+ 五层数仓 DIM→DWD→DWS→ADS→DQC + 会员数据顾问八类活（口径咨询/体系设计/缺口诊断/建表 DDL/看板规划/质量排障/方法论内训/观远复刻）+ 与兄弟 skill majia-guanyuan 分工"/>
+</p>
 
 **谁适合看**：做会员、做私域的业务同学；做数据分析、数据建设的同学；想给自己公司从零搭一套会员数据体系的人。**不需要会写代码。**
 
@@ -237,11 +241,13 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 
 ## 📋 版本记录
 
-**最新：V1.3.0** (2026-07-12) — **Skill 化**：新增 SKILL.md + manifest.json，仓库本体即 Agent Skill，可经 ClawHub / gh skill / git clone 安装；顾问型定位（八类活任务路由 + 五条硬约束），上架 ClawHub。
+**最新：V1.3.1** (2026-07-23) — **文档装修**：新增功能架构图（`docs/architecture.svg` + PNG，三大资产 / 五层数仓 / 八类活一图看全）、README.en.md 英文版、品牌后缀「· 马甲实战版」pixel-perfect 落到各展示面。内容零改动。
+
+**V1.3.0** (2026-07-12) — **Skill 化**：新增 SKILL.md + manifest.json，仓库本体即 Agent Skill，可经 ClawHub / gh skill / git clone 安装；顾问型定位（八类活任务路由 + 五条硬约束）。
 
 **V1.2.0** (2026-07-12) — 新增《区域运营的一天》获奖直播书面实录（34 页插画长文：五步动作链 / 可信四件套 / 三案例现场实录 / 落地 FAQ）。
 
-**V1.1.0** (2026-07-12) — 餐饮 BI 公式实战库（9 册约 2900 行）从 majia-guanyuan 整体迁入 `公式库/`。
+完整变更历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
 
 完整历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
 

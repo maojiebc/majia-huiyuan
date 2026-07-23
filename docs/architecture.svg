@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 574" font-family="'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <linearGradient id="tbar" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#0D5C54"/>
+    </linearGradient>
+  </defs>
+
+  <!-- page bg -->
+  <rect x="0" y="0" width="440" height="574" fill="#F7F8FA"/>
+
+  <!-- title bar -->
+  <rect x="0" y="0" width="440" height="72" fill="url(#tbar)"/>
+  <text x="22" y="33" font-size="21" font-weight="700" fill="#FFFFFF">会员运营 · 马甲实战版</text>
+  <text x="23" y="56" font-size="11" fill="#CCFBF1">开源会员数据家底 · 装上即「会员数据顾问」</text>
+  <rect x="370" y="16" width="52" height="22" rx="11" fill="#FFFFFF" fill-opacity="0.16"/>
+  <text x="396" y="31" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">v1.3.1</text>
+
+  <!-- stat ribbon -->
+  <rect x="0" y="72" width="440" height="24" fill="#0B4F48"/>
+  <text x="220" y="88" font-size="10.5" fill="#99F6E4" text-anchor="middle">8 万会员 · 1200 门店 · 141 加盟商 · 129 万订单 —— 全部模拟</text>
+
+  <!-- Section A: 三大资产 -->
+  <text x="16" y="116" font-size="12.5" font-weight="700" fill="#0F766E">三大资产（都在 skill 目录里）</text>
+
+  <!-- card 1 样板间 -->
+  <rect x="16" y="126" width="128" height="92" rx="9" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <path d="M16 135 a9 9 0 0 1 9 -9 h110 a9 9 0 0 1 9 9 v17 h-128 z" fill="#CCFBF1"/>
+  <text x="26" y="147" font-size="12.5" font-weight="700" fill="#0F766E">🏠 样板间</text>
+  <text x="26" y="171" font-size="10.5" fill="#334155">54 数据集</text>
+  <text x="26" y="188" font-size="10.5" fill="#334155">25 ETL · 12 看板</text>
+  <text x="26" y="205" font-size="10.5" fill="#64748B">五层数仓整库</text>
+
+  <!-- card 2 公式库 -->
+  <rect x="156" y="126" width="128" height="92" rx="9" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <path d="M156 135 a9 9 0 0 1 9 -9 h110 a9 9 0 0 1 9 9 v17 h-128 z" fill="#FEF3C7"/>
+  <text x="166" y="147" font-size="12.5" font-weight="700" fill="#B45309">📐 公式库</text>
+  <text x="166" y="171" font-size="10.5" fill="#334155">9 册 · 约 2900 行</text>
+  <text x="166" y="188" font-size="10.5" fill="#334155">复购 / RFM / 核销</text>
+  <text x="166" y="205" font-size="10.5" fill="#64748B">字段词典 + 39 ETL</text>
+
+  <!-- card 3 方法论 -->
+  <rect x="296" y="126" width="128" height="92" rx="9" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <path d="M296 135 a9 9 0 0 1 9 -9 h110 a9 9 0 0 1 9 9 v17 h-128 z" fill="#DBEAFE"/>
+  <text x="306" y="147" font-size="12.5" font-weight="700" fill="#1D4ED8">🎤 方法论实录</text>
+  <text x="306" y="171" font-size="10.5" fill="#334155">获奖直播书面版</text>
+  <text x="306" y="188" font-size="10.5" fill="#334155">34 页插画</text>
+  <text x="306" y="205" font-size="10.5" fill="#64748B">五步 · 可信四件套</text>
+
+  <!-- Section B: 五层数仓 -->
+  <text x="16" y="240" font-size="12.5" font-weight="700" fill="#0F766E">五层数仓 · 档案 → 流水 → 台账 → 驾驶舱</text>
+
+  <g font-size="11" font-weight="700" text-anchor="middle">
+    <rect x="16"  y="250" width="72" height="42" rx="8" fill="#E0F2FE" stroke="#BAE6FD"/>
+    <text x="52"  y="270" fill="#0369A1">DIM</text>
+    <text x="52"  y="285" font-size="9.5" font-weight="400" fill="#475569">档案柜</text>
+
+    <rect x="100" y="250" width="72" height="42" rx="8" fill="#BAE6FD" stroke="#7DD3FC"/>
+    <text x="136" y="270" fill="#075985">DWD</text>
+    <text x="136" y="285" font-size="9.5" font-weight="400" fill="#475569">流水账</text>
+
+    <rect x="184" y="250" width="72" height="42" rx="8" fill="#7DD3FC" stroke="#38BDF8"/>
+    <text x="220" y="270" fill="#0C4A6E">DWS</text>
+    <text x="220" y="285" font-size="9.5" font-weight="400" fill="#0C4A6E">台账</text>
+
+    <rect x="268" y="250" width="72" height="42" rx="8" fill="#38BDF8" stroke="#0EA5E9"/>
+    <text x="304" y="270" fill="#0C4A6E">ADS</text>
+    <text x="304" y="285" font-size="9.5" font-weight="400" fill="#0C4A6E">驾驶舱</text>
+
+    <rect x="352" y="250" width="72" height="42" rx="8" fill="#E2E8F0" stroke="#CBD5E1"/>
+    <text x="388" y="270" fill="#475569">DQC</text>
+    <text x="388" y="285" font-size="9.5" font-weight="400" fill="#475569">质检</text>
+  </g>
+  <g fill="#94A3B8" font-size="13" font-weight="700" text-anchor="middle">
+    <text x="94" y="275">›</text>
+    <text x="178" y="275">›</text>
+    <text x="262" y="275">›</text>
+    <text x="346" y="275">›</text>
+  </g>
+
+  <!-- Section C: 八类活 -->
+  <text x="16" y="316" font-size="12.5" font-weight="700" fill="#0F766E">顾问能干的八类活</text>
+
+  <g font-size="10.5" fill="#334155">
+    <!-- row 1 -->
+    <rect x="16"  y="326" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="34" cy="342" r="9" fill="#0F766E"/><text x="34" y="346" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+    <text x="50" y="346">口径与公式咨询</text>
+    <rect x="228" y="326" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="246" cy="342" r="9" fill="#0F766E"/><text x="246" y="346" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+    <text x="262" y="346">从零设计会员体系</text>
+    <!-- row 2 -->
+    <rect x="16"  y="365" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="34" cy="381" r="9" fill="#0F766E"/><text x="34" y="385" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+    <text x="50" y="385">现有体系缺口诊断</text>
+    <rect x="228" y="365" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="246" cy="381" r="9" fill="#0F766E"/><text x="246" y="385" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+    <text x="262" y="385">生成建表 DDL</text>
+    <!-- row 3 -->
+    <rect x="16"  y="404" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="34" cy="420" r="9" fill="#0F766E"/><text x="34" y="424" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+    <text x="50" y="424">按角色规划看板</text>
+    <rect x="228" y="404" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="246" cy="420" r="9" fill="#0F766E"/><text x="246" y="424" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">6</text>
+    <text x="262" y="424">数据质量排障</text>
+    <!-- row 4 -->
+    <rect x="16"  y="443" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="34" cy="459" r="9" fill="#0F766E"/><text x="34" y="463" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">7</text>
+    <text x="50" y="463">方法论内训素材</text>
+    <rect x="228" y="443" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="246" cy="459" r="9" fill="#0F766E"/><text x="246" y="463" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">8</text>
+    <text x="262" y="463">观远 BI 整套复刻</text>
+  </g>
+
+  <!-- Section D: 分工 -->
+  <text x="16" y="497" font-size="12.5" font-weight="700" fill="#0F766E">与兄弟 skill 分工</text>
+  <rect x="16"  y="505" width="196" height="46" rx="9" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.5"/>
+  <text x="28" y="524" font-size="11" font-weight="700" fill="#0F766E">本 skill · huiyuan</text>
+  <text x="28" y="541" font-size="10" fill="#334155">数据 · 公式 · 方法（平台无关）</text>
+  <rect x="228" y="505" width="196" height="46" rx="9" fill="#F1F5F9" stroke="#CBD5E1"/>
+  <text x="240" y="524" font-size="11" font-weight="700" fill="#475569">兄弟 · majia-guanyuan</text>
+  <text x="240" y="541" font-size="10" fill="#64748B">观远平台 · 工具 · 踩坑</text>
+
+  <!-- tagline -->
+  <text x="220" y="567" font-size="9.5" fill="#94A3B8" text-anchor="middle">全模拟数据 · 平台无关（Spark 3.4）· MIT · 业务 / 数分 / AI Agent 友好</text>
+</svg>

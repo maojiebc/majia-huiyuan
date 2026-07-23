@@ -3,7 +3,7 @@ name: majia-huiyuan
 description: 会员运营·马甲实战版（majia-huiyuan）Agent Skill —— 把一套完整开源的连锁会员数据家底变成你的会员数据顾问：咖啡连锁模拟数据中台样板间（54 数据集 / 25 条 ETL / 12 张看板，DIM/DWD/DWS/ADS/DQC 五层，8 万会员 · 1200 门店 · 129 万订单全模拟）+ 餐饮 BI 公式实战库（9 册约 2900 行：复购跨天 vs 非跨天 / RFM 8 类×营销策略 / 核销折扣 / 消费频次 3 口径 / 留存流失 / 通用字段词典 / NULL 三态坑 / DWD 宽表范式 / 39 生产 ETL 索引）+ 获奖直播方法论实录（五步动作链 / 可信四件套 / AI 会闭嘴 / 误报比漏报贵）。八类活：①口径与公式咨询 ②从零设计会员数据体系（DIM→DWD→DWS→ADS 分阶段最小可用集）③现有体系缺口诊断（54 表 checklist 对照）④生成建表 DDL ⑤按角色规划看板（老板/会员负责人/店长/加盟商）⑥数据质量排障（字段重名/口径歧义/对账自检）⑦会员数据方法论讲解与内训素材 ⑧观远 BI 整套复刻。触发：会员运营 / 会员数据 / 会员体系 / 会员中台 / 私域数据 / 复购率 / RFM / 留存 / 流失 / 核销率 / 客单价 / 消费频次 / 会员分层 / 生命周期 / 同期群 / Cohort / 转化漏斗 / 私域漏斗 / 加盟商报告 / 门店日报 / 数仓分层 / DIM / DWD / DWS / ADS / 字段词典 / 数据口径 / 连锁餐饮数据 / 会员看板 / 搭会员数据体系 / CRM 数据 / 豁免日历 / 归因清单。数值全为模拟，仅结构与口径可引用；方法平台无关（SQL 为 Spark 3.4 方言）；观远 BI 平台操作与踩坑走兄弟 skill majia-guanyuan。
 license: MIT
 metadata:
-  version: "1.3.0"
+  version: "1.3.1"
   author: "超级马甲 / maojiebc"
   homepage: https://github.com/maojiebc/majia-huiyuan
   openclaw:
@@ -11,9 +11,15 @@ metadata:
     homepage: https://github.com/maojiebc/majia-huiyuan
 ---
 
-# majia-huiyuan · 会员运营-马甲实战版
+# 会员运营 · 马甲实战版
 
 你装上的是一套**开源会员运营家底**：一个可照抄的连锁会员数据中台样板间 + 一座口径公式库 + 一份方法论实录。你的角色是**会员数据顾问**——用户大概率是业务或数据分析背景，不是工程师：先人话，后术语；每个结论给出处路径。
+
+## 功能架构
+
+一图看全：三大资产 → 五层数仓 → 会员数据顾问能干的八类活。
+
+![majia-huiyuan 功能架构](https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png)
 
 ## 三大资产（都在本 skill 目录内）
 
@@ -52,3 +58,11 @@ metadata:
 
 - **majia-huiyuan（本 skill）**：会员运营的数据与公式——体系怎么设计、口径怎么算、看板给谁看。**平台无关。**
 - **[majia-guanyuan](https://github.com/maojiebc/majia-guanyuan)**：观远 BI 平台的工具与踩坑——ETL 治理、报错手册、自定义图表注入、发布状态机。用户在观远平台上动手时切过去。
+
+## 📋 版本记录
+
+- **v1.3.1**（2026-07-23）文档装修：功能架构图 + README.en.md + 品牌后缀落地，内容零改动。
+- **v1.3.0**（2026-07-12）Skill 化：SKILL.md + manifest.json 进仓库，顾问型八类活任务路由。
+- **v1.2.0**（2026-07-12）新增《区域运营的一天》获奖直播书面实录（34 页插画）。
+
+完整历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
