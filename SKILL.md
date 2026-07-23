@@ -46,6 +46,8 @@ metadata:
 
 更多命名约定与文件形态说明见 [AGENTS.md](AGENTS.md)；机器可读索引见 [llms.txt](llms.txt)。
 
+> 📦 **ClawHub / npm 安装包为轻量版**：不含直播插画图片与观远平台原始 JSON（`*/原始JSON/`）。走"复刻整套到观远"路由或想看带图实录时，`git clone https://github.com/maojiebc/majia-huiyuan` 取完整版。
+
 ## 与兄弟 skill 的分工
 
 - **majia-huiyuan（本 skill）**：会员运营的数据与公式——体系怎么设计、口径怎么算、看板给谁看。**平台无关。**
