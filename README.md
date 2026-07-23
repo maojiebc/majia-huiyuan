@@ -268,6 +268,6 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 | 🐙 GitHub | [github.com/maojiebc](https://github.com/maojiebc) |
 | 🐦 X | [@maojiebc](https://x.com/maojiebc) |
 | 📕 小红书 | [超级马甲](https://xhslink.com/m/4fQMJeHHWKC) |
-| 📰 微信公众号 | **超级马甲** |
+| 📰 微信公众号 | [超级马甲](https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzY5NzIzODk2NA==#wechat_redirect) |
 
 > 踩过的坑、总结的经验，不叫私有，是群策群力。
