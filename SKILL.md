@@ -46,7 +46,7 @@ metadata:
 
 更多命名约定与文件形态说明见 [AGENTS.md](AGENTS.md)；机器可读索引见 [llms.txt](llms.txt)。
 
-> 📦 **ClawHub / npm 安装包为轻量版**：不含直播插画图片与观远平台原始 JSON（`*/原始JSON/`）。走"复刻整套到观远"路由或想看带图实录时，`git clone https://github.com/maojiebc/majia-huiyuan` 取完整版。
+> 📦 **完整版以 GitHub 为准**：若你通过 ClawHub / npm 安装的包里缺插画图片或 `*/原始JSON/`（发布包可能瘦身），`git clone https://github.com/maojiebc/majia-huiyuan` 取完整版；"复刻整套到观远"路由必须用完整版。
 
 ## 与兄弟 skill 的分工
 
