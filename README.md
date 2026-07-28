@@ -1,6 +1,6 @@
 # majia-huiyuan · 会员运营家底（开源样板间）
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.3.1-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.3.2-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
@@ -12,7 +12,7 @@
 > 数据全部模拟生成，与任何真实企业无关。MIT 协议，个人用、公司用、商用，都随便。
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.3.1 功能架构：三大资产（样板间 54 数据集/25 ETL/12 看板 · 公式库 9 册 2900 行 · 方法论实录 34 页直播）+ 五层数仓 DIM→DWD→DWS→ADS→DQC + 会员数据顾问八类活（口径咨询/体系设计/缺口诊断/建表 DDL/看板规划/质量排障/方法论内训/观远复刻）+ 与兄弟 skill majia-guanyuan 分工"/>
+  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.3.2 功能架构：三大资产 + 五层数仓 + 会员数据顾问八类活 + 与 majia-siyu（私域经营动作）及 majia-guanyuan（平台工具）的分工"/>
 </p>
 
 **谁适合看**：做会员、做私域的业务同学；做数据分析、数据建设的同学；想给自己公司从零搭一套会员数据体系的人。**不需要会写代码。**
@@ -227,6 +227,7 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 
 | 项目 | 关系 |
 |---|---|
+| [majia-siyu](https://github.com/maojiebc/majia-siyu-team) | 私域经营动作入口。**朋友圈、群发、欢迎语、社群触达与整盘经营诊断在那边；指标、公式、SQL 与看板在本库。** |
 | [majia-guanyuan](https://github.com/maojiebc/majia-guanyuan) | 观远 BI 实战增益层 skill。**工具与踩坑手册在那边，数据与公式在这边**；本库的模拟中台和公式库都源自它，现独立迭代 |
 
 ## 路线图
@@ -241,13 +242,11 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 
 ## 📋 版本记录
 
-**最新：V1.3.1** (2026-07-23) — **文档装修**：新增功能架构图（`docs/architecture.svg` + PNG，三大资产 / 五层数仓 / 八类活一图看全）、README.en.md 英文版、品牌后缀「· 马甲实战版」pixel-perfect 落到各展示面。内容零改动。
+**最新：V1.3.2** (2026-07-28) — **触发边界修复**：聚焦会员数据、指标口径、SQL、数仓与看板；私域内容、触达和经营动作明确交给 `majia-siyu`。
+
+**V1.3.1** (2026-07-23) — **文档装修**：新增功能架构图（`docs/architecture.svg` + PNG，三大资产 / 五层数仓 / 八类活一图看全）、README.en.md 英文版、品牌后缀「· 马甲实战版」pixel-perfect 落到各展示面。内容零改动。
 
 **V1.3.0** (2026-07-12) — **Skill 化**：新增 SKILL.md + manifest.json，仓库本体即 Agent Skill，可经 ClawHub / gh skill / git clone 安装；顾问型定位（八类活任务路由 + 五条硬约束）。
-
-**V1.2.0** (2026-07-12) — 新增《区域运营的一天》获奖直播书面实录（34 页插画长文：五步动作链 / 可信四件套 / 三案例现场实录 / 落地 FAQ）。
-
-完整变更历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
 
 完整历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
 

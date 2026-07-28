@@ -1,6 +1,6 @@
 # majia-huiyuan · Membership Ops Playbook
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.3.1-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.3.2-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
@@ -11,7 +11,7 @@
 > All data is simulated — unrelated to any real company. MIT licensed: personal, corporate, commercial use, all fine.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.3.1 architecture: three assets (showroom 54 datasets/25 ETLs/12 dashboards, formula playbook 9 volumes/2900 lines, methodology transcript 34 slides) + five warehouse layers DIM→DWD→DWS→ADS→DQC + eight consulting jobs + division of labor with sibling skill majia-guanyuan"/>
+  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.3.2 architecture: three assets, five warehouse layers, eight consulting jobs, and boundaries with majia-siyu for private-domain actions and majia-guanyuan for platform tooling"/>
 </p>
 
 **English README ↓ · [中文说明](./README.md)**
@@ -53,7 +53,16 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.claude/skills/majia-h
 
 | Project | Relationship |
 |---|---|
+| [majia-siyu](https://github.com/maojiebc/majia-siyu-team) | Private-domain operating actions: Moments, broadcasts, welcome scripts, community engagement, and whole-funnel diagnosis. Data definitions, SQL, and dashboards stay here. |
 | [majia-guanyuan](https://github.com/maojiebc/majia-guanyuan) | Guandata BI field-gain-layer skill. **Tools & pitfall handbooks there, data & formulas here.** |
+
+## Version History
+
+- **v1.3.2** (2026-07-28): Tightened routing to membership data, metric definitions, SQL, warehouse design, and dashboards; private-domain content and engagement actions now route to `majia-siyu`.
+- **v1.3.1** (2026-07-23): Added the architecture preview, English README, and branded display surfaces.
+- **v1.3.0** (2026-07-12): Converted the repository into a consultant-style Agent Skill.
+
+Full history: [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases).
 
 ## 👤 Author
 

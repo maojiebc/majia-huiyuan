@@ -14,7 +14,7 @@
   <text x="22" y="33" font-size="21" font-weight="700" fill="#FFFFFF">会员运营 · 马甲实战版</text>
   <text x="23" y="56" font-size="11" fill="#CCFBF1">开源会员数据家底 · 装上即「会员数据顾问」</text>
   <rect x="370" y="16" width="52" height="22" rx="11" fill="#FFFFFF" fill-opacity="0.16"/>
-  <text x="396" y="31" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">v1.3.1</text>
+  <text x="396" y="31" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">v1.3.2</text>
 
   <!-- stat ribbon -->
   <rect x="0" y="72" width="440" height="24" fill="#0B4F48"/>
@@ -113,13 +113,16 @@
   </g>
 
   <!-- Section D: 分工 -->
-  <text x="16" y="497" font-size="12.5" font-weight="700" fill="#0F766E">与兄弟 skill 分工</text>
-  <rect x="16"  y="505" width="196" height="46" rx="9" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.5"/>
-  <text x="28" y="524" font-size="11" font-weight="700" fill="#0F766E">本 skill · huiyuan</text>
-  <text x="28" y="541" font-size="10" fill="#334155">数据 · 公式 · 方法（平台无关）</text>
-  <rect x="228" y="505" width="196" height="46" rx="9" fill="#F1F5F9" stroke="#CBD5E1"/>
-  <text x="240" y="524" font-size="11" font-weight="700" fill="#475569">兄弟 · majia-guanyuan</text>
-  <text x="240" y="541" font-size="10" fill="#64748B">观远平台 · 工具 · 踩坑</text>
+  <text x="16" y="497" font-size="12.5" font-weight="700" fill="#0F766E">三套 skill 的边界</text>
+  <rect x="16" y="505" width="126" height="46" rx="9" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.5"/>
+  <text x="26" y="524" font-size="10" font-weight="700" fill="#0F766E">majia-huiyuan</text>
+  <text x="26" y="541" font-size="9" fill="#334155">指标 · SQL · 数仓</text>
+  <rect x="157" y="505" width="126" height="46" rx="9" fill="#F3E8FF" stroke="#A855F7"/>
+  <text x="167" y="524" font-size="10" font-weight="700" fill="#7E22CE">majia-siyu</text>
+  <text x="167" y="541" font-size="9" fill="#581C87">内容 · 触达 · 经营动作</text>
+  <rect x="298" y="505" width="126" height="46" rx="9" fill="#F1F5F9" stroke="#CBD5E1"/>
+  <text x="308" y="524" font-size="10" font-weight="700" fill="#475569">majia-guanyuan</text>
+  <text x="308" y="541" font-size="9" fill="#64748B">平台 · 工具 · 踩坑</text>
 
   <!-- tagline -->
   <text x="220" y="567" font-size="9.5" fill="#94A3B8" text-anchor="middle">全模拟数据 · 平台无关（Spark 3.4）· MIT · 业务 / 数分 / AI Agent 友好</text>
