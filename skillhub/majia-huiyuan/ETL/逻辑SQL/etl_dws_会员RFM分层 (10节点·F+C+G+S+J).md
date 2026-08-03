@@ -67,17 +67,18 @@ SELECT * FROM input
 - Position: (1247,64)
 - SqlScript:
 ```sql
+-- 生产环境用 CURRENT_DATE；快照/回溯分析时把 CURRENT_DATE 替换为固定日期，例如 DATE '2026-05-20'
 SELECT
   `会员ID`,
   `业务日期` AS `最近消费日期`,
   `订单计数` AS `消费次数`,
   `实付金额` AS `消费金额`,
-  DATEDIFF(DATE '2026-05-20', `业务日期`) AS `距今天数`,
+  DATEDIFF(CURRENT_DATE, `业务日期`) AS `距今天数`,
   CASE
-    WHEN DATEDIFF(DATE '2026-05-20', `业务日期`) <= 7  THEN 5
-    WHEN DATEDIFF(DATE '2026-05-20', `业务日期`) <= 14 THEN 4
-    WHEN DATEDIFF(DATE '2026-05-20', `业务日期`) <= 30 THEN 3
-    WHEN DATEDIFF(DATE '2026-05-20', `业务日期`) <= 60 THEN 2
+    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 7  THEN 5
+    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 14 THEN 4
+    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 30 THEN 3
+    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 60 THEN 2
     ELSE 1 END AS `R分`,
   CASE WHEN `订单计数` >= 50 THEN 5 WHEN `订单计数` >= 25 THEN 4
        WHEN `订单计数` >= 12 THEN 3 WHEN `订单计数` >= 4 THEN 2 ELSE 1 END AS `F分`,
@@ -87,17 +88,18 @@ FROM input1
 ```
 - 等价SQL:
 ```sql
+-- 生产环境用 CURRENT_DATE；快照/回溯分析时把 CURRENT_DATE 替换为固定日期，例如 DATE '2026-05-20'
 SELECT
   `会员ID`,
   `业务日期` AS `最近消费日期`,
   `订单计数` AS `消费次数`,
   `实付金额` AS `消费金额`,
-  DATEDIFF(DATE '2026-05-20', `业务日期`) AS `距今天数`,
+  DATEDIFF(CURRENT_DATE, `业务日期`) AS `距今天数`,
   CASE
-    WHEN DATEDIFF(DATE '2026-05-20', `业务日期`) <= 7  THEN 5
-    WHEN DATEDIFF(DATE '2026-05-20', `业务日期`) <= 14 THEN 4
-    WHEN DATEDIFF(DATE '2026-05-20', `业务日期`) <= 30 THEN 3
-    WHEN DATEDIFF(DATE '2026-05-20', `业务日期`) <= 60 THEN 2
+    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 7  THEN 5
+    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 14 THEN 4
+    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 30 THEN 3
+    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 60 THEN 2
     ELSE 1 END AS `R分`,
   CASE WHEN `订单计数` >= 50 THEN 5 WHEN `订单计数` >= 25 THEN 4
        WHEN `订单计数` >= 12 THEN 3 WHEN `订单计数` >= 4 THEN 2 ELSE 1 END AS `F分`,
@@ -226,7 +228,7 @@ SELECT * FROM input1
 SELECT
   *
 FROM input1
-WHERE (`会员标志` = '1')
+WHERE (`会员标志` = 1)
 ```
 
 
@@ -243,8 +245,12 @@ WHERE (`会员标志` = '1')
 - 等价SQL:
 ```sql
 SELECT
-  *
+  `会员ID`,
+  MAX(`业务日期`)    AS `业务日期`,   -- 取最近消费日期，供下游算 R 分
+  SUM(`订单计数`)    AS `订单计数`,   -- 累计消费次数，供下游算 F 分
+  SUM(`实付金额`)    AS `实付金额`    -- 累计消费金额，供下游算 M 分
 FROM input1
+GROUP BY `会员ID`
 ```
 
 
