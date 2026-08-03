@@ -195,6 +195,9 @@ ETL/
 看板/
   页面文档/    每张看板放了哪些卡片、各是什么
   页面JSON/    页面布局原始定义
+skillhub/      ⚙️ 自动生成产物（ClawHub / npm 发布包的瘦身文本子集）
+               勿手动修改——改根目录再跑 python3 tools/build_skillhub_bundle.py
+tools/         构建脚本（含 --check 漂移检测模式）
 ```
 
 ## 三种用法
