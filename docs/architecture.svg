@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 574" font-family="'PingFang SC','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 613" font-family="'PingFang SC','Microsoft YaHei',sans-serif">
   <defs>
     <linearGradient id="tbar" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0F766E"/>
@@ -7,14 +7,14 @@
   </defs>
 
   <!-- page bg -->
-  <rect x="0" y="0" width="440" height="574" fill="#F7F8FA"/>
+  <rect x="0" y="0" width="440" height="613" fill="#F7F8FA"/>
 
   <!-- title bar -->
   <rect x="0" y="0" width="440" height="72" fill="url(#tbar)"/>
   <text x="22" y="33" font-size="21" font-weight="700" fill="#FFFFFF">会员运营 · 马甲实战版</text>
   <text x="23" y="56" font-size="11" fill="#CCFBF1">开源会员数据家底 · 装上即「会员数据顾问」</text>
   <rect x="370" y="16" width="52" height="22" rx="11" fill="#FFFFFF" fill-opacity="0.16"/>
-  <text x="396" y="31" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">v1.3.2</text>
+  <text x="396" y="31" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">v1.4.0</text>
 
   <!-- stat ribbon -->
   <rect x="0" y="72" width="440" height="24" fill="#0B4F48"/>
@@ -35,7 +35,7 @@
   <rect x="156" y="126" width="128" height="92" rx="9" fill="#FFFFFF" stroke="#E2E8F0"/>
   <path d="M156 135 a9 9 0 0 1 9 -9 h110 a9 9 0 0 1 9 9 v17 h-128 z" fill="#FEF3C7"/>
   <text x="166" y="147" font-size="12.5" font-weight="700" fill="#B45309">📐 公式库</text>
-  <text x="166" y="171" font-size="10.5" fill="#334155">9 册 · 约 2900 行</text>
+  <text x="166" y="171" font-size="10.5" fill="#334155">10 册 · 约 3100 行</text>
   <text x="166" y="188" font-size="10.5" fill="#334155">复购 / RFM / 核销</text>
   <text x="166" y="205" font-size="10.5" fill="#64748B">字段词典 + 39 ETL</text>
 
@@ -78,8 +78,8 @@
     <text x="346" y="275">›</text>
   </g>
 
-  <!-- Section C: 八类活 -->
-  <text x="16" y="316" font-size="12.5" font-weight="700" fill="#0F766E">顾问能干的八类活</text>
+  <!-- Section C: 十类活 -->
+  <text x="16" y="316" font-size="12.5" font-weight="700" fill="#0F766E">顾问能干的十类活</text>
 
   <g font-size="10.5" fill="#334155">
     <!-- row 1 -->
@@ -110,20 +110,27 @@
     <rect x="228" y="443" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#E2E8F0"/>
     <circle cx="246" cy="459" r="9" fill="#0F766E"/><text x="246" y="463" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">8</text>
     <text x="262" y="463">观远 BI 整套复刻</text>
+    <!-- row 5 (v1.4.0 新增) -->
+    <rect x="16"  y="482" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#0F766E"/>
+    <circle cx="34" cy="498" r="9" fill="#B45309"/><text x="34" y="502" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">9</text>
+    <text x="50" y="502">运营动作的数据依据</text>
+    <rect x="228" y="482" width="196" height="32" rx="7" fill="#FFFFFF" stroke="#0F766E"/>
+    <circle cx="246" cy="498" r="9" fill="#B45309"/><text x="246" y="502" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">10</text>
+    <text x="262" y="502">CDP / 标签体系设计</text>
   </g>
 
   <!-- Section D: 分工 -->
-  <text x="16" y="497" font-size="12.5" font-weight="700" fill="#0F766E">三套 skill 的边界</text>
-  <rect x="16" y="505" width="126" height="46" rx="9" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.5"/>
-  <text x="26" y="524" font-size="10" font-weight="700" fill="#0F766E">majia-huiyuan</text>
-  <text x="26" y="541" font-size="9" fill="#334155">指标 · SQL · 数仓</text>
-  <rect x="157" y="505" width="126" height="46" rx="9" fill="#F3E8FF" stroke="#A855F7"/>
-  <text x="167" y="524" font-size="10" font-weight="700" fill="#7E22CE">majia-siyu</text>
-  <text x="167" y="541" font-size="9" fill="#581C87">内容 · 触达 · 经营动作</text>
-  <rect x="298" y="505" width="126" height="46" rx="9" fill="#F1F5F9" stroke="#CBD5E1"/>
-  <text x="308" y="524" font-size="10" font-weight="700" fill="#475569">majia-guanyuan</text>
-  <text x="308" y="541" font-size="9" fill="#64748B">平台 · 工具 · 踩坑</text>
+  <text x="16" y="536" font-size="12.5" font-weight="700" fill="#0F766E">三套 skill 的边界</text>
+  <rect x="16" y="544" width="126" height="46" rx="9" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.5"/>
+  <text x="26" y="563" font-size="10" font-weight="700" fill="#0F766E">majia-huiyuan</text>
+  <text x="26" y="580" font-size="9" fill="#334155">指标 · SQL · 数据依据</text>
+  <rect x="157" y="544" width="126" height="46" rx="9" fill="#F3E8FF" stroke="#A855F7"/>
+  <text x="167" y="563" font-size="10" font-weight="700" fill="#7E22CE">majia-siyu</text>
+  <text x="167" y="580" font-size="9" fill="#581C87">话术 · 触达 · 执行内容</text>
+  <rect x="298" y="544" width="126" height="46" rx="9" fill="#F1F5F9" stroke="#CBD5E1"/>
+  <text x="308" y="563" font-size="10" font-weight="700" fill="#475569">majia-guanyuan</text>
+  <text x="308" y="580" font-size="9" fill="#64748B">平台 · 工具 · 踩坑</text>
 
   <!-- tagline -->
-  <text x="220" y="567" font-size="9.5" fill="#94A3B8" text-anchor="middle">全模拟数据 · 平台无关（Spark 3.4）· MIT · 业务 / 数分 / AI Agent 友好</text>
+  <text x="220" y="606" font-size="9.5" fill="#94A3B8" text-anchor="middle">全模拟数据 · 平台无关（Spark 3.4）· MIT · 业务 / 数分 / AI Agent 友好</text>
 </svg>

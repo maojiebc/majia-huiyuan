@@ -1,18 +1,18 @@
 # majia-huiyuan · 会员运营家底（开源样板间）
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.3.2-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.4.0-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
 [![AI Agent Friendly](https://img.shields.io/badge/AI_Agent-friendly-1abc9c)](./AGENTS.md)
 [![Data](https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-%E5%85%A8%E6%A8%A1%E6%8B%9F%E7%94%9F%E6%88%90-orange)](#数据说明必读)
 
-> **会员运营 · 马甲实战版** — 一套**完整的、可以照着抄的**连锁会员数据体系。以一家虚构的咖啡连锁为例，从会员注册的第一行数据，到老板看的经营驾驶舱：**54 个数据集、25 条数据加工链、12 张看板，外加约 2900 行的实战公式库**，全部摊开。
+> **会员运营 · 马甲实战版** — 一套**完整的、可以照着抄的**连锁会员数据体系。以一家虚构的咖啡连锁为例，从会员注册的第一行数据，到老板看的经营驾驶舱：**54 个数据集、25 条数据加工链、12 张看板，外加约 3100 行的实战公式库**，全部摊开。
 >
 > 数据全部模拟生成，与任何真实企业无关。MIT 协议，个人用、公司用、商用，都随便。
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.3.2 功能架构：三大资产 + 五层数仓 + 会员数据顾问八类活 + 与 majia-siyu（私域经营动作）及 majia-guanyuan（平台工具）的分工"/>
+  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.4.0 功能架构：三大资产 + 五层数仓 + 会员数据顾问十类活 + 与 majia-siyu（执行内容）及 majia-guanyuan（平台工具）的分工"/>
 </p>
 
 **谁适合看**：做会员、做私域的业务同学；做数据分析、数据建设的同学；想给自己公司从零搭一套会员数据体系的人。**不需要会写代码。**
@@ -157,7 +157,7 @@
 
 ## 公式库（60+ 段可直接抄的 SQL）
 
-样板间给你看结构，公式库给你抄算法。[公式库/](./公式库/) 蒸馏自两段连锁餐饮 BI 实战履职（已全脱敏，约 2900 行），2026-07-12 从 majia-guanyuan 迁入本仓库统一维护，按主题分 9 册：
+样板间给你看结构，公式库给你抄算法。[公式库/](./公式库/) 蒸馏自两段连锁餐饮 BI 实战履职（已全脱敏，约 3100 行），2026-07-12 从 majia-guanyuan 迁入本仓库统一维护，按主题分 10 册：
 
 | 分册 | 管什么 |
 |---|---|
@@ -170,6 +170,7 @@
 | [07 数据质量坑](./公式库/07-data-quality-traps.md) | NULL / 空串 / 'null' 三态、口径歧义、通用字段词典 |
 | [08 ETL 工程范式](./公式库/08-etl-engineering-patterns.md) | DWD 宽表底座、财务双源对账、POS 归一化、Cohort 网格 |
 | [09 生产 ETL 索引](./公式库/09-etl-catalog.md) | 39 个生产 ETL 按 11 个业务域的索引与复用决策表 |
+| [10 任务与触达回收](./公式库/10-task-and-touch-recovery.md) | 白盒 NBA 任务池模型、九类任务×圈选依据、防打扰与仲裁、漏斗四率回收、差评客户挽回 |
 
 总入口和"5 条最容易踩的坑"见 [公式库/README.md](./公式库/README.md)。**样板间的表结构 + 公式库的算法，两样凑齐，就是能开工的图纸。**
 
@@ -183,7 +184,7 @@
 
 ```
 清单/          三张总清单 CSV（数据集 / ETL / 看板，含 ID）——先看这里拿全景
-公式库/        餐饮 BI 公式实战库（README + 9 册）★ 算法和口径 SQL 都在这
+公式库/        餐饮 BI 公式实战库（README + 10 册）★ 算法和口径 SQL 都在这
 分享/          直播分享书面实录（34 页插画长文）★ 想先看故事的从这进
 数据集/
   结构定义/    每个数据集的字段结构说明 ★ 最值得先看
@@ -220,7 +221,7 @@ AI 会自己顺着 [llms.txt](./llms.txt) 和 [AGENTS.md](./AGENTS.md) 找到路
 
 ## 🎛 当 Agent Skill 用
 
-本仓库同时是一个 **Agent Skill**（[SKILL.md](./SKILL.md) 在仓库根部）——装进任何支持 SKILL.md 的 agent（Claude Code / OpenClaw / Codex / WorkBuddy …），它就变成一个随叫随到的**会员数据顾问**，能干八类活：口径与公式咨询、从零设计会员数据体系、现有体系缺口诊断、生成建表 DDL、按角色规划看板、数据质量排障、方法论内训、观远整套复刻。
+本仓库同时是一个 **Agent Skill**（[SKILL.md](./SKILL.md) 在仓库根部）——装进任何支持 SKILL.md 的 agent（Claude Code / OpenClaw / Codex / WorkBuddy …），它就变成一个随叫随到的**会员数据顾问**，能干十类活：口径与公式咨询、**会员运营动作的数据依据**（召回/提频/防流失该圈谁、何时触达、给什么力度、派给谁、怎么回收）、**CDP 与标签体系设计**（OneID 身份打通、人群圈选、标签规则外置）、从零设计会员数据体系、现有体系缺口诊断、生成建表 DDL、按角色规划看板、数据质量排障、方法论内训、观远整套复刻。
 
 ```bash
 # ClawHub / OpenClaw
@@ -263,11 +264,11 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 
 ## 📋 版本记录
 
-**最新：V1.3.2** (2026-07-28) — **触发边界修复**：聚焦会员数据、指标口径、SQL、数仓与看板；私域内容、触达和经营动作明确交给 `majia-siyu`。
+**最新：V1.4.0** (2026-08-07) — **能力边界深挖**：SKILL.md 十类活（新增"业务动作的数据依据"与"CDP/标签体系"两类）；公式库新增第 10 册《任务与触达回收》（白盒 NBA 任务池模型、九类任务×圈选依据×回收口径、防打扰与优先级仲裁、差评客户挽回）；与 majia-siyu 的边界从互斥改为"同一动作两半"协同（数据依据在这、执行话术在 siyu）。
+
+**V1.3.2** (2026-07-28) — **触发边界修复**：聚焦会员数据、指标口径、SQL、数仓与看板；私域内容、触达和经营动作明确交给 `majia-siyu`。
 
 **V1.3.1** (2026-07-23) — **文档装修**：新增功能架构图（`docs/architecture.svg` + PNG，三大资产 / 五层数仓 / 八类活一图看全）、README.en.md 英文版、品牌后缀「· 马甲实战版」pixel-perfect 落到各展示面。内容零改动。
-
-**V1.3.0** (2026-07-12) — **Skill 化**：新增 SKILL.md + manifest.json，仓库本体即 Agent Skill，可经 ClawHub / gh skill / git clone 安装；顾问型定位（八类活任务路由 + 五条硬约束）。
 
 完整历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
 

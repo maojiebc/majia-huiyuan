@@ -2,11 +2,11 @@
   "$schema": "https://json.schemastore.org/skill-manifest",
   "name": "majia-huiyuan",
   "displayName": "会员运营 · 马甲实战版",
-  "version": "1.3.2",
-  "description": "Membership data consultant for metric definitions, RFM, repurchase and retention formulas, SQL/DDL, warehouse layers, field dictionaries, data quality, and dashboards. Trigger only when the user explicitly needs data, metrics, formulas, SQL, tables, validation, or dashboards. For Moments copy, broadcasts, welcome scripts, community engagement, WeCom operating actions, or whole-funnel private-domain diagnosis, use majia-siyu instead. All values are simulated; only structures and definitions are citable.",
+  "version": "1.4.0",
+  "description": "Membership data consultant for metric definitions, RFM, segmentation and audience selection, CDP/OneID identity resolution, repurchase and retention formulas, SQL/DDL, warehouse layers, field dictionaries, data quality, and dashboards. Also owns the data basis behind membership ops actions (win-back, frequency lift, churn alerts, task dispatch): who to target, when, with what incentive, and how to measure recovery. Execution content (Moments copy, broadcasts, welcome scripts, WeCom actions) and whole-funnel private-domain diagnosis go to majia-siyu — two halves of the same action. All values are simulated; only structures and definitions are citable.",
   "license": "MIT",
   "author": "maojiebc",
   "homepage": "https://github.com/maojiebc/majia-huiyuan",
   "repository": "https://github.com/maojiebc/majia-huiyuan",
-  "keywords": ["membership", "crm", "bi", "data-warehouse", "restaurant", "retail", "rfm", "repurchase", "guandata", "chinese", "agent-skill", "llm-friendly"]
+  "keywords": ["membership", "crm", "cdp", "bi", "data-warehouse", "restaurant", "retail", "rfm", "segmentation", "repurchase", "nba-engine", "guandata", "chinese", "agent-skill", "llm-friendly"]
 }
