@@ -1,4 +1,4 @@
-# majia-huiyuan · Membership Ops Playbook
+# majia-huiyuan · Membership Ops Playbook <!-- plain-ok -->
 
 [![Skill Version](https://img.shields.io/badge/skill-v1.4.0-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
@@ -6,7 +6,7 @@
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
 [![AI Agent Friendly](https://img.shields.io/badge/AI_Agent-friendly-1abc9c)](./AGENTS.md)
 
-> **会员运营 · 马甲实战版** (Membership Ops — Majia's Field Edition) — a complete, copyable chain-store membership data system, fully open-sourced. Modeled on a fictional coffee chain, from the first row of a member's registration all the way to the boss's executive cockpit: **54 datasets, 25 ETL pipelines, 12 dashboards, plus a ~3,100-line battle-tested formula playbook** — all laid open.
+> **会员运营 · 马甲实战版** (Membership Ops — Majia's Field Edition) — a complete, copyable chain-store membership data system, fully open-sourced. Modeled on a fictional coffee chain, from the first row of a member's registration all the way to the boss's executive cockpit: **54 datasets, 25 ETL pipelines, 12 dashboards, plus a ~3,100-line battle-tested formula playbook** — all laid open. <!-- plain-ok -->
 >
 > All data is simulated — unrelated to any real company. MIT licensed: personal, corporate, commercial use, all fine.
 
