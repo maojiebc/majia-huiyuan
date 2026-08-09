@@ -14,7 +14,7 @@
   <text x="22" y="33" font-size="21" font-weight="700" fill="#FFFFFF">会员运营 · 马甲实战版</text>
   <text x="23" y="56" font-size="11" fill="#CCFBF1">开源会员数据家底 · 装上即「会员数据顾问」</text>
   <rect x="370" y="16" width="52" height="22" rx="11" fill="#FFFFFF" fill-opacity="0.16"/>
-  <text x="396" y="31" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">v1.4.0</text>
+  <text x="396" y="31" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">v1.4.1</text>
 
   <!-- stat ribbon -->
   <rect x="0" y="72" width="440" height="24" fill="#0B4F48"/>
@@ -27,7 +27,7 @@
   <rect x="16" y="126" width="128" height="92" rx="9" fill="#FFFFFF" stroke="#E2E8F0"/>
   <path d="M16 135 a9 9 0 0 1 9 -9 h110 a9 9 0 0 1 9 9 v17 h-128 z" fill="#CCFBF1"/>
   <text x="26" y="147" font-size="12.5" font-weight="700" fill="#0F766E">🏠 样板间</text>
-  <text x="26" y="171" font-size="10.5" fill="#334155">54 数据集</text>
+  <text x="26" y="171" font-size="10.5" fill="#334155">55 逻辑数据集</text>
   <text x="26" y="188" font-size="10.5" fill="#334155">25 ETL · 12 看板</text>
   <text x="26" y="205" font-size="10.5" fill="#64748B">五层数仓整库</text>
 

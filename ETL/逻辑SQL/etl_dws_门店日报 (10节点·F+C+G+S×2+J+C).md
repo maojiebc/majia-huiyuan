@@ -19,6 +19,7 @@
   - sedfdd84abacc4cb496c15e7 (dim_门店主档)
 - **数据输出目标:**
   - dws_门店日报 (目录: 马甲的demo-0523)
+- **运行参数:** `as_of_date`（本模拟快照默认 `2026-06-24`，调度时统一替换）
 ---
 ## ETL 节点详细信息
 
@@ -36,8 +37,19 @@
 - 等价SQL:
 ```sql
 SELECT
-  *
+  `门店ID`, `业务日期`,
+  SUM(`订单计数`) AS `订单计数`,
+  SUM(`实付金额`) AS `实付金额`,
+  SUM(`原价金额`) AS `原价金额`,
+  SUM(`折扣金额`) AS `折扣金额`,
+  SUM(`商品件数`) AS `商品件数`,
+  SUM(`会员订单计数`) AS `会员订单计数`,
+  SUM(`到店销售`) AS `到店销售`,
+  SUM(`外卖销售`) AS `外卖销售`,
+  SUM(`到店订单计数`) AS `到店订单计数`,
+  SUM(`外卖订单计数`) AS `外卖订单计数`
 FROM input1
+GROUP BY `门店ID`, `业务日期`
 ```
 
 
@@ -102,6 +114,7 @@ SELECT
   *
 FROM input1
 WHERE (`订单状态` = '已完成')
+  AND `业务日期` <= CAST('${as_of_date}' AS DATE)
 ```
 
 
@@ -183,10 +196,32 @@ SELECT * FROM input
 - Position: (1247,64)
 - 等价SQL:
 ```sql
+WITH matched AS (
+  SELECT
+    f.*,
+    s.`门店版本ID`, s.`门店名称`, s.`门店类型`, s.`省份`, s.`城市`,
+    s.`城市层级`, s.`店型`, s.`商圈`, s.`品牌线`, s.`直营加盟类型`,
+    s.`开业日期`, s.`闭店日期`,
+    ROW_NUMBER() OVER (
+      PARTITION BY f.`门店ID`, f.`业务日期`
+      ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+    ) AS scd_rn
+  FROM input1 f
+  LEFT JOIN input2 s
+    ON f.`门店ID` = s.`门店ID`
+   AND f.`业务日期` BETWEEN CAST(s.`生效起始日期` AS DATE)
+                       AND COALESCE(CAST(s.`生效截止日期` AS DATE), DATE '9999-12-31')
+)
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
+  `门店ID`, `门店名称`, `省份`, `城市`, `城市层级`, `店型`, `门店类型`, `商圈`,
+  `品牌线`, `直营加盟类型`,
+  CASE WHEN DATEDIFF(`业务日期`, `开业日期`) BETWEEN 0 AND 89 THEN TRUE ELSE FALSE END AS `是否90天内新店`,
+  CASE WHEN DATEDIFF(`业务日期`, `开业日期`) BETWEEN 0 AND 89 THEN '新店' ELSE '非新店' END AS `新店标签`,
+  `业务日期`, `订单数`, `销售额`, `原价销售额`, `折扣金额合计`, `商品件数合计`,
+  `会员订单数`, `到店销售额`, `外卖销售额`, `到店订单数`, `外卖订单数`, `去重会员数`,
+  `门店版本ID`, CAST('${as_of_date}' AS DATE) AS `数据快照日期`
+FROM matched
+WHERE scd_rn = 1
 ```
 
 
@@ -241,13 +276,17 @@ FROM input1
 - 等价SQL:
 ```sql
 SELECT
-  *,
-  `销售额` / `订单数` AS `平均客单价`,
-  `会员订单数` / `订单数` AS `会员订单占比`,
+  `门店ID`, `门店名称`, `省份`, `城市`, `城市层级`, `店型`, `门店类型`, `商圈`,
+  `品牌线`, `直营加盟类型`, `是否90天内新店`, `新店标签`,
+  `业务日期`, `订单数`, `销售额`, `原价销售额`, `折扣金额合计`, `商品件数合计`,
+  `会员订单数`, `到店销售额`, `外卖销售额`, `到店订单数`, `外卖订单数`, `去重会员数`,
+  case when `订单数` > 0 then `销售额` / `订单数` else 0 end AS `平均客单价`,
+  case when `订单数` > 0 then `会员订单数` * 1.0 / `订单数` else 0 end AS `会员订单占比`,
   case when `原价销售额` > 0 then `折扣金额合计` / `原价销售额` else 0 end AS `折扣率`,
-  `到店订单数` * 1.0 / `订单数` AS `到店占比`,
-  `外卖订单数` * 1.0 / `订单数` AS `外卖占比`,
-  `商品件数合计` * 1.0 / `订单数` AS `平均件数`
+  case when `订单数` > 0 then `到店订单数` * 1.0 / `订单数` else 0 end AS `到店占比`,
+  case when `订单数` > 0 then `外卖订单数` * 1.0 / `订单数` else 0 end AS `外卖占比`,
+  case when `订单数` > 0 then `商品件数合计` * 1.0 / `订单数` else 0 end AS `平均件数`,
+  `门店版本ID`, `数据快照日期`
 FROM input1
 ```
 

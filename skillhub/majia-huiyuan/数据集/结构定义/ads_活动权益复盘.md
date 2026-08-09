@@ -1,180 +1,101 @@
 我正在查看一个数据集的详细配置信息：
 
 ## 基本信息
+
 - 数据集ID: q2154240ed0334aec8883ae8
 - 数据集名称: ads_活动权益复盘
 - 显示类型: DATAFLOW
-- 状态: FINISHED
-- 完整路径: 根目录>马甲的模拟数据集>ads_活动权益复盘
 - UniformResourceType: DATA_SET_ETL
+- 结构版本: v1.4.1
 
-## 数据规模
-- 数据行数: 50 行
-- 字段列数: 17 列
-
-## 时间信息
-- 创建时间: 2026-05-21 09:22:04+0800
-- 更新时间: 2026-05-21 12:21:23+0800
-
-
----
+> v1.4.1 分开呈现券实例核销、触达后关联、活动参与后关联和实验增量四类结果。前三类不是自然增量；没有对照组与完整成本时，增量 GMV/ROI 必须为 NULL。
 
 ## 字段结构概览
 
-### 字段分类统计
-- **总字段数**: 17
-- **普通字段**: 17 个
-- **计算字段**: 0 个
-- **维度字段**: 6 个
-- **度量字段**: 11 个
+- **总字段数:** 33
+- **维度字段:** 10
+- **度量字段:** 23
 
 ### 字段列表
 
-- 活动ID (fdId: n514c734d258249be94bfa8b)
-  - 字段类型: STRING
-  - 元类型: DIM
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 活动名称 (fdId: ue9946327e98c4c7fbc2857a)
-  - 字段类型: STRING
-  - 元类型: DIM
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 活动类型 (fdId: e182d348c7a524e81ba6d5e7)
-  - 字段类型: STRING
-  - 元类型: DIM
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 活动渠道 (fdId: e5fff999be7dc4e799716b08)
-  - 字段类型: STRING
-  - 元类型: DIM
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 开始日期 (fdId: u21458b1ea8584533b6ecd78)
-  - 字段类型: DATE
-  - 元类型: DIM
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 结束日期 (fdId: ffbd4ab3b62c74cdf8951442)
-  - 字段类型: DATE
-  - 元类型: DIM
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 预算 (fdId: t50cb5c92d11a4626881bdd1)
-  - 字段类型: LONG
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 券发放数 (fdId: je5a380a46b57442c99954d3)
-  - 字段类型: LONG
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 券核销数 (fdId: c6b2198c38c474e3fa80a366)
-  - 字段类型: LONG
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 总折扣 (fdId: r0e5a9a0c6e2a4e0e9edcb5e)
-  - 字段类型: DOUBLE
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 触达人数 (fdId: hb8c5fa0465fb46c4ae7380c)
-  - 字段类型: LONG
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 查看人数 (fdId: ldbd5e93d2aa14da0a054935)
-  - 字段类型: LONG
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 转化人数 (fdId: ea0d1ae71fb3742f094b5150)
-  - 字段类型: LONG
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 拉动销售 (fdId: ub98523b3916e41cba56f8e2)
-  - 字段类型: DOUBLE
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 券核销率 (fdId: r18e52bb1a1d94a62996d7bd)
-  - 字段类型: DOUBLE
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 总体转化率 (fdId: v41860dce5f734c88836dce0)
-  - 字段类型: DOUBLE
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
-- 券ROI (fdId: r2613749c2149495f907037d)
-  - 字段类型: DOUBLE
-  - 元类型: METRIC
-  - 计算类型: normal
-  - 来源: 物理列
-
----
+| 字段 | 类型 | 属性 | 口径 |
+|---|---|---|---|
+| 活动ID | STRING | DIM | 活动主键 |
+| 活动名称 | STRING | DIM | 活动名称 |
+| 活动类型 | STRING | DIM | 活动类型 |
+| 活动渠道 | STRING | DIM | 活动主渠道 |
+| 开始日期 | DATE | DIM | 活动开始日期 |
+| 结束日期 | DATE | DIM | 活动结束日期 |
+| 预算 | LONG | METRIC | 活动主档预算；不代表完整实际成本 |
+| 券发放数 | LONG | METRIC | 来源活动下的去重券实例数 |
+| 券核销数 | LONG | METRIC | 快照日前已核销券实例数 |
+| 已记录权益成本 | DOUBLE | METRIC | 已核销券实例折扣金额合计 |
+| 核销订单数 | LONG | METRIC | 券实例通过订单ID直连的唯一已完成订单数 |
+| 核销订单GMV | DOUBLE | METRIC | 核销订单实付金额；不是增量 GMV |
+| 触达人数 | LONG | METRIC | 活动有效触达去重会员数 |
+| 查看人数 | LONG | METRIC | 活动已查看触达去重会员数 |
+| 活动参与人数 | LONG | METRIC | 结果为成功的活动参与去重会员数 |
+| 触达后关联下单人数 | LONG | METRIC | 被最近一次有效触达唯一归因的下单会员数 |
+| 触达后关联订单数 | LONG | METRIC | 被最近一次有效触达唯一归因的订单数 |
+| 触达后关联GMV | DOUBLE | METRIC | 有限窗口关联订单实付金额；不是增量 GMV |
+| 参与后关联下单人数 | LONG | METRIC | 被最近一次成功参与唯一归因的下单会员数 |
+| 参与后关联订单数 | LONG | METRIC | 被最近一次成功参与唯一归因的订单数 |
+| 参与后关联GMV | DOUBLE | METRIC | 有限窗口参与关联订单实付金额；不是增量 GMV |
+| 券核销率 | DOUBLE | METRIC | 券核销数 / 券发放数 |
+| 打开率 | DOUBLE | METRIC | 查看人数 / 触达人数 |
+| 触达后关联下单率 | DOUBLE | METRIC | 触达后关联下单人数 / 触达人数 |
+| 参与后关联下单率 | DOUBLE | METRIC | 参与后关联下单人数 / 活动参与人数 |
+| 核销GMV成本比 | DOUBLE | METRIC | 核销订单GMV / 已记录权益成本；不是 ROI |
+| 增量GMV | DOUBLE | METRIC | 仅对照实验或准实验可计算；当前为 NULL |
+| 增量ROI | DOUBLE | METRIC | 仅增量GMV减完整成本后可计算；当前为 NULL |
+| 增量测算状态 | STRING | DIM | 是否具备对照组及完整成本 |
+| 归因窗口天数 | LONG | METRIC | 当前为 7，表示事件后 0–7 天 |
+| 触达归因规则 | STRING | DIM | 下单前最近一次有效触达；每订单唯一 |
+| 活动参与归因规则 | STRING | DIM | 下单前最近一次成功活动参与；每订单唯一 |
+| 数据快照日期 | DATE | DIM | ETL 必填参数 `as_of_date` |
 
 ## Malloy 数据源定义
 
-以下是该数据集的 Malloy source 定义,展示了数据表的结构和计算字段:
-
 ```malloy
 source: `ads_活动权益复盘` is table('q2154240ed0334aec8883ae8') extend {
-  // Base columns from table:
-  //   - 活动ID (STRING)
-  //   - 活动名称 (STRING)
-  //   - 活动类型 (STRING)
-  //   - 活动渠道 (STRING)
-  //   - 开始日期 (DATE)
-  //   - 结束日期 (DATE)
-  //   - 预算 (LONG)
-  //   - 券发放数 (LONG)
-  //   - 券核销数 (LONG)
-  //   - 总折扣 (DOUBLE)
-  //   - 触达人数 (LONG)
-  //   - 查看人数 (LONG)
-  //   - 转化人数 (LONG)
-  //   - 拉动销售 (DOUBLE)
-  //   - 券核销率 (DOUBLE)
-  //   - 总体转化率 (DOUBLE)
-  //   - 券ROI (DOUBLE)
-
+  // 活动ID (STRING)
+  // 活动名称 (STRING)
+  // 活动类型 (STRING)
+  // 活动渠道 (STRING)
+  // 开始日期 (DATE)
+  // 结束日期 (DATE)
+  // 预算 (LONG)
+  // 券发放数 (LONG)
+  // 券核销数 (LONG)
+  // 已记录权益成本 (DOUBLE)
+  // 核销订单数 (LONG)
+  // 核销订单GMV (DOUBLE)
+  // 触达人数 (LONG)
+  // 查看人数 (LONG)
+  // 活动参与人数 (LONG)
+  // 触达后关联下单人数 (LONG)
+  // 触达后关联订单数 (LONG)
+  // 触达后关联GMV (DOUBLE)
+  // 参与后关联下单人数 (LONG)
+  // 参与后关联订单数 (LONG)
+  // 参与后关联GMV (DOUBLE)
+  // 券核销率 (DOUBLE)
+  // 打开率 (DOUBLE)
+  // 触达后关联下单率 (DOUBLE)
+  // 参与后关联下单率 (DOUBLE)
+  // 核销GMV成本比 (DOUBLE)
+  // 增量GMV (DOUBLE)
+  // 增量ROI (DOUBLE)
+  // 增量测算状态 (STRING)
+  // 归因窗口天数 (LONG)
+  // 触达归因规则 (STRING)
+  // 活动参与归因规则 (STRING)
+  // 数据快照日期 (DATE)
 }
 ```
 
-**说明:**
-- **基础列**: 直接来自数据表的原始字段,以注释形式列出
-- **dimension**: 维度字段(用于分组、筛选、钻取),包含计算逻辑和分组定义
-- **measure**: 度量字段(用于聚合计算,如求和、平均等)
-
----
-
 ## 血缘关系
 
-### 上游资源 (1)
-- **etl_ads_活动权益复盘 (17节点·C+G+F+C+G×2+S+J×3+C)** (DATA_PROCESS_ETL)
-  - ID: g75c5f907f4bb4e87938fa35
-
-### 下游资源 (1)
-- **05-活动权益复盘** (DATA_ANALYSIS_PAGE)
-  - ID: t1400adf655d5974c9cfb990
+- 上游 ETL：`ETL/逻辑SQL/etl_ads_活动权益复盘 (17节点·C+G+F+C+G×2+S+J×3+C).md`
+- 上游数据：`dwd_券事件`、`dwd_会员触达`、`dwd_订单`、`dim_活动主档`、`dwd_活动参与`
+- 下游看板：`05-活动权益复盘`

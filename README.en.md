@@ -1,17 +1,18 @@
 # majia-huiyuan · Membership Ops Playbook <!-- plain-ok -->
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.4.0-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.4.1-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
+[![Quality](https://github.com/maojiebc/majia-huiyuan/actions/workflows/quality.yml/badge.svg)](https://github.com/maojiebc/majia-huiyuan/actions/workflows/quality.yml)
 [![AI Agent Friendly](https://img.shields.io/badge/AI_Agent-friendly-1abc9c)](./AGENTS.md)
 
-> **会员运营 · 马甲实战版** (Membership Ops — Majia's Field Edition) — a complete, copyable chain-store membership data system, fully open-sourced. Modeled on a fictional coffee chain, from the first row of a member's registration all the way to the boss's executive cockpit: **54 datasets, 25 ETL pipelines, 12 dashboards, plus a ~3,100-line battle-tested formula playbook** — all laid open. <!-- plain-ok -->
+> **会员运营 · 马甲实战版** (Membership Ops — Majia's Field Edition) — a complete, auditable, adaptable reference system for chain-store membership data. Modeled on a fictional coffee chain: **55 logical datasets, 25 ETL pipelines, 12 dashboards, plus a ~3,100-line field-tested formula playbook**. <!-- plain-ok -->
 >
 > All data is simulated — unrelated to any real company. MIT licensed: personal, corporate, commercial use, all fine.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.4.0 architecture: three assets, five warehouse layers, ten consulting jobs, and boundaries with majia-siyu for execution content and majia-guanyuan for platform tooling"/>
+  <img src="https://raw.githubusercontent.com/maojiebc/majia-huiyuan/main/docs/architecture.png" width="440" alt="majia-huiyuan v1.4.1 architecture: three assets, five warehouse layers, ten consulting jobs, and boundaries with majia-siyu for execution content and majia-guanyuan for platform tooling"/>
 </p>
 
 **English README ↓ · [中文说明](./README.md)**
@@ -28,7 +29,7 @@ This repo is the reference nobody publishes — a **showroom**. A show home teac
 
 | Asset | Where | What |
 |---|---|---|
-| **Showroom** | `数据集/` `ETL/` `看板/` `清单/` | Full simulated data platform: 54 datasets (DIM/DWD/DWS/ADS/DQC), 25 ETLs, 12 role dashboards. Each asset in three forms: structure-definition md, 200-row sample CSV, raw platform JSON. |
+| **Showroom** | `数据集/` `ETL/` `看板/` `清单/` | Simulated reference platform: 55 logical datasets (DIM/DWD/DWS/ADS/DQC/param), 25 ETLs, 12 role dashboards. Corrected logic lives in `ETL/逻辑SQL/` and `ETL/公共口径/`; raw platform JSON remains the historical workshop snapshot. |
 | **Formula playbook** | `公式库/` | 10 volumes (~3,100 lines), distilled from real field experience (anonymized): standard SQL for repurchase / RFM / redemption / retention, a field dictionary, NULL tri-state traps, DWD wide-table paradigms, a 39-ETL catalog, and a white-box NBA task-pool model (task generation → dispatch → touch → recovery). |
 | **Methodology transcript** | `分享/区域运营的一天/` | Award-winning live-talk write-up (34 illustrated slides): pain points → AI runs a 5-step action chain, human decides → trust quartet → three demo cases → adoption FAQ. |
 
@@ -45,9 +46,12 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.claude/skills/majia-h
 ## Data notice (read first)
 
 - **All data is programmatically simulated**, unrelated to any real company; personal identifiers are masked (e.g. `156****0925`).
-- 200-row samples per table; full scale (80k members, 1.29M orders) noted in each structure-definition file.
+- Up to 200 simulated rows per table (parameter and naturally small tables keep their actual sample size); full scale (80k members, 1.29M orders) is noted in each structure-definition file.
 - Structures, fields, and calibers are citable; **numbers must never be used as real business data**.
 - SQL dialect is Spark 3.4 — mind function differences on other engines.
+- v1.4.1 SQL is a **reference example that still requires validation** against your own schemas, edge cases, and controls; it is not drop-in production code.
+- `*/原始JSON/` and `看板/页面JSON/` are historical v1.4.0 workshop snapshots and do not contain the v1.4.1 logic or field corrections; they are not drop-in import bundles.
+- Where a structure file retains historical platform fields, its top-level `v1.4.1 结构覆盖` note is authoritative; current CSV sample headers follow that override.
 
 ## Sibling project
 
@@ -58,6 +62,7 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.claude/skills/majia-h
 
 ## Version History
 
+- **v1.4.1** (2026-08-09): Business-correctness release — canonical touch/order, coupon-instance/order, and activity/order bridges; one-clock `as_of_date`; point-in-time SCD2 joins; corrected cohort retention, zero-sales cost months, consecutive losses, franchise payback, zero-order days, and complaint-only dates; split the mislabeled parameter table; added nine business-invariant regression checks, GitHub Actions, and bundle-drift verification. Copy-paste production claims were removed.
 - **v1.4.0** (2026-08-07): Capability-boundary deep dive — ten consulting jobs (added "data basis behind ops actions" and "CDP & tag-system design"); new formula volume 10 *Task & Touch Recovery* (white-box NBA task-pool model, nine task types × targeting sources × recovery calibers, anti-disturb & priority arbitration, bad-review win-back); the majia-siyu boundary reframed from mutual exclusion to "two halves of the same action".
 - **v1.3.2** (2026-07-28): Tightened routing to membership data, metric definitions, SQL, warehouse design, and dashboards; private-domain content and engagement actions now route to `majia-siyu`.
 - **v1.3.1** (2026-07-23): Added the architecture preview, English README, and branded display surfaces.

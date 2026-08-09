@@ -15,7 +15,7 @@
   - g52a667122e214eefb542bf6 (dws_体验口碑汇总)
   - sedfdd84abacc4cb496c15e7 (dim_门店主档)
   - idc628b87ed3a4f1d91e5e1c (param_豁免日历)
-  - jc8be722fd6cb49fa87206f0 (param_会员生命周期阈值)
+  - jc8be722fd6cb49fa87206f0 (param_门店会员占比预警阈值)
   - nd177a0ac0eda44ac98c75bc (ads_门店每日指挥台)
 - **数据输出目标:**
   - ads_异常归因清单 (目录: 马甲的模拟数据集)
@@ -85,7 +85,7 @@ SELECT * FROM input
 
 ### 节点5
 - Id: id_1006
-- Name: param_会员生命周期阈值
+- Name: param_门店会员占比预警阈值
 - Type: INPUT_DATASET
 - **Used By (Outputs):**
   - id_2001 (四路异常合流归因)
@@ -127,7 +127,7 @@ SELECT * FROM input1
   - id_1003 (dws_体验口碑汇总)
   - id_1004 (dim_门店主档)
   - id_1005 (param_豁免日历)
-  - id_1006 (param_会员生命周期阈值)
+  - id_1006 (param_门店会员占比预警阈值)
 
 - **Used By (Outputs):**
   - id_3001 (ads_异常归因清单)
@@ -137,9 +137,12 @@ SELECT * FROM input1
 -- ads_异常归因清单：四路异常合流 → 归因到参数、到人、到动作
 -- 设计原则（唯一异常出口）：多出口=同店多套结论=周会变对数会；合流后责任人唯一、
 -- 优先级全局可排、豁免统一套用、AI 单表可问。
-WITH dim_cur AS (
+WITH params AS (
+  SELECT DATE '2026-06-24' AS `as_of_date` -- 生产由调度参数替换
+),
+dim_cur AS (
   -- SCD2 拉链表必须锁当前版本：不加此过滤，未来主档加历史版本后 join 会爆行
-  SELECT `门店ID`, `店长姓名`, `区域经理`, `是否90天内新店`
+  SELECT `门店ID`, `店长姓名`, `区域经理`, `开业日期`
   FROM input4
   WHERE `当前版本标记` = 1
 ),
@@ -177,22 +180,22 @@ profit_anom AS (
     `门店ID`, `门店名称`, `门店类型`, `城市`,
     '利润健康' AS `异常来源`,
     CONCAT_WS('+',
-      CASE WHEN `房租超标` = TRUE THEN '房租超标' END,
-      CASE WHEN `人工超标` = TRUE THEN '人工超标' END,
-      CASE WHEN `堂食衰减` = TRUE THEN '堂食衰减' END,
-      CASE WHEN `本月亏损` = TRUE THEN '本月亏损' END) AS `异常类型`,
+      CASE WHEN `房租超标` = 'TRUE' THEN '房租超标' END,
+      CASE WHEN `人工超标` = 'TRUE' THEN '人工超标' END,
+      CASE WHEN `堂食衰减` = 'TRUE' THEN '堂食衰减' END,
+      CASE WHEN `本月亏损` = 'TRUE' THEN '本月亏损' END) AS `异常类型`,
     CONCAT('净利', CAST(ROUND(`单店净利润`, 0) AS STRING),
            '；房租占比', CAST(ROUND(`房租占比` * 100, 1) AS STRING), '%/上限', CAST(ROUND(`房租占比上限` * 100, 0) AS STRING), '%',
            '；人工占比', CAST(ROUND(`人工占比` * 100, 1) AS STRING), '%/上限', CAST(ROUND(`人工占比上限` * 100, 0) AS STRING), '%',
            '；堂食占比', CAST(ROUND(`堂食占比` * 100, 1) AS STRING), '%/下限', CAST(ROUND(`堂食占比下限` * 100, 0) AS STRING), '%',
-           '；连亏', CAST(`历史亏损月数` AS STRING), '月') AS `异常详情`,
+           '；连续亏损', CAST(`连续亏损月数` AS STRING), '月') AS `异常详情`,
     -- 持续亏损按连续月数而非累计：偶发亏损与结构性失血是两种病，连续性才指向结构问题
-    CASE WHEN `利润健康等级` = '严重亏损' AND `历史亏损月数` >= `持续亏损预警月数` THEN 'P0'
+    CASE WHEN `利润健康等级` = '严重亏损' AND `连续亏损月数` >= `持续亏损预警月数` THEN 'P0'
          WHEN `预警条数` >= 2 THEN 'P1'
          ELSE 'P2' END AS `风险等级`,
     `建议动作`
   FROM input2
-  WHERE `预警条数` > 0 OR `本月亏损` = TRUE
+  WHERE `预警条数` > 0 OR `本月亏损` = 'TRUE'
 ),
 rep_anom AS (
   -- 路3：日粒度口碑异常。收紧到「高风险且有抓手」：没有未回复负评/待处理投诉的高风险日
@@ -220,7 +223,7 @@ member_monthly AS (
     MAX(`门店类型`) AS `门店类型`,
     MAX(`城市`) AS `城市`,
     substr(CAST(`业务日期` AS STRING), 1, 7) AS `月份`,
-    SUM(`会员订单数`) * 1.0 / SUM(`订单数`) AS `会员占比`,
+    CASE WHEN SUM(`订单数`) > 0 THEN SUM(`会员订单数`) * 1.0 / SUM(`订单数`) ELSE 0 END AS `会员占比`,
     SUM(`订单数`) AS `月订单数`
   FROM input1
   GROUP BY `门店ID`, substr(CAST(`业务日期` AS STRING), 1, 7)
@@ -265,20 +268,23 @@ SELECT
   -- 豁免是打标不是删除：豁免行保留在清单中可审计「本来命中了什么、为什么被豁免」
   CASE
     WHEN e.`豁免原因` IS NOT NULL THEN e.`豁免原因`
-    WHEN d.`是否90天内新店` = 'TRUE' THEN '新店爬坡观察'
+    WHEN DATEDIFF(u.`业务日期`, d.`开业日期`) BETWEEN 0 AND 89 THEN '新店爬坡观察'
     ELSE NULL
   END AS `豁免标记`,
   CASE
     WHEN e.`豁免原因` IS NOT NULL THEN '豁免观察'
-    WHEN d.`是否90天内新店` = 'TRUE' THEN '豁免观察'
+    WHEN DATEDIFF(u.`业务日期`, d.`开业日期`) BETWEEN 0 AND 89 THEN '豁免观察'
     ELSE '需处理'
   END AS `处理状态`,
-  u.`建议动作`
+  u.`建议动作`,
+  p.`as_of_date` AS `数据快照日期`
 FROM unioned u
+CROSS JOIN params p
 LEFT JOIN dim_cur d ON u.`门店ID` = d.`门店ID`
 -- 豁免日历为窄表（店型×月份一行一档）：规避 CSV 导入对 "1,2,7,8" 的数字类型推断，
 -- join 直接数字对数字，豁免规则走数据变更不走代码发布
 LEFT JOIN input5 e ON u.`门店类型` = e.`门店类型` AND MONTH(u.`业务日期`) = CAST(e.`豁免月份` AS INT)
+WHERE u.`业务日期` <= p.`as_of_date`
 
 ```
 - 等价SQL:
@@ -286,9 +292,12 @@ LEFT JOIN input5 e ON u.`门店类型` = e.`门店类型` AND MONTH(u.`业务日
 -- ads_异常归因清单：四路异常合流 → 归因到参数、到人、到动作
 -- 设计原则（唯一异常出口）：多出口=同店多套结论=周会变对数会；合流后责任人唯一、
 -- 优先级全局可排、豁免统一套用、AI 单表可问。
-WITH dim_cur AS (
+WITH params AS (
+  SELECT DATE '2026-06-24' AS `as_of_date` -- 生产由调度参数替换
+),
+dim_cur AS (
   -- SCD2 拉链表必须锁当前版本：不加此过滤，未来主档加历史版本后 join 会爆行
-  SELECT `门店ID`, `店长姓名`, `区域经理`, `是否90天内新店`
+  SELECT `门店ID`, `店长姓名`, `区域经理`, `开业日期`
   FROM input4
   WHERE `当前版本标记` = 1
 ),
@@ -326,22 +335,22 @@ profit_anom AS (
     `门店ID`, `门店名称`, `门店类型`, `城市`,
     '利润健康' AS `异常来源`,
     CONCAT_WS('+',
-      CASE WHEN `房租超标` = TRUE THEN '房租超标' END,
-      CASE WHEN `人工超标` = TRUE THEN '人工超标' END,
-      CASE WHEN `堂食衰减` = TRUE THEN '堂食衰减' END,
-      CASE WHEN `本月亏损` = TRUE THEN '本月亏损' END) AS `异常类型`,
+      CASE WHEN `房租超标` = 'TRUE' THEN '房租超标' END,
+      CASE WHEN `人工超标` = 'TRUE' THEN '人工超标' END,
+      CASE WHEN `堂食衰减` = 'TRUE' THEN '堂食衰减' END,
+      CASE WHEN `本月亏损` = 'TRUE' THEN '本月亏损' END) AS `异常类型`,
     CONCAT('净利', CAST(ROUND(`单店净利润`, 0) AS STRING),
            '；房租占比', CAST(ROUND(`房租占比` * 100, 1) AS STRING), '%/上限', CAST(ROUND(`房租占比上限` * 100, 0) AS STRING), '%',
            '；人工占比', CAST(ROUND(`人工占比` * 100, 1) AS STRING), '%/上限', CAST(ROUND(`人工占比上限` * 100, 0) AS STRING), '%',
            '；堂食占比', CAST(ROUND(`堂食占比` * 100, 1) AS STRING), '%/下限', CAST(ROUND(`堂食占比下限` * 100, 0) AS STRING), '%',
-           '；连亏', CAST(`历史亏损月数` AS STRING), '月') AS `异常详情`,
+           '；连续亏损', CAST(`连续亏损月数` AS STRING), '月') AS `异常详情`,
     -- 持续亏损按连续月数而非累计：偶发亏损与结构性失血是两种病，连续性才指向结构问题
-    CASE WHEN `利润健康等级` = '严重亏损' AND `历史亏损月数` >= `持续亏损预警月数` THEN 'P0'
+    CASE WHEN `利润健康等级` = '严重亏损' AND `连续亏损月数` >= `持续亏损预警月数` THEN 'P0'
          WHEN `预警条数` >= 2 THEN 'P1'
          ELSE 'P2' END AS `风险等级`,
     `建议动作`
   FROM input2
-  WHERE `预警条数` > 0 OR `本月亏损` = TRUE
+  WHERE `预警条数` > 0 OR `本月亏损` = 'TRUE'
 ),
 rep_anom AS (
   -- 路3：日粒度口碑异常。收紧到「高风险且有抓手」：没有未回复负评/待处理投诉的高风险日
@@ -369,7 +378,7 @@ member_monthly AS (
     MAX(`门店类型`) AS `门店类型`,
     MAX(`城市`) AS `城市`,
     substr(CAST(`业务日期` AS STRING), 1, 7) AS `月份`,
-    SUM(`会员订单数`) * 1.0 / SUM(`订单数`) AS `会员占比`,
+    CASE WHEN SUM(`订单数`) > 0 THEN SUM(`会员订单数`) * 1.0 / SUM(`订单数`) ELSE 0 END AS `会员占比`,
     SUM(`订单数`) AS `月订单数`
   FROM input1
   GROUP BY `门店ID`, substr(CAST(`业务日期` AS STRING), 1, 7)
@@ -414,20 +423,23 @@ SELECT
   -- 豁免是打标不是删除：豁免行保留在清单中可审计「本来命中了什么、为什么被豁免」
   CASE
     WHEN e.`豁免原因` IS NOT NULL THEN e.`豁免原因`
-    WHEN d.`是否90天内新店` = 'TRUE' THEN '新店爬坡观察'
+    WHEN DATEDIFF(u.`业务日期`, d.`开业日期`) BETWEEN 0 AND 89 THEN '新店爬坡观察'
     ELSE NULL
   END AS `豁免标记`,
   CASE
     WHEN e.`豁免原因` IS NOT NULL THEN '豁免观察'
-    WHEN d.`是否90天内新店` = 'TRUE' THEN '豁免观察'
+    WHEN DATEDIFF(u.`业务日期`, d.`开业日期`) BETWEEN 0 AND 89 THEN '豁免观察'
     ELSE '需处理'
   END AS `处理状态`,
-  u.`建议动作`
+  u.`建议动作`,
+  p.`as_of_date` AS `数据快照日期`
 FROM unioned u
+CROSS JOIN params p
 LEFT JOIN dim_cur d ON u.`门店ID` = d.`门店ID`
 -- 豁免日历为窄表（店型×月份一行一档）：规避 CSV 导入对 "1,2,7,8" 的数字类型推断，
 -- join 直接数字对数字，豁免规则走数据变更不走代码发布
 LEFT JOIN input5 e ON u.`门店类型` = e.`门店类型` AND MONTH(u.`业务日期`) = CAST(e.`豁免月份` AS INT)
+WHERE u.`业务日期` <= p.`as_of_date`
 
 ```
 
@@ -460,7 +472,7 @@ SELECT * FROM input
   - ID: nd177a0ac0eda44ac98c75bc
 - **dws_体验口碑汇总** (DATA_SET_ETL)
   - ID: g52a667122e214eefb542bf6
-- **param_会员生命周期阈值** (DATA_SET_FILE)
+- **param_门店会员占比预警阈值** (DATA_SET_FILE)
   - ID: jc8be722fd6cb49fa87206f0
 - **param_豁免日历** (DATA_SET_FILE)
   - ID: idc628b87ed3a4f1d91e5e1c

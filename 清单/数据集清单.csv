@@ -50,6 +50,7 @@ DWS,dws_渠道迁移分析,s44dad3e0887d41dcb5dfc52
 DWS,dws_目标达成,me754bd92ca384667a33a6d1
 DWS,dws_私域转化漏斗,u37d100614fbd4abe89f7731
 DWS,dws_门店日报,l335bc476e2f343ed8c721bd
-其他,param_会员生命周期阈值,jc8be722fd6cb49fa87206f0
+其他,param_会员生命周期阈值,v141-logical-param-lifecycle
+其他,param_门店会员占比预警阈值,jc8be722fd6cb49fa87206f0
 其他,param_利润健康阈值,l9312c8ef7ec14877889f06b
 其他,param_豁免日历,idc628b87ed3a4f1d91e5e1c

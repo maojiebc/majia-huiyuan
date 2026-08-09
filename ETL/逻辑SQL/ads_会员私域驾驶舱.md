@@ -64,7 +64,8 @@ SELECT * FROM input
 - Position: (500,100)
 - SqlScript:
 ```sql
-WITH order_monthly AS (
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date),
+order_monthly AS (
   SELECT
     DATE_TRUNC('MONTH', CAST(`业务日期` AS DATE)) AS `年月`,
     COUNT(DISTINCT `会员ID`) AS `当月活跃会员`,
@@ -73,8 +74,8 @@ WITH order_monthly AS (
     SUM(CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `实付金额` ELSE 0 END) AS `会员销售`,
     SUM(CASE WHEN `是否到店` = 1 THEN `实付金额` ELSE 0 END) AS `到店销售`,
     COUNT(DISTINCT `订单ID`) AS `总订单数`
-  FROM input1
-  WHERE `订单状态` = '已完成'
+  FROM input1 CROSS JOIN params p
+  WHERE `订单状态` = '已完成' AND `业务日期` <= p.as_of_date
   GROUP BY DATE_TRUNC('MONTH', CAST(`业务日期` AS DATE))
 ),
 touch_monthly AS (
@@ -82,7 +83,8 @@ touch_monthly AS (
     DATE_TRUNC('MONTH', CAST(`触达日期` AS DATE)) AS `年月`,
     COUNT(DISTINCT `触达ID`) AS `触达次数`,
     COUNT(DISTINCT `会员ID`) AS `触达会员数`
-  FROM input2
+  FROM input2 CROSS JOIN params p
+  WHERE `触达状态` = '已发送' AND `触达日期` <= p.as_of_date
   GROUP BY DATE_TRUNC('MONTH', CAST(`触达日期` AS DATE))
 )
 SELECT
@@ -92,13 +94,16 @@ SELECT
   COALESCE(t.`触达次数`, 0) AS `触达次数`,
   COALESCE(t.`触达会员数`, 0) AS `触达会员数`,
   CASE WHEN o.`总销售` > 0 THEN o.`会员销售` / o.`总销售` ELSE 0 END AS `会员销售占比`,
-  CASE WHEN o.`总销售` > 0 THEN o.`到店销售` / o.`总销售` ELSE 0 END AS `到店销售占比`
+  CASE WHEN o.`总销售` > 0 THEN o.`到店销售` / o.`总销售` ELSE 0 END AS `到店销售额占比`,
+  p.as_of_date AS `数据快照日期`
 FROM order_monthly o
 LEFT JOIN touch_monthly t ON o.`年月` = t.`年月`
+CROSS JOIN params p
 ```
 - 等价SQL:
 ```sql
-WITH order_monthly AS (
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date),
+order_monthly AS (
   SELECT
     DATE_TRUNC('MONTH', CAST(`业务日期` AS DATE)) AS `年月`,
     COUNT(DISTINCT `会员ID`) AS `当月活跃会员`,
@@ -107,8 +112,8 @@ WITH order_monthly AS (
     SUM(CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `实付金额` ELSE 0 END) AS `会员销售`,
     SUM(CASE WHEN `是否到店` = 1 THEN `实付金额` ELSE 0 END) AS `到店销售`,
     COUNT(DISTINCT `订单ID`) AS `总订单数`
-  FROM input1
-  WHERE `订单状态` = '已完成'
+  FROM input1 CROSS JOIN params p
+  WHERE `订单状态` = '已完成' AND `业务日期` <= p.as_of_date
   GROUP BY DATE_TRUNC('MONTH', CAST(`业务日期` AS DATE))
 ),
 touch_monthly AS (
@@ -116,7 +121,8 @@ touch_monthly AS (
     DATE_TRUNC('MONTH', CAST(`触达日期` AS DATE)) AS `年月`,
     COUNT(DISTINCT `触达ID`) AS `触达次数`,
     COUNT(DISTINCT `会员ID`) AS `触达会员数`
-  FROM input2
+  FROM input2 CROSS JOIN params p
+  WHERE `触达状态` = '已发送' AND `触达日期` <= p.as_of_date
   GROUP BY DATE_TRUNC('MONTH', CAST(`触达日期` AS DATE))
 )
 SELECT
@@ -126,9 +132,11 @@ SELECT
   COALESCE(t.`触达次数`, 0) AS `触达次数`,
   COALESCE(t.`触达会员数`, 0) AS `触达会员数`,
   CASE WHEN o.`总销售` > 0 THEN o.`会员销售` / o.`总销售` ELSE 0 END AS `会员销售占比`,
-  CASE WHEN o.`总销售` > 0 THEN o.`到店销售` / o.`总销售` ELSE 0 END AS `到店销售占比`
+  CASE WHEN o.`总销售` > 0 THEN o.`到店销售` / o.`总销售` ELSE 0 END AS `到店销售额占比`,
+  p.as_of_date AS `数据快照日期`
 FROM order_monthly o
 LEFT JOIN touch_monthly t ON o.`年月` = t.`年月`
+CROSS JOIN params p
 ```
 
 

@@ -66,10 +66,18 @@ SELECT * FROM input
 - Position: (431,64)
 - 等价SQL:
 ```sql
+WITH params AS (
+  -- 统一运行参数：调度到其他快照时只替换此处
+  SELECT DATE '2026-06-24' AS as_of_date
+)
 SELECT
-  *
-FROM input1
-WHERE (`订单状态` = '已完成')
+  o.*,
+  p.as_of_date AS `数据快照日期`
+FROM input1 o
+CROSS JOIN params p
+WHERE o.`订单状态` = '已完成'
+  AND o.`业务日期` IS NOT NULL
+  AND CAST(o.`业务日期` AS DATE) <= p.as_of_date
 ```
 
 
@@ -109,8 +117,16 @@ FROM input1
 - 等价SQL:
 ```sql
 SELECT
-  *
+  `门店ID`,
+  CAST(`业务日期` AS DATE) AS `业务日期`,
+  `数据快照日期`,
+  COUNT(DISTINCT `订单ID`) AS `订单数`,
+  SUM(COALESCE(`实付金额`, 0)) AS `销售额`,
+  COUNT(DISTINCT CASE
+    WHEN `会员ID` IS NOT NULL AND `会员ID` <> '' THEN `订单ID`
+  END) AS `会员订单数`
 FROM input1
+GROUP BY `门店ID`, CAST(`业务日期` AS DATE), `数据快照日期`
 ```
 
 
@@ -128,9 +144,23 @@ FROM input1
 - 等价SQL:
 ```sql
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
+  f.`门店ID`,
+  d.`门店名称`,
+  d.`城市`,
+  d.`城市层级`,
+  d.`店型`,
+  d.`商圈`,
+  CAST(d.`开业日期` AS DATE) AS `开业日期`,
+  f.`业务日期`,
+  f.`订单数`,
+  f.`销售额`,
+  f.`会员订单数`,
+  f.`数据快照日期`
+FROM input1 f
+LEFT OUTER JOIN input2 d
+  ON f.`门店ID` = d.`门店ID`
+ AND f.`业务日期` >= CAST(d.`生效起始日期` AS DATE)
+ AND f.`业务日期` <= COALESCE(CAST(d.`生效截止日期` AS DATE), DATE '9999-12-31')
 ```
 
 
@@ -145,6 +175,8 @@ LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
   - id_1779337109464 (dws_新店爬坡_Comp老店)
 - Position: (1247,64)
 - FormulaNames:
+  - 新店标签（按事实日重算）
+  - 是否90天内新店（按事实日重算）
   - 开业天数
   - 爬坡阶段
   - 门店成长类型
@@ -152,14 +184,50 @@ LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
   - 会员订单占比
 - 等价SQL:
 ```sql
+WITH base AS (
+  SELECT
+    *,
+    CAST(DATEDIFF(`业务日期`, `开业日期`) AS BIGINT) AS `开业天数`
+  FROM input1
+)
 SELECT
-  *,
-  datediff(`业务日期`, `开业日期`) AS `开业天数`,
-  case when `是否90天内新店` = 'TRUE' then   case when datediff(`业务日期`,`开业日期`) <= 7 then 'W1'        when datediff(`业务日期`,`开业日期`) <= 14 then 'W2'        when datediff(`业务日期`,`开业日期`) <= 30 then 'M1'        when datediff(`业务日期`,`开业日期`) <= 60 then 'M2'        else 'M3+' end else 'Comp老店' end AS `爬坡阶段`,
-  case when `是否90天内新店` = 'TRUE' then '新店'      when datediff(`业务日期`,`开业日期`) > 365 then 'Comp老店'      else '次新店' end AS `门店成长类型`,
-  `销售额` * 1.0 / `订单数` AS `平均客单价`,
-  case when `订单数` > 0 then `会员订单数` * 1.0 / `订单数` else 0 end AS `会员订单占比`
-FROM input1
+  `门店ID`, `门店名称`, `城市`, `城市层级`, `店型`, `商圈`,
+  CASE
+    WHEN `开业天数` IS NULL OR `开业天数` < 0 THEN '待核验'
+    WHEN `开业天数` <= 89 THEN '新店'
+    ELSE '非新店'
+  END AS `新店标签`,
+  CASE
+    WHEN `开业天数` IS NULL THEN CAST(NULL AS STRING)
+    WHEN `开业天数` BETWEEN 0 AND 89 THEN 'TRUE'
+    ELSE 'FALSE'
+  END AS `是否90天内新店`,
+  `开业日期`, `业务日期`, `订单数`, `销售额`, `会员订单数`, `开业天数`,
+  CASE
+    WHEN `开业天数` IS NULL OR `开业天数` < 0 THEN '待核验'
+    WHEN `开业天数` <= 7  THEN 'W1'
+    WHEN `开业天数` <= 14 THEN 'W2'
+    WHEN `开业天数` <= 30 THEN 'M1'
+    WHEN `开业天数` <= 60 THEN 'M2'
+    WHEN `开业天数` <= 89 THEN 'M3'
+    ELSE 'Comp老店'
+  END AS `爬坡阶段`,
+  CASE
+    WHEN `开业天数` IS NULL OR `开业天数` < 0 THEN '待核验'
+    WHEN `开业天数` <= 89  THEN '新店'
+    WHEN `开业天数` <= 365 THEN '次新店'
+    ELSE 'Comp老店'
+  END AS `门店成长类型`,
+  CASE
+    WHEN `订单数` > 0 THEN `销售额` * 1.0 / `订单数`
+    ELSE CAST(NULL AS DOUBLE)
+  END AS `平均客单价`,
+  CASE
+    WHEN `订单数` > 0 THEN `会员订单数` * 1.0 / `订单数`
+    ELSE CAST(NULL AS DOUBLE)
+  END AS `会员订单占比`,
+  `数据快照日期`
+FROM base
 ```
 
 

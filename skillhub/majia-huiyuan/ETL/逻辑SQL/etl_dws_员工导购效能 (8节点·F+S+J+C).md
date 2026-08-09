@@ -83,6 +83,7 @@ SELECT * FROM input
 - Position: (431,64)
 - 等价SQL:
 ```sql
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date)
 SELECT
   *
 FROM input1
@@ -103,6 +104,7 @@ WHERE (`状态` = '在职')
 - Position: (431,232)
 - SqlScript:
 ```sql
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date)
 SELECT
   COALESCE(t.`员工ID`, k.`员工导购ID`) AS `员工ID`,
   COALESCE(t.`周起始`, k.`周起始`) AS `周起始`,
@@ -112,14 +114,16 @@ SELECT
   COALESCE(k.`任务数`, 0) AS `任务数`,
   COALESCE(k.`已触达任务`, 0) AS `已触达任务`,
   COALESCE(k.`转化任务数`, 0) AS `转化任务数`,
-  COALESCE(k.`转化金额`, 0) AS `转化金额`
+  COALESCE(k.`转化金额`, 0) AS `转化金额`,
+  p.as_of_date AS `数据快照日期`
 FROM (
   SELECT `员工ID`,
     date_sub(`触达日期`, dayofweek(`触达日期`) - 1) AS `周起始`,
     COUNT(DISTINCT `触达ID`) AS `触达数`,
     COUNT(DISTINCT `会员ID`) AS `触达会员数`,
     SUM(`是否查看`) AS `查看数`
-  FROM input1
+  FROM input1 CROSS JOIN params p1
+  WHERE `触达状态` = '已发送' AND `触达日期` <= p1.as_of_date
   GROUP BY `员工ID`, date_sub(`触达日期`, dayofweek(`触达日期`) - 1)
 ) t
 FULL OUTER JOIN (
@@ -129,13 +133,16 @@ FULL OUTER JOIN (
     SUM(CASE WHEN `触达状态` = '已触达' THEN 1 ELSE 0 END) AS `已触达任务`,
     SUM(`触达后下单`) AS `转化任务数`,
     SUM(`触达后下单金额`) AS `转化金额`
-  FROM input2
+  FROM input2 CROSS JOIN params p2
+  WHERE DATE(`任务生成时间`) <= p2.as_of_date
   GROUP BY `员工导购ID`, date_sub(DATE(`任务生成时间`), dayofweek(DATE(`任务生成时间`)) - 1)
 ) k
 ON t.`员工ID` = k.`员工导购ID` AND t.`周起始` = k.`周起始`
+CROSS JOIN params p
 ```
 - 等价SQL:
 ```sql
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date)
 SELECT
   COALESCE(t.`员工ID`, k.`员工导购ID`) AS `员工ID`,
   COALESCE(t.`周起始`, k.`周起始`) AS `周起始`,
@@ -145,14 +152,16 @@ SELECT
   COALESCE(k.`任务数`, 0) AS `任务数`,
   COALESCE(k.`已触达任务`, 0) AS `已触达任务`,
   COALESCE(k.`转化任务数`, 0) AS `转化任务数`,
-  COALESCE(k.`转化金额`, 0) AS `转化金额`
+  COALESCE(k.`转化金额`, 0) AS `转化金额`,
+  p.as_of_date AS `数据快照日期`
 FROM (
   SELECT `员工ID`,
     date_sub(`触达日期`, dayofweek(`触达日期`) - 1) AS `周起始`,
     COUNT(DISTINCT `触达ID`) AS `触达数`,
     COUNT(DISTINCT `会员ID`) AS `触达会员数`,
     SUM(`是否查看`) AS `查看数`
-  FROM input1
+  FROM input1 CROSS JOIN params p1
+  WHERE `触达状态` = '已发送' AND `触达日期` <= p1.as_of_date
   GROUP BY `员工ID`, date_sub(`触达日期`, dayofweek(`触达日期`) - 1)
 ) t
 FULL OUTER JOIN (
@@ -162,10 +171,12 @@ FULL OUTER JOIN (
     SUM(CASE WHEN `触达状态` = '已触达' THEN 1 ELSE 0 END) AS `已触达任务`,
     SUM(`触达后下单`) AS `转化任务数`,
     SUM(`触达后下单金额`) AS `转化金额`
-  FROM input2
+  FROM input2 CROSS JOIN params p2
+  WHERE DATE(`任务生成时间`) <= p2.as_of_date
   GROUP BY `员工导购ID`, date_sub(DATE(`任务生成时间`), dayofweek(DATE(`任务生成时间`)) - 1)
 ) k
 ON t.`员工ID` = k.`员工导购ID` AND t.`周起始` = k.`周起始`
+CROSS JOIN params p
 ```
 
 
@@ -182,10 +193,21 @@ ON t.`员工ID` = k.`员工导购ID` AND t.`周起始` = k.`周起始`
 - Position: (635,64)
 - 等价SQL:
 ```sql
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date)
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`员工ID` = input2.`员工ID`
+  e.`员工ID`, e.`姓名`, e.`归属门店ID`, e.`岗位`, e.`角色标签`,
+  a.`周起始`,
+  COALESCE(a.`触达数`, 0) AS `触达数`,
+  COALESCE(a.`触达会员数`, 0) AS `触达会员数`,
+  COALESCE(a.`查看数`, 0) AS `查看数`,
+  COALESCE(a.`任务数`, 0) AS `任务数`,
+  COALESCE(a.`已触达任务`, 0) AS `已触达任务`,
+  COALESCE(a.`转化任务数`, 0) AS `转化任务数`,
+  COALESCE(a.`转化金额`, 0.0) AS `转化金额`,
+  p.as_of_date AS `数据快照日期`
+FROM input1 e
+LEFT JOIN input2 a ON e.`员工ID` = a.`员工ID`
+CROSS JOIN (SELECT DATE '2026-06-24' AS as_of_date) p
 ```
 
 
@@ -205,9 +227,11 @@ LEFT_OUTER JOIN input2 ON input1.`员工ID` = input2.`员工ID`
 - 等价SQL:
 ```sql
 SELECT
-  *,
+  `员工ID`, `姓名`, `归属门店ID`, `岗位`, `角色标签`, `周起始`,
+  `触达数`, `触达会员数`, `查看数`, `任务数`, `已触达任务`, `转化任务数`, `转化金额`,
   case when `任务数` > 0 then `已触达任务` * 1.0 / `任务数` else 0 end AS `任务完成率`,
-  case when `已触达任务` > 0 then `转化任务数` * 1.0 / `已触达任务` else 0 end AS `触达后转化率`
+  case when `已触达任务` > 0 then `转化任务数` * 1.0 / `已触达任务` else 0 end AS `触达后转化率`,
+  `数据快照日期`
 FROM input1
 ```
 

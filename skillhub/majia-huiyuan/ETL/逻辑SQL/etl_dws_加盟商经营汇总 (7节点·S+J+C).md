@@ -18,6 +18,7 @@
   - e620121168c3447c3abe4948 (dim_加盟商主档)
 - **数据输出目标:**
   - dws_加盟商经营汇总 (目录: 马甲的demo-0523)
+- **时间口径:** 继承 `dws_单店利润月汇总.数据快照日期`，与同批次 `as_of_date` 一致
 ---
 ## ETL 节点详细信息
 
@@ -52,9 +53,14 @@ SELECT * FROM input
 - 等价SQL:
 ```sql
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`加盟商ID` = input2.`加盟商ID`
+  a.`加盟商ID`, d.`加盟商名称`, d.`加盟商类型`, d.`签约省份`,
+  d.`合作状态`, d.`信用等级`, d.`入网日期`,
+  a.`月份`, a.`经营门店数`, a.`月总营收`, a.`月总堂食营收`, a.`月总外卖营收`,
+  a.`月总订单数`, a.`月总毛利`, a.`月总店面贡献利润`, a.`月总单店净利润`,
+  a.`平均贡献利润率`, a.`平均堂食占比`, a.`亏损门店数`, a.`盈利门店数`,
+  a.`数据快照日期`
+FROM input1 a
+LEFT JOIN input2 d ON a.`加盟商ID` = d.`加盟商ID`
 ```
 
 
@@ -93,12 +99,16 @@ SELECT * FROM input
 - 等价SQL:
 ```sql
 SELECT
-  *,
+  `加盟商ID`, `加盟商名称`, `加盟商类型`, `签约省份`, `合作状态`, `信用等级`, `入网日期`,
+  `月份`, `经营门店数`, `月总营收`, `月总堂食营收`, `月总外卖营收`, `月总订单数`,
+  `月总毛利`, `月总店面贡献利润`, `月总单店净利润`, `平均贡献利润率`, `平均堂食占比`,
+  `亏损门店数`, `盈利门店数`,
   case when `经营门店数` > 0 then `月总营收` / `经营门店数` else 0 end AS `门均营收`,
   case when `经营门店数` > 0 then `月总店面贡献利润` / `经营门店数` else 0 end AS `门均贡献利润`,
   case when `经营门店数` > 0 then `亏损门店数` * 1.0 / `经营门店数` else 0 end AS `亏损率`,
   case when `平均贡献利润率` >= 0.20 and `亏损门店数` = 0 then '标杆' when `平均贡献利润率` >= 0.12 then '健康' when `平均贡献利润率` >= 0.05 then '关注' when `平均贡献利润率` >= 0 then '预警' else '严重' end AS `经营健康等级`,
-  case when `合作状态` = '纠纷处理' then '高' when `合作状态` = '续约预警' or `平均贡献利润率` < 0.05 then '高' when `合作状态` = '关注名单' or `平均贡献利润率` < 0.10 then '中' else '低' end AS `续约风险`
+  case when `合作状态` = '纠纷处理' then '高' when `合作状态` = '续约预警' or `平均贡献利润率` < 0.05 then '高' when `合作状态` = '关注名单' or `平均贡献利润率` < 0.10 then '中' else '低' end AS `续约风险`,
+  `数据快照日期`
 FROM input1
 ```
 
@@ -146,9 +156,14 @@ SELECT
   AVG(p.`店面贡献利润率`) AS `平均贡献利润率`,
   AVG(p.`堂食占比`)       AS `平均堂食占比`,
   SUM(CASE WHEN p.`店面贡献利润` < 0 THEN 1 ELSE 0 END) AS `亏损门店数`,
-  SUM(CASE WHEN p.`店面贡献利润` > 0 THEN 1 ELSE 0 END) AS `盈利门店数`
+  SUM(CASE WHEN p.`店面贡献利润` > 0 THEN 1 ELSE 0 END) AS `盈利门店数`,
+  MAX(p.`数据快照日期`) AS `数据快照日期`
 FROM input1 p
-JOIN input2 c ON p.`门店ID` = c.`门店ID`
+JOIN input2 c
+  ON p.`门店ID` = c.`门店ID`
+ AND CAST(CONCAT(p.`月份`, '-01') AS DATE) BETWEEN c.`签约日期`
+                                                 AND COALESCE(c.`到期日`, DATE '9999-12-31')
+ AND c.`合同状态` <> '已作废'
 GROUP BY c.`加盟商ID`, p.`月份`
 ```
 - 等价SQL:
@@ -167,9 +182,14 @@ SELECT
   AVG(p.`店面贡献利润率`) AS `平均贡献利润率`,
   AVG(p.`堂食占比`)       AS `平均堂食占比`,
   SUM(CASE WHEN p.`店面贡献利润` < 0 THEN 1 ELSE 0 END) AS `亏损门店数`,
-  SUM(CASE WHEN p.`店面贡献利润` > 0 THEN 1 ELSE 0 END) AS `盈利门店数`
+  SUM(CASE WHEN p.`店面贡献利润` > 0 THEN 1 ELSE 0 END) AS `盈利门店数`,
+  MAX(p.`数据快照日期`) AS `数据快照日期`
 FROM input1 p
-JOIN input2 c ON p.`门店ID` = c.`门店ID`
+JOIN input2 c
+  ON p.`门店ID` = c.`门店ID`
+ AND CAST(CONCAT(p.`月份`, '-01') AS DATE) BETWEEN c.`签约日期`
+                                                 AND COALESCE(c.`到期日`, DATE '9999-12-31')
+ AND c.`合同状态` <> '已作废'
 GROUP BY c.`加盟商ID`, p.`月份`
 ```
 

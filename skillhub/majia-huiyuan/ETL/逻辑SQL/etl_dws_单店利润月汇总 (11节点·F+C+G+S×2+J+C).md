@@ -36,10 +36,15 @@
 - Position: (431,64)
 - 等价SQL:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date -- 生产由调度参数替换
+)
 SELECT
-  *
+  input1.*
 FROM input1
-WHERE (`订单状态` = '已完成')
+CROSS JOIN params p
+WHERE `订单状态` = '已完成'
+  AND `业务日期` <= p.as_of_date
 ```
 
 
@@ -111,7 +116,12 @@ SELECT * FROM input
 - 等价SQL:
 ```sql
 SELECT
-  *,
+  `门店ID`, `门店名称`, `省份`, `城市`, `城市层级`, `门店类型`, `商圈`,
+  `品牌线`, `直营加盟类型`, `是否90天内新店`, `新店标签`, `开业日期`,
+  `月份`, `月营收`, `堂食营收`, `外卖营收`, `订单数`,
+  `原材料成本`, `包材成本`, `平台抽佣`, `人工成本`, `房租物业`,
+  `能耗水电`, `设备折旧`, `总部分摊`, `变动成本合计`,
+  `半固定成本合计`, `固定成本合计`, `成本总计`,
   `月营收` - `变动成本合计` AS `毛利`,
   `月营收` - `变动成本合计` - `半固定成本合计` - `房租物业` AS `店面贡献利润`,
   `月营收` - `成本总计` AS `单店净利润`,
@@ -122,7 +132,8 @@ SELECT
   case when `月营收` > 0 then `外卖营收` / `月营收` else 0 end AS `外卖占比`,
   case when `月营收` > 0 then `人工成本` / `月营收` else 0 end AS `人工占比`,
   case when `月营收` > 0 then `房租物业` / `月营收` else 0 end AS `房租占比`,
-  case when `订单数` > 0 then `月营收` / `订单数` else 0 end AS `客单价`
+  case when `订单数` > 0 then `月营收` / `订单数` else 0 end AS `客单价`,
+  `数据快照日期`
 FROM input1
 ```
 
@@ -135,13 +146,19 @@ FROM input1
   - id_1779345679921 (派生月份+营收分流)
 
 - **Used By (Outputs):**
-  - id_1779345679925 (营收+成本 多键JOIN)
+  - id_1779345679925 (营业门店月份骨架+营收成本)
 - Position: (839,64)
 - 等价SQL:
 ```sql
 SELECT
-  *
+  `门店ID`,
+  `月份`,
+  SUM(`实付金额`) AS `实付金额`,
+  SUM(`堂食营收`) AS `堂食营收`,
+  SUM(`外卖营收`) AS `外卖营收`,
+  SUM(`订单计数`) AS `订单计数`
 FROM input1
+GROUP BY `门店ID`, `月份`
 ```
 
 
@@ -151,6 +168,7 @@ FROM input1
 - Type: INPUT_DATASET
 - **Used By (Outputs):**
   - id_1779345679927 (关联门店维度)
+  - id_1779345679925 (营业门店月份骨架+营收成本)
 - Position: (1043,232)
 - InputDsId: sedfdd84abacc4cb496c15e7
 - DisplayType: EXCEL
@@ -201,7 +219,7 @@ SELECT * FROM input1
 - Name: 关联门店维度
 - Type: JOIN_DATA
 - **Sources (Inputs):**
-  - id_1779345679925 (营收+成本 多键JOIN)
+  - id_1779345679925 (营业门店月份骨架+营收成本)
   - id_1779345679926 (dim_门店主档)
 
 - **Used By (Outputs):**
@@ -209,10 +227,39 @@ SELECT * FROM input1
 - Position: (1247,64)
 - 等价SQL:
 ```sql
+WITH matched AS (
+  SELECT
+    p.`门店ID`,
+    s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`门店类型`, s.`商圈`,
+    s.`品牌线`, s.`直营加盟类型`,
+    CASE WHEN DATEDIFF(p.`维度命中日期`, s.`开业日期`) BETWEEN 0 AND 89
+         THEN 'TRUE' ELSE 'FALSE' END AS `是否90天内新店`,
+    CASE WHEN DATEDIFF(p.`维度命中日期`, s.`开业日期`) BETWEEN 0 AND 89
+         THEN '90天新店' ELSE '成熟店' END AS `新店标签`,
+    s.`开业日期`,
+    p.`月份`, p.`月营收`, p.`堂食营收`, p.`外卖营收`, p.`订单数`,
+    p.`原材料成本`, p.`包材成本`, p.`平台抽佣`, p.`人工成本`, p.`房租物业`,
+    p.`能耗水电`, p.`设备折旧`, p.`总部分摊`, p.`变动成本合计`,
+    p.`半固定成本合计`, p.`固定成本合计`, p.`成本总计`, p.`数据快照日期`,
+    ROW_NUMBER() OVER (
+      PARTITION BY p.`门店ID`, p.`月份`
+      ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+    ) AS scd_rn
+  FROM input1 p
+  LEFT JOIN input2 s
+    ON p.`门店ID` = s.`门店ID`
+   AND p.`维度命中日期` >= s.`生效起始日期`
+   AND p.`维度命中日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
+)
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
+  `门店ID`, `门店名称`, `省份`, `城市`, `城市层级`, `门店类型`, `商圈`,
+  `品牌线`, `直营加盟类型`, `是否90天内新店`, `新店标签`, `开业日期`,
+  `月份`, `月营收`, `堂食营收`, `外卖营收`, `订单数`,
+  `原材料成本`, `包材成本`, `平台抽佣`, `人工成本`, `房租物业`,
+  `能耗水电`, `设备折旧`, `总部分摊`, `变动成本合计`,
+  `半固定成本合计`, `固定成本合计`, `成本总计`, `数据快照日期`
+FROM matched
+WHERE scd_rn = 1
 ```
 
 
@@ -224,10 +271,13 @@ LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
   - id_1779345679923 (dwd_门店成本明细)
 
 - **Used By (Outputs):**
-  - id_1779345679925 (营收+成本 多键JOIN)
+  - id_1779345679925 (营业门店月份骨架+营收成本)
 - Position: (839,232)
 - SqlScript:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date -- 生产由调度参数替换
+)
 SELECT
   `门店ID`,
   `月份`,
@@ -244,10 +294,15 @@ SELECT
   SUM(CASE WHEN `成本大类` = '固定成本'   THEN `成本金额` ELSE 0 END) AS `固定成本合计`,
   SUM(`成本金额`) AS `成本总计`
 FROM input1
+CROSS JOIN params p
+WHERE TRUNC(CAST(`月份` AS DATE), 'MM') <= p.as_of_date
 GROUP BY `门店ID`, `月份`
 ```
 - 等价SQL:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date -- 生产由调度参数替换
+)
 SELECT
   `门店ID`,
   `月份`,
@@ -264,29 +319,74 @@ SELECT
   SUM(CASE WHEN `成本大类` = '固定成本'   THEN `成本金额` ELSE 0 END) AS `固定成本合计`,
   SUM(`成本金额`) AS `成本总计`
 FROM input1
+CROSS JOIN params p
+WHERE TRUNC(CAST(`月份` AS DATE), 'MM') <= p.as_of_date
 GROUP BY `门店ID`, `月份`
 ```
 
 
 ### 节点11
 - Id: id_1779345679925
-- Name: 营收+成本 多键JOIN
+- Name: 营业门店月份骨架+营收成本
 - Type: SQL_SCRIPT
 - **Sources (Inputs):**
   - id_1779345679922 (门店月营收聚合)
   - id_1779345679924 (成本透视(8 大科目))
+  - id_1779345679926 (dim_门店主档)
 
 - **Used By (Outputs):**
   - id_1779345679927 (关联门店维度)
 - Position: (1043,64)
 - SqlScript:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS `as_of_date` -- 生产由调度参数替换
+),
+store_current AS (
+  -- 当前版本只用于取得每家门店的开闭店边界；历史属性在下一节点按月份命中 SCD2。
+  SELECT
+    s.`门店ID`, s.`开业日期`,
+    CASE WHEN s.`闭店日期` IS NULL OR TRIM(s.`闭店日期`) = '' OR LOWER(TRIM(s.`闭店日期`)) = 'null'
+         THEN NULL ELSE TO_DATE(s.`闭店日期`) END AS `闭店日期`
+  FROM input3 s
+  WHERE s.`当前版本标记` = 1
+),
+store_months AS (
+  SELECT
+    s.`门店ID`,
+    EXPLODE(SEQUENCE(
+      TRUNC(s.`开业日期`, 'MM'),
+      TRUNC(LEAST(p.`as_of_date`, COALESCE(s.`闭店日期`, p.`as_of_date`)), 'MM'),
+      INTERVAL 1 MONTH
+    )) AS `月份日期`,
+    p.`as_of_date` AS `数据快照日期`
+  FROM store_current s
+  CROSS JOIN params p
+  WHERE s.`开业日期` IS NOT NULL
+    AND s.`开业日期` <= p.`as_of_date`
+    AND COALESCE(s.`闭店日期`, p.`as_of_date`) >= s.`开业日期`
+),
+revenue AS (
+  SELECT
+    `门店ID`, TO_DATE(CONCAT(SUBSTR(CAST(`月份` AS STRING), 1, 7), '-01')) AS `月份日期`,
+    `实付金额`, `堂食营收`, `外卖营收`, `订单计数`
+  FROM input1
+),
+cost AS (
+  SELECT
+    `门店ID`, TRUNC(CAST(`月份` AS DATE), 'MM') AS `月份日期`,
+    `原材料成本`, `包材成本`, `平台抽佣`, `人工成本`, `房租物业`,
+    `能耗水电`, `设备折旧`, `总部分摊`, `变动成本合计`,
+    `半固定成本合计`, `固定成本合计`, `成本总计`
+  FROM input2
+)
 SELECT
-  r.`门店ID`, r.`月份`,
-  r.`实付金额`     AS `月营收`,
-  r.`堂食营收`,
-  r.`外卖营收`,
-  r.`订单计数`     AS `订单数`,
+  b.`门店ID`, DATE_FORMAT(b.`月份日期`, 'yyyy-MM') AS `月份`,
+  LEAST(LAST_DAY(b.`月份日期`), b.`数据快照日期`) AS `维度命中日期`,
+  COALESCE(r.`实付金额`, 0) AS `月营收`,
+  COALESCE(r.`堂食营收`, 0) AS `堂食营收`,
+  COALESCE(r.`外卖营收`, 0) AS `外卖营收`,
+  COALESCE(r.`订单计数`, 0) AS `订单数`,
   COALESCE(c.`原材料成本`, 0) AS `原材料成本`,
   COALESCE(c.`包材成本`, 0)   AS `包材成本`,
   COALESCE(c.`平台抽佣`, 0)   AS `平台抽佣`,
@@ -298,18 +398,64 @@ SELECT
   COALESCE(c.`变动成本合计`, 0) AS `变动成本合计`,
   COALESCE(c.`半固定成本合计`, 0) AS `半固定成本合计`,
   COALESCE(c.`固定成本合计`, 0)   AS `固定成本合计`,
-  COALESCE(c.`成本总计`, 0)   AS `成本总计`
-FROM input1 r
-LEFT JOIN input2 c ON r.`门店ID` = c.`门店ID` AND r.`月份` = c.`月份`
+  COALESCE(c.`成本总计`, 0) AS `成本总计`,
+  b.`数据快照日期`
+FROM store_months b
+LEFT JOIN revenue r
+  ON b.`门店ID` = r.`门店ID` AND b.`月份日期` = r.`月份日期`
+LEFT JOIN cost c
+  ON b.`门店ID` = c.`门店ID` AND b.`月份日期` = c.`月份日期`
 ```
 - 等价SQL:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS `as_of_date` -- 生产由调度参数替换
+),
+store_current AS (
+  -- 当前版本只用于取得每家门店的开闭店边界；历史属性在下一节点按月份命中 SCD2。
+  SELECT
+    s.`门店ID`, s.`开业日期`,
+    CASE WHEN s.`闭店日期` IS NULL OR TRIM(s.`闭店日期`) = '' OR LOWER(TRIM(s.`闭店日期`)) = 'null'
+         THEN NULL ELSE TO_DATE(s.`闭店日期`) END AS `闭店日期`
+  FROM input3 s
+  WHERE s.`当前版本标记` = 1
+),
+store_months AS (
+  SELECT
+    s.`门店ID`,
+    EXPLODE(SEQUENCE(
+      TRUNC(s.`开业日期`, 'MM'),
+      TRUNC(LEAST(p.`as_of_date`, COALESCE(s.`闭店日期`, p.`as_of_date`)), 'MM'),
+      INTERVAL 1 MONTH
+    )) AS `月份日期`,
+    p.`as_of_date` AS `数据快照日期`
+  FROM store_current s
+  CROSS JOIN params p
+  WHERE s.`开业日期` IS NOT NULL
+    AND s.`开业日期` <= p.`as_of_date`
+    AND COALESCE(s.`闭店日期`, p.`as_of_date`) >= s.`开业日期`
+),
+revenue AS (
+  SELECT
+    `门店ID`, TO_DATE(CONCAT(SUBSTR(CAST(`月份` AS STRING), 1, 7), '-01')) AS `月份日期`,
+    `实付金额`, `堂食营收`, `外卖营收`, `订单计数`
+  FROM input1
+),
+cost AS (
+  SELECT
+    `门店ID`, TRUNC(CAST(`月份` AS DATE), 'MM') AS `月份日期`,
+    `原材料成本`, `包材成本`, `平台抽佣`, `人工成本`, `房租物业`,
+    `能耗水电`, `设备折旧`, `总部分摊`, `变动成本合计`,
+    `半固定成本合计`, `固定成本合计`, `成本总计`
+  FROM input2
+)
 SELECT
-  r.`门店ID`, r.`月份`,
-  r.`实付金额`     AS `月营收`,
-  r.`堂食营收`,
-  r.`外卖营收`,
-  r.`订单计数`     AS `订单数`,
+  b.`门店ID`, DATE_FORMAT(b.`月份日期`, 'yyyy-MM') AS `月份`,
+  LEAST(LAST_DAY(b.`月份日期`), b.`数据快照日期`) AS `维度命中日期`,
+  COALESCE(r.`实付金额`, 0) AS `月营收`,
+  COALESCE(r.`堂食营收`, 0) AS `堂食营收`,
+  COALESCE(r.`外卖营收`, 0) AS `外卖营收`,
+  COALESCE(r.`订单计数`, 0) AS `订单数`,
   COALESCE(c.`原材料成本`, 0) AS `原材料成本`,
   COALESCE(c.`包材成本`, 0)   AS `包材成本`,
   COALESCE(c.`平台抽佣`, 0)   AS `平台抽佣`,
@@ -321,9 +467,13 @@ SELECT
   COALESCE(c.`变动成本合计`, 0) AS `变动成本合计`,
   COALESCE(c.`半固定成本合计`, 0) AS `半固定成本合计`,
   COALESCE(c.`固定成本合计`, 0)   AS `固定成本合计`,
-  COALESCE(c.`成本总计`, 0)   AS `成本总计`
-FROM input1 r
-LEFT JOIN input2 c ON r.`门店ID` = c.`门店ID` AND r.`月份` = c.`月份`
+  COALESCE(c.`成本总计`, 0) AS `成本总计`,
+  b.`数据快照日期`
+FROM store_months b
+LEFT JOIN revenue r
+  ON b.`门店ID` = r.`门店ID` AND b.`月份日期` = r.`月份日期`
+LEFT JOIN cost c
+  ON b.`门店ID` = c.`门店ID` AND b.`月份日期` = c.`月份日期`
 ```
 
 

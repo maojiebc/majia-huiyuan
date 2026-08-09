@@ -67,18 +67,19 @@ SELECT * FROM input
 - Position: (1247,64)
 - SqlScript:
 ```sql
--- 生产环境用 CURRENT_DATE；快照/回溯分析时把 CURRENT_DATE 替换为固定日期，例如 DATE '2026-05-20'
+-- v1.4.1：整条批次只使用一个 as_of_date；生产调度替换本模拟快照值
 SELECT
   `会员ID`,
   `业务日期` AS `最近消费日期`,
   `订单计数` AS `消费次数`,
   `实付金额` AS `消费金额`,
-  DATEDIFF(CURRENT_DATE, `业务日期`) AS `距今天数`,
+  `数据快照日期`,
+  DATEDIFF(`数据快照日期`, `业务日期`) AS `距今天数`,
   CASE
-    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 7  THEN 5
-    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 14 THEN 4
-    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 30 THEN 3
-    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 60 THEN 2
+    WHEN DATEDIFF(`数据快照日期`, `业务日期`) <= 7  THEN 5
+    WHEN DATEDIFF(`数据快照日期`, `业务日期`) <= 14 THEN 4
+    WHEN DATEDIFF(`数据快照日期`, `业务日期`) <= 30 THEN 3
+    WHEN DATEDIFF(`数据快照日期`, `业务日期`) <= 60 THEN 2
     ELSE 1 END AS `R分`,
   CASE WHEN `订单计数` >= 50 THEN 5 WHEN `订单计数` >= 25 THEN 4
        WHEN `订单计数` >= 12 THEN 3 WHEN `订单计数` >= 4 THEN 2 ELSE 1 END AS `F分`,
@@ -88,18 +89,19 @@ FROM input1
 ```
 - 等价SQL:
 ```sql
--- 生产环境用 CURRENT_DATE；快照/回溯分析时把 CURRENT_DATE 替换为固定日期，例如 DATE '2026-05-20'
+-- v1.4.1：整条批次只使用一个 as_of_date；生产调度替换本模拟快照值
 SELECT
   `会员ID`,
   `业务日期` AS `最近消费日期`,
   `订单计数` AS `消费次数`,
   `实付金额` AS `消费金额`,
-  DATEDIFF(CURRENT_DATE, `业务日期`) AS `距今天数`,
+  `数据快照日期`,
+  DATEDIFF(`数据快照日期`, `业务日期`) AS `距今天数`,
   CASE
-    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 7  THEN 5
-    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 14 THEN 4
-    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 30 THEN 3
-    WHEN DATEDIFF(CURRENT_DATE, `业务日期`) <= 60 THEN 2
+    WHEN DATEDIFF(`数据快照日期`, `业务日期`) <= 7  THEN 5
+    WHEN DATEDIFF(`数据快照日期`, `业务日期`) <= 14 THEN 4
+    WHEN DATEDIFF(`数据快照日期`, `业务日期`) <= 30 THEN 3
+    WHEN DATEDIFF(`数据快照日期`, `业务日期`) <= 60 THEN 2
     ELSE 1 END AS `R分`,
   CASE WHEN `订单计数` >= 50 THEN 5 WHEN `订单计数` >= 25 THEN 4
        WHEN `订单计数` >= 12 THEN 3 WHEN `订单计数` >= 4 THEN 2 ELSE 1 END AS `F分`,
@@ -123,9 +125,19 @@ FROM input1
 - 等价SQL:
 ```sql
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`会员ID` = input2.`会员ID`
+  r.`会员ID`,
+  m.`会员等级`,
+  m.`注册渠道`,
+  m.`城市`,
+  r.`最近消费日期`,
+  r.`距今天数`,
+  r.`消费次数`,
+  r.`消费金额`,
+  r.`R分`, r.`F分`, r.`M分`,
+  r.`RFM总分`, r.`RFM标签`,
+  r.`数据快照日期`
+FROM input1 r
+LEFT JOIN input2 m ON r.`会员ID` = m.`会员ID`
 ```
 
 
@@ -248,9 +260,12 @@ SELECT
   `会员ID`,
   MAX(`业务日期`)    AS `业务日期`,   -- 取最近消费日期，供下游算 R 分
   SUM(`订单计数`)    AS `订单计数`,   -- 累计消费次数，供下游算 F 分
-  SUM(`实付金额`)    AS `实付金额`    -- 累计消费金额，供下游算 M 分
+  SUM(`实付金额`)    AS `实付金额`,   -- 累计消费金额，供下游算 M 分
+  p.as_of_date       AS `数据快照日期`
 FROM input1
-GROUP BY `会员ID`
+CROSS JOIN (SELECT DATE '2026-06-24' AS as_of_date) p
+WHERE `业务日期` <= p.as_of_date
+GROUP BY `会员ID`, p.as_of_date
 ```
 
 

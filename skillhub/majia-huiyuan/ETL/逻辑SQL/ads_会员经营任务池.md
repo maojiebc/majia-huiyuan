@@ -87,6 +87,12 @@ SELECT * FROM input
 - Position: (500,100)
 - SqlScript:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date
+),
+store_current AS (
+  SELECT * FROM input3 WHERE `当前版本标记` = 1
+)
 SELECT
   t.`任务ID`, t.`任务优先级`, t.`任务类型`, t.`任务来源`,
   t.`会员ID`, m.`会员等级`, m.`城市` AS `会员城市`,
@@ -98,21 +104,30 @@ SELECT
   t.`触达后下单`, t.`触达后下单金额`, t.`任务结果`,
   CASE
     WHEN t.`任务结果` LIKE '已完成%' THEN '已完结'
-    WHEN t.`任务失效时间` < CURRENT_TIMESTAMP() THEN '已过期'
+    WHEN t.`任务失效时间` < CAST(p.as_of_date AS TIMESTAMP) + INTERVAL 1 DAY THEN '已过期'
     ELSE '进行中'
   END AS `执行状态`,
   CASE
     WHEN t.`触达后下单` = 1 THEN '有转化'
     WHEN t.`触达状态` = '已触达' THEN '已触达未转化'
     ELSE '未触达'
-  END AS `转化阶段`
+  END AS `转化阶段`,
+  p.as_of_date AS `数据快照日期`
 FROM input1 t
 LEFT JOIN input2 e ON t.`员工导购ID` = e.`员工ID`
-LEFT JOIN input3 s ON t.`归属门店ID` = s.`门店ID`
+LEFT JOIN store_current s ON t.`归属门店ID` = s.`门店ID`
 LEFT JOIN input4 m ON t.`会员ID` = m.`会员ID`
+CROSS JOIN params p
+WHERE t.`任务生成时间` < CAST(p.as_of_date AS TIMESTAMP) + INTERVAL 1 DAY
 ```
 - 等价SQL:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date
+),
+store_current AS (
+  SELECT * FROM input3 WHERE `当前版本标记` = 1
+)
 SELECT
   t.`任务ID`, t.`任务优先级`, t.`任务类型`, t.`任务来源`,
   t.`会员ID`, m.`会员等级`, m.`城市` AS `会员城市`,
@@ -124,18 +139,21 @@ SELECT
   t.`触达后下单`, t.`触达后下单金额`, t.`任务结果`,
   CASE
     WHEN t.`任务结果` LIKE '已完成%' THEN '已完结'
-    WHEN t.`任务失效时间` < CURRENT_TIMESTAMP() THEN '已过期'
+    WHEN t.`任务失效时间` < CAST(p.as_of_date AS TIMESTAMP) + INTERVAL 1 DAY THEN '已过期'
     ELSE '进行中'
   END AS `执行状态`,
   CASE
     WHEN t.`触达后下单` = 1 THEN '有转化'
     WHEN t.`触达状态` = '已触达' THEN '已触达未转化'
     ELSE '未触达'
-  END AS `转化阶段`
+  END AS `转化阶段`,
+  p.as_of_date AS `数据快照日期`
 FROM input1 t
 LEFT JOIN input2 e ON t.`员工导购ID` = e.`员工ID`
-LEFT JOIN input3 s ON t.`归属门店ID` = s.`门店ID`
+LEFT JOIN store_current s ON t.`归属门店ID` = s.`门店ID`
 LEFT JOIN input4 m ON t.`会员ID` = m.`会员ID`
+CROSS JOIN params p
+WHERE t.`任务生成时间` < CAST(p.as_of_date AS TIMESTAMP) + INTERVAL 1 DAY
 ```
 
 

@@ -52,43 +52,73 @@ SELECT * FROM input
 - Position: (500,100)
 - SqlScript:
 ```sql
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date),
+fact_with_store AS (
+  SELECT i.*, o.`会员ID`, o.`门店ID`, o.`销售渠道`, o.`是否到店`, o.`业务日期`,
+         s.`省份`, s.`城市`, s.`城市层级`, s.`店型`,
+         x.as_of_date AS `数据快照日期`,
+         ROW_NUMBER() OVER (
+           PARTITION BY i.`订单ID`, i.`商品序号`
+           ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+         ) AS scd_rn
+  FROM input1 i
+  JOIN input2 o ON i.`订单ID` = o.`订单ID`
+  JOIN input4 s
+    ON o.`门店ID` = s.`门店ID`
+   AND o.`业务日期` BETWEEN CAST(s.`生效起始日期` AS DATE)
+                       AND COALESCE(CAST(s.`生效截止日期` AS DATE), DATE '9999-12-31')
+  CROSS JOIN params x
+  WHERE o.`订单状态` = '已完成' AND o.`业务日期` <= x.as_of_date
+)
 SELECT
   p.`一级类目`, p.`二级类目`, p.`商品ID`, p.`商品名称`,
-  s.`省份`, s.`城市`, s.`城市层级`, s.`店型`,
-  o.`销售渠道`, o.`是否到店`, o.`业务日期`,
-  COUNT(DISTINCT o.`订单ID`) AS `订单数`,
-  SUM(i.`数量`) AS `销量`,
-  SUM(i.`行金额`) AS `销售额`,
-  SUM(i.`数量` * p.`成本`) AS `总成本`,
-  SUM(i.`行金额`) - SUM(i.`数量` * p.`成本`) AS `毛利`
-FROM input1 i
-JOIN input2 o ON i.`订单ID` = o.`订单ID`
-JOIN input3 p ON i.`商品ID` = p.`商品ID`
-JOIN input4 s ON o.`门店ID` = s.`门店ID`
-WHERE o.`订单状态` = '已完成'
+  f.`省份`, f.`城市`, f.`城市层级`, f.`店型`,
+  f.`销售渠道`, f.`是否到店`, f.`业务日期`,
+  COUNT(DISTINCT f.`订单ID`) AS `订单数`, SUM(f.`数量`) AS `销量`,
+  SUM(f.`行金额`) AS `销售额`, SUM(f.`数量` * p.`成本`) AS `总成本`,
+  SUM(f.`行金额`) - SUM(f.`数量` * p.`成本`) AS `毛利`,
+  MAX(f.`数据快照日期`) AS `数据快照日期`
+FROM fact_with_store f
+JOIN input3 p ON f.`商品ID` = p.`商品ID`
+WHERE f.scd_rn = 1
 GROUP BY p.`一级类目`, p.`二级类目`, p.`商品ID`, p.`商品名称`,
-         s.`省份`, s.`城市`, s.`城市层级`, s.`店型`,
-         o.`销售渠道`, o.`是否到店`, o.`业务日期`
+         f.`省份`, f.`城市`, f.`城市层级`, f.`店型`,
+         f.`销售渠道`, f.`是否到店`, f.`业务日期`
 ```
 - 等价SQL:
 ```sql
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date),
+fact_with_store AS (
+  SELECT i.*, o.`会员ID`, o.`门店ID`, o.`销售渠道`, o.`是否到店`, o.`业务日期`,
+         s.`省份`, s.`城市`, s.`城市层级`, s.`店型`,
+         x.as_of_date AS `数据快照日期`,
+         ROW_NUMBER() OVER (
+           PARTITION BY i.`订单ID`, i.`商品序号`
+           ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+         ) AS scd_rn
+  FROM input1 i
+  JOIN input2 o ON i.`订单ID` = o.`订单ID`
+  JOIN input4 s
+    ON o.`门店ID` = s.`门店ID`
+   AND o.`业务日期` BETWEEN CAST(s.`生效起始日期` AS DATE)
+                       AND COALESCE(CAST(s.`生效截止日期` AS DATE), DATE '9999-12-31')
+  CROSS JOIN params x
+  WHERE o.`订单状态` = '已完成' AND o.`业务日期` <= x.as_of_date
+)
 SELECT
   p.`一级类目`, p.`二级类目`, p.`商品ID`, p.`商品名称`,
-  s.`省份`, s.`城市`, s.`城市层级`, s.`店型`,
-  o.`销售渠道`, o.`是否到店`, o.`业务日期`,
-  COUNT(DISTINCT o.`订单ID`) AS `订单数`,
-  SUM(i.`数量`) AS `销量`,
-  SUM(i.`行金额`) AS `销售额`,
-  SUM(i.`数量` * p.`成本`) AS `总成本`,
-  SUM(i.`行金额`) - SUM(i.`数量` * p.`成本`) AS `毛利`
-FROM input1 i
-JOIN input2 o ON i.`订单ID` = o.`订单ID`
-JOIN input3 p ON i.`商品ID` = p.`商品ID`
-JOIN input4 s ON o.`门店ID` = s.`门店ID`
-WHERE o.`订单状态` = '已完成'
+  f.`省份`, f.`城市`, f.`城市层级`, f.`店型`,
+  f.`销售渠道`, f.`是否到店`, f.`业务日期`,
+  COUNT(DISTINCT f.`订单ID`) AS `订单数`, SUM(f.`数量`) AS `销量`,
+  SUM(f.`行金额`) AS `销售额`, SUM(f.`数量` * p.`成本`) AS `总成本`,
+  SUM(f.`行金额`) - SUM(f.`数量` * p.`成本`) AS `毛利`,
+  MAX(f.`数据快照日期`) AS `数据快照日期`
+FROM fact_with_store f
+JOIN input3 p ON f.`商品ID` = p.`商品ID`
+WHERE f.scd_rn = 1
 GROUP BY p.`一级类目`, p.`二级类目`, p.`商品ID`, p.`商品名称`,
-         s.`省份`, s.`城市`, s.`城市层级`, s.`店型`,
-         o.`销售渠道`, o.`是否到店`, o.`业务日期`
+         f.`省份`, f.`城市`, f.`城市层级`, f.`店型`,
+         f.`销售渠道`, f.`是否到店`, f.`业务日期`
 ```
 
 
