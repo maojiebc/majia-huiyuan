@@ -56,7 +56,7 @@ SELECT * FROM input
 
 ### 节点3
 - Id: id_1779345941095
-- Name: JOIN算回本指标(SQL多键替代)
+- Name: 投资起点回本周期+剩余月数
 - Type: SQL_SCRIPT
 - **Sources (Inputs):**
   - id_1779345941093 (门店总投资聚合)
@@ -67,47 +67,73 @@ SELECT * FROM input
 - Position: (700,250)
 - SqlScript:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS `as_of_date` -- 生产由调度参数替换
+),
+base AS (
+  SELECT
+    i.`门店ID`, i.`加盟商ID`, i.`总投资额`, i.`可回收投资`, i.`不可回收投资`, i.`投资起始日`,
+    COALESCE(p.`经营月数`, 0) AS `经营月数`,
+    COALESCE(p.`累计营收`, 0) AS `累计营收`,
+    COALESCE(p.`累计店面贡献利润`, 0) AS `累计店面贡献利润`,
+    p.`月均店面贡献利润`, p.`平均贡献利润率`,
+    CASE WHEN i.`总投资额` > 0 THEN COALESCE(p.`累计店面贡献利润`, 0) / i.`总投资额` ELSE NULL END AS `累计回本率`,
+    CASE WHEN i.`总投资额` > 0 AND p.`月均店面贡献利润` > 0
+         THEN CAST(CEIL(i.`总投资额` / p.`月均店面贡献利润`) AS INT) ELSE NULL END AS `预计完整回本月数`,
+    GREATEST(CAST(FLOOR(MONTHS_BETWEEN(x.`as_of_date`, i.`投资起始日`)) AS INT), 0) AS `已开业月数`,
+    x.`as_of_date` AS `数据快照日期`
+  FROM input1 i
+  LEFT JOIN input2 p ON i.`门店ID` = p.`门店ID`
+  CROSS JOIN params x
+)
 SELECT
-  i.`门店ID`,
-  i.`加盟商ID`,
-  i.`总投资额`,
-  i.`可回收投资`,
-  i.`不可回收投资`,
-  i.`投资起始日`,
-  p.`经营月数`,
-  p.`累计营收`,
-  p.`累计店面贡献利润`,
-  p.`月均店面贡献利润`,
-  p.`平均贡献利润率`,
-  CASE WHEN i.`总投资额` > 0 THEN p.`累计店面贡献利润` / i.`总投资额` ELSE 0 END AS `累计回本率`,
-  CASE WHEN p.`月均店面贡献利润` > 0 THEN i.`总投资额` / p.`月均店面贡献利润` ELSE 999 END AS `预计完整回本月数`,
-  CAST(MONTHS_BETWEEN(DATE '2026-05-20', i.`投资起始日`) AS INT) AS `已开业月数`,
-  CASE WHEN p.`月均店面贡献利润` > 0 THEN DATE_ADD(DATE '2026-05-20', CAST(i.`总投资额` / p.`月均店面贡献利润` * 30 AS INT))
-       ELSE NULL END AS `预计完整回本日期`
-FROM input1 i
-LEFT JOIN input2 p ON i.`门店ID` = p.`门店ID`
+  *,
+  CASE WHEN `预计完整回本月数` IS NOT NULL
+       THEN GREATEST(`预计完整回本月数` - `已开业月数`, 0) ELSE NULL END AS `剩余回本月数`,
+  CASE
+    WHEN `总投资额` <= 0 THEN '无需测算'
+    WHEN `累计店面贡献利润` >= `总投资额` THEN '已回本'
+    WHEN `月均店面贡献利润` > 0 THEN '测算中'
+    ELSE '当前不可测算'
+  END AS `回本状态`,
+  CASE WHEN `预计完整回本月数` IS NOT NULL
+       THEN ADD_MONTHS(`投资起始日`, `预计完整回本月数`) ELSE NULL END AS `预计完整回本日期`
+FROM base
 ```
 - 等价SQL:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS `as_of_date` -- 生产由调度参数替换
+),
+base AS (
+  SELECT
+    i.`门店ID`, i.`加盟商ID`, i.`总投资额`, i.`可回收投资`, i.`不可回收投资`, i.`投资起始日`,
+    COALESCE(p.`经营月数`, 0) AS `经营月数`,
+    COALESCE(p.`累计营收`, 0) AS `累计营收`,
+    COALESCE(p.`累计店面贡献利润`, 0) AS `累计店面贡献利润`,
+    p.`月均店面贡献利润`, p.`平均贡献利润率`,
+    CASE WHEN i.`总投资额` > 0 THEN COALESCE(p.`累计店面贡献利润`, 0) / i.`总投资额` ELSE NULL END AS `累计回本率`,
+    CASE WHEN i.`总投资额` > 0 AND p.`月均店面贡献利润` > 0
+         THEN CAST(CEIL(i.`总投资额` / p.`月均店面贡献利润`) AS INT) ELSE NULL END AS `预计完整回本月数`,
+    GREATEST(CAST(FLOOR(MONTHS_BETWEEN(x.`as_of_date`, i.`投资起始日`)) AS INT), 0) AS `已开业月数`,
+    x.`as_of_date` AS `数据快照日期`
+  FROM input1 i
+  LEFT JOIN input2 p ON i.`门店ID` = p.`门店ID`
+  CROSS JOIN params x
+)
 SELECT
-  i.`门店ID`,
-  i.`加盟商ID`,
-  i.`总投资额`,
-  i.`可回收投资`,
-  i.`不可回收投资`,
-  i.`投资起始日`,
-  p.`经营月数`,
-  p.`累计营收`,
-  p.`累计店面贡献利润`,
-  p.`月均店面贡献利润`,
-  p.`平均贡献利润率`,
-  CASE WHEN i.`总投资额` > 0 THEN p.`累计店面贡献利润` / i.`总投资额` ELSE 0 END AS `累计回本率`,
-  CASE WHEN p.`月均店面贡献利润` > 0 THEN i.`总投资额` / p.`月均店面贡献利润` ELSE 999 END AS `预计完整回本月数`,
-  CAST(MONTHS_BETWEEN(DATE '2026-05-20', i.`投资起始日`) AS INT) AS `已开业月数`,
-  CASE WHEN p.`月均店面贡献利润` > 0 THEN DATE_ADD(DATE '2026-05-20', CAST(i.`总投资额` / p.`月均店面贡献利润` * 30 AS INT))
-       ELSE NULL END AS `预计完整回本日期`
-FROM input1 i
-LEFT JOIN input2 p ON i.`门店ID` = p.`门店ID`
+  *,
+  CASE WHEN `预计完整回本月数` IS NOT NULL
+       THEN GREATEST(`预计完整回本月数` - `已开业月数`, 0) ELSE NULL END AS `剩余回本月数`,
+  CASE
+    WHEN `总投资额` <= 0 THEN '无需测算'
+    WHEN `累计店面贡献利润` >= `总投资额` THEN '已回本'
+    WHEN `月均店面贡献利润` > 0 THEN '测算中'
+    ELSE '当前不可测算'
+  END AS `回本状态`,
+  CASE WHEN `预计完整回本月数` IS NOT NULL
+       THEN ADD_MONTHS(`投资起始日`, `预计完整回本月数`) ELSE NULL END AS `预计完整回本日期`
+FROM base
 ```
 
 
@@ -116,7 +142,7 @@ LEFT JOIN input2 p ON i.`门店ID` = p.`门店ID`
 - Name: 关联合同信息
 - Type: JOIN_DATA
 - **Sources (Inputs):**
-  - id_1779345941095 (JOIN算回本指标(SQL多键替代))
+  - id_1779345941095 (投资起点回本周期+剩余月数)
   - id_1779345941092 (dwd_加盟合同明细)
 
 - **Used By (Outputs):**
@@ -124,10 +150,25 @@ LEFT JOIN input2 p ON i.`门店ID` = p.`门店ID`
 - Position: (1000,400)
 - 等价SQL:
 ```sql
-SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date -- 生产由调度参数替换
+),
+contract_ranked AS (
+  SELECT c.*,
+    ROW_NUMBER() OVER (
+      PARTITION BY c.`门店ID`
+      ORDER BY CASE WHEN p.as_of_date BETWEEN c.`签约日期`
+                                             AND COALESCE(c.`到期日`, DATE '9999-12-31') THEN 0 ELSE 1 END,
+               c.`签约日期` DESC, c.`合同ID` DESC
+    ) AS `合同序`
+  FROM input2 c
+  CROSS JOIN params p
+  WHERE c.`签约日期` <= p.as_of_date
+    AND c.`合同状态` <> '已作废'
+)
+SELECT m.*, c.`门店类型`, c.`签约日期`, c.`合同期年数`, c.`到期日`, c.`分成模型`, c.`续约状态`
+FROM input1 m
+LEFT JOIN contract_ranked c ON m.`门店ID` = c.`门店ID` AND c.`合同序` = 1
 ```
 
 
@@ -149,11 +190,15 @@ LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
 - 等价SQL:
 ```sql
 SELECT
-  *,
+  `门店ID`, `加盟商ID`, `门店类型`, `签约日期`, `合同期年数`, `到期日`, `分成模型`, `续约状态`,
+  `总投资额`, `可回收投资`, `不可回收投资`, `投资起始日`, `经营月数`, `累计营收`,
+  `累计店面贡献利润`, `月均店面贡献利润`, `平均贡献利润率`, `累计回本率`,
+  `预计完整回本月数`, `已开业月数`, `剩余回本月数`, `回本状态`, `预计完整回本日期`,
   case `门店类型` when '商场店' then 24 when '社区店' then 18 when '写字楼店' then 22 when '交通店' then 30 when '学校店' then 20 when '夜市店' then 18 when '外卖卫星店' then 12 when '旗舰店' then 36 when '快取店' then 15 else 24 end AS `招商承诺回本月数`,
-  case `门店类型` when '商场店' then `预计完整回本月数` - 24 when '社区店' then `预计完整回本月数` - 18 when '写字楼店' then `预计完整回本月数` - 22 when '交通店' then `预计完整回本月数` - 30 when '学校店' then `预计完整回本月数` - 20 when '夜市店' then `预计完整回本月数` - 18 when '外卖卫星店' then `预计完整回本月数` - 12 when '旗舰店' then `预计完整回本月数` - 36 when '快取店' then `预计完整回本月数` - 15 else `预计完整回本月数` - 24 end AS `回本偏离度`,
-  case when `月均店面贡献利润` <= 0 then '严重' when `预计完整回本月数` >= 60 then '严重' when `预计完整回本月数` >= 36 then '预警' when `预计完整回本月数` >= 24 then '关注' else '健康' end AS `回本风险等级`,
-  case when `平均贡献利润率` >= 0.25 and `预计完整回本月数` <= 18 then 'TRUE' else 'FALSE' end AS `标杆门店标志`
+  case when `预计完整回本月数` is null then null when `门店类型` = '商场店' then `预计完整回本月数` - 24 when `门店类型` = '社区店' then `预计完整回本月数` - 18 when `门店类型` = '写字楼店' then `预计完整回本月数` - 22 when `门店类型` = '交通店' then `预计完整回本月数` - 30 when `门店类型` = '学校店' then `预计完整回本月数` - 20 when `门店类型` = '夜市店' then `预计完整回本月数` - 18 when `门店类型` = '外卖卫星店' then `预计完整回本月数` - 12 when `门店类型` = '旗舰店' then `预计完整回本月数` - 36 when `门店类型` = '快取店' then `预计完整回本月数` - 15 else `预计完整回本月数` - 24 end AS `回本偏离度`,
+  case when `回本状态` = '无需测算' then '不适用' when `回本状态` = '当前不可测算' then '严重' when `预计完整回本月数` >= 60 then '严重' when `预计完整回本月数` >= 36 then '预警' when `预计完整回本月数` >= 24 then '关注' else '健康' end AS `回本风险等级`,
+  case when `回本状态` in ('测算中', '已回本') and `平均贡献利润率` >= 0.25 and `预计完整回本月数` <= 18 then 'TRUE' else 'FALSE' end AS `标杆门店标志`,
+  `数据快照日期`
 FROM input1
 ```
 
@@ -182,10 +227,13 @@ SELECT * FROM input
   - id_1779345941090 (dwd_门店投资明细)
 
 - **Used By (Outputs):**
-  - id_1779345941095 (JOIN算回本指标(SQL多键替代))
+  - id_1779345941095 (投资起点回本周期+剩余月数)
 - Position: (400,100)
 - SqlScript:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date -- 生产由调度参数替换
+)
 SELECT
   `门店ID`,
   `加盟商ID`,
@@ -194,10 +242,15 @@ SELECT
   SUM(CASE WHEN `回收性质` = '不可回收' THEN `投资金额` ELSE 0 END) AS `不可回收投资`,
   MIN(`投资日期`) AS `投资起始日`
 FROM input1
+CROSS JOIN params p
+WHERE `投资日期` <= p.as_of_date
 GROUP BY `门店ID`, `加盟商ID`
 ```
 - 等价SQL:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date -- 生产由调度参数替换
+)
 SELECT
   `门店ID`,
   `加盟商ID`,
@@ -206,6 +259,8 @@ SELECT
   SUM(CASE WHEN `回收性质` = '不可回收' THEN `投资金额` ELSE 0 END) AS `不可回收投资`,
   MIN(`投资日期`) AS `投资起始日`
 FROM input1
+CROSS JOIN params p
+WHERE `投资日期` <= p.as_of_date
 GROUP BY `门店ID`, `加盟商ID`
 ```
 
@@ -218,10 +273,13 @@ GROUP BY `门店ID`, `加盟商ID`
   - id_1779345941091 (dws_单店利润月汇总)
 
 - **Used By (Outputs):**
-  - id_1779345941095 (JOIN算回本指标(SQL多键替代))
+  - id_1779345941095 (投资起点回本周期+剩余月数)
 - Position: (400,400)
 - SqlScript:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date -- 生产由调度参数替换
+)
 SELECT
   `门店ID`,
   COUNT(DISTINCT `月份`) AS `经营月数`,
@@ -230,12 +288,17 @@ SELECT
   SUM(`单店净利润`) AS `累计单店净利润`,
   AVG(`月营收`) AS `月均营收`,
   AVG(`店面贡献利润`) AS `月均店面贡献利润`,
-  AVG(`店面贡献利润率`) AS `平均贡献利润率`
+  CASE WHEN SUM(`月营收`) > 0 THEN SUM(`店面贡献利润`) / SUM(`月营收`) ELSE NULL END AS `平均贡献利润率`
 FROM input1
+CROSS JOIN params p
+WHERE TO_DATE(CONCAT(SUBSTR(CAST(`月份` AS STRING), 1, 7), '-01')) <= p.as_of_date
 GROUP BY `门店ID`
 ```
 - 等价SQL:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date -- 生产由调度参数替换
+)
 SELECT
   `门店ID`,
   COUNT(DISTINCT `月份`) AS `经营月数`,
@@ -244,8 +307,10 @@ SELECT
   SUM(`单店净利润`) AS `累计单店净利润`,
   AVG(`月营收`) AS `月均营收`,
   AVG(`店面贡献利润`) AS `月均店面贡献利润`,
-  AVG(`店面贡献利润率`) AS `平均贡献利润率`
+  CASE WHEN SUM(`月营收`) > 0 THEN SUM(`店面贡献利润`) / SUM(`月营收`) ELSE NULL END AS `平均贡献利润率`
 FROM input1
+CROSS JOIN params p
+WHERE TO_DATE(CONCAT(SUBSTR(CAST(`月份` AS STRING), 1, 7), '-01')) <= p.as_of_date
 GROUP BY `门店ID`
 ```
 

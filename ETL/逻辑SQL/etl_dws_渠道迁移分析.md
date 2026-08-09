@@ -64,31 +64,48 @@ SELECT * FROM input
 - Position: (500,100)
 - SqlScript:
 ```sql
-WITH member_channel AS (
+WITH params AS (
+  -- 统一运行参数：调度到其他快照时只替换此处
+  SELECT DATE '2026-06-24' AS as_of_date
+),
+member_channel AS (
   SELECT
-    `会员ID`,
+    o.`会员ID`,
+    p.as_of_date,
     CASE
-      WHEN `业务日期` >= DATE_SUB(DATE '2026-05-20', 30) THEN '近30天'
-      ELSE '前60天'
+      WHEN CAST(o.`业务日期` AS DATE) BETWEEN DATE_SUB(p.as_of_date, 29) AND p.as_of_date
+        THEN '近30天'
+      ELSE '此前60天'
     END AS `周期`,
-    SUM(CASE WHEN `是否到店` = 1 THEN `实付金额` ELSE 0 END) AS `堂食金额`,
-    SUM(CASE WHEN `是否到店` = 0 THEN `实付金额` ELSE 0 END) AS `外卖金额`,
-    COUNT(DISTINCT CASE WHEN `是否到店` = 1 THEN `订单ID` END) AS `堂食单数`,
-    COUNT(DISTINCT CASE WHEN `是否到店` = 0 THEN `订单ID` END) AS `外卖单数`
-  FROM input1
-  WHERE (`会员ID` IS NOT NULL AND `会员ID` <> '') AND `订单状态` = '已完成'
-  GROUP BY `会员ID`,
-    CASE WHEN `业务日期` >= DATE_SUB(DATE '2026-05-20', 30) THEN '近30天' ELSE '前60天' END
+    COUNT(DISTINCT CASE WHEN o.`是否到店` = 1 THEN o.`订单ID` END) AS `堂食单数`,
+    COUNT(DISTINCT CASE WHEN o.`是否到店` = 0 THEN o.`订单ID` END) AS `外卖单数`
+  FROM input1 o
+  CROSS JOIN params p
+  WHERE o.`会员ID` IS NOT NULL
+    AND o.`会员ID` <> ''
+    AND o.`订单状态` = '已完成'
+    AND o.`业务日期` IS NOT NULL
+    -- 两个互斥闭合窗口：近30天 [T-29,T]；此前60天 [T-89,T-30]
+    AND CAST(o.`业务日期` AS DATE) BETWEEN DATE_SUB(p.as_of_date, 89) AND p.as_of_date
+  GROUP BY
+    o.`会员ID`,
+    p.as_of_date,
+    CASE
+      WHEN CAST(o.`业务日期` AS DATE) BETWEEN DATE_SUB(p.as_of_date, 29) AND p.as_of_date
+        THEN '近30天'
+      ELSE '此前60天'
+    END
 ),
 member_pattern AS (
   SELECT
     `会员ID`,
+    as_of_date,
     SUM(CASE WHEN `周期` = '近30天' THEN `堂食单数` ELSE 0 END) AS `近30天堂食`,
     SUM(CASE WHEN `周期` = '近30天' THEN `外卖单数` ELSE 0 END) AS `近30天外卖`,
-    SUM(CASE WHEN `周期` = '前60天' THEN `堂食单数` ELSE 0 END) AS `前60天堂食`,
-    SUM(CASE WHEN `周期` = '前60天' THEN `外卖单数` ELSE 0 END) AS `前60天外卖`
+    SUM(CASE WHEN `周期` = '此前60天' THEN `堂食单数` ELSE 0 END) AS `前60天堂食`,
+    SUM(CASE WHEN `周期` = '此前60天' THEN `外卖单数` ELSE 0 END) AS `前60天外卖`
   FROM member_channel
-  GROUP BY `会员ID`
+  GROUP BY `会员ID`, as_of_date
 )
 SELECT
   p.`会员ID`, m.`会员等级`, m.`城市`,
@@ -100,37 +117,55 @@ SELECT
     WHEN p.`前60天外卖` >= 1 AND p.`近30天外卖` >= 1 AND p.`近30天堂食` = 0 THEN '纯外卖'
     WHEN p.`近30天堂食` > 0 AND p.`近30天外卖` > 0 THEN '混合渠道'
     ELSE '其他'
-  END AS `迁移类型`
+  END AS `迁移类型`,
+  p.as_of_date AS `数据快照日期`
 FROM member_pattern p
 LEFT JOIN input2 m ON p.`会员ID` = m.`会员ID`
 ```
 - 等价SQL:
 ```sql
-WITH member_channel AS (
+WITH params AS (
+  -- 统一运行参数：调度到其他快照时只替换此处
+  SELECT DATE '2026-06-24' AS as_of_date
+),
+member_channel AS (
   SELECT
-    `会员ID`,
+    o.`会员ID`,
+    p.as_of_date,
     CASE
-      WHEN `业务日期` >= DATE_SUB(DATE '2026-05-20', 30) THEN '近30天'
-      ELSE '前60天'
+      WHEN CAST(o.`业务日期` AS DATE) BETWEEN DATE_SUB(p.as_of_date, 29) AND p.as_of_date
+        THEN '近30天'
+      ELSE '此前60天'
     END AS `周期`,
-    SUM(CASE WHEN `是否到店` = 1 THEN `实付金额` ELSE 0 END) AS `堂食金额`,
-    SUM(CASE WHEN `是否到店` = 0 THEN `实付金额` ELSE 0 END) AS `外卖金额`,
-    COUNT(DISTINCT CASE WHEN `是否到店` = 1 THEN `订单ID` END) AS `堂食单数`,
-    COUNT(DISTINCT CASE WHEN `是否到店` = 0 THEN `订单ID` END) AS `外卖单数`
-  FROM input1
-  WHERE (`会员ID` IS NOT NULL AND `会员ID` <> '') AND `订单状态` = '已完成'
-  GROUP BY `会员ID`,
-    CASE WHEN `业务日期` >= DATE_SUB(DATE '2026-05-20', 30) THEN '近30天' ELSE '前60天' END
+    COUNT(DISTINCT CASE WHEN o.`是否到店` = 1 THEN o.`订单ID` END) AS `堂食单数`,
+    COUNT(DISTINCT CASE WHEN o.`是否到店` = 0 THEN o.`订单ID` END) AS `外卖单数`
+  FROM input1 o
+  CROSS JOIN params p
+  WHERE o.`会员ID` IS NOT NULL
+    AND o.`会员ID` <> ''
+    AND o.`订单状态` = '已完成'
+    AND o.`业务日期` IS NOT NULL
+    -- 两个互斥闭合窗口：近30天 [T-29,T]；此前60天 [T-89,T-30]
+    AND CAST(o.`业务日期` AS DATE) BETWEEN DATE_SUB(p.as_of_date, 89) AND p.as_of_date
+  GROUP BY
+    o.`会员ID`,
+    p.as_of_date,
+    CASE
+      WHEN CAST(o.`业务日期` AS DATE) BETWEEN DATE_SUB(p.as_of_date, 29) AND p.as_of_date
+        THEN '近30天'
+      ELSE '此前60天'
+    END
 ),
 member_pattern AS (
   SELECT
     `会员ID`,
+    as_of_date,
     SUM(CASE WHEN `周期` = '近30天' THEN `堂食单数` ELSE 0 END) AS `近30天堂食`,
     SUM(CASE WHEN `周期` = '近30天' THEN `外卖单数` ELSE 0 END) AS `近30天外卖`,
-    SUM(CASE WHEN `周期` = '前60天' THEN `堂食单数` ELSE 0 END) AS `前60天堂食`,
-    SUM(CASE WHEN `周期` = '前60天' THEN `外卖单数` ELSE 0 END) AS `前60天外卖`
+    SUM(CASE WHEN `周期` = '此前60天' THEN `堂食单数` ELSE 0 END) AS `前60天堂食`,
+    SUM(CASE WHEN `周期` = '此前60天' THEN `外卖单数` ELSE 0 END) AS `前60天外卖`
   FROM member_channel
-  GROUP BY `会员ID`
+  GROUP BY `会员ID`, as_of_date
 )
 SELECT
   p.`会员ID`, m.`会员等级`, m.`城市`,
@@ -142,7 +177,8 @@ SELECT
     WHEN p.`前60天外卖` >= 1 AND p.`近30天外卖` >= 1 AND p.`近30天堂食` = 0 THEN '纯外卖'
     WHEN p.`近30天堂食` > 0 AND p.`近30天外卖` > 0 THEN '混合渠道'
     ELSE '其他'
-  END AS `迁移类型`
+  END AS `迁移类型`,
+  p.as_of_date AS `数据快照日期`
 FROM member_pattern p
 LEFT JOIN input2 m ON p.`会员ID` = m.`会员ID`
 ```

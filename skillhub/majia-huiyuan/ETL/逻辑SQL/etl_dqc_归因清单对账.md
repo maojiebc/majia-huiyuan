@@ -16,9 +16,15 @@
   - p39cc9d0866ac442bb777c63 (ads_单店利润健康)
   - g52a667122e214eefb542bf6 (dws_体验口碑汇总)
   - l9312c8ef7ec14877889f06b (param_利润健康阈值)
-  - jc8be722fd6cb49fa87206f0 (param_会员生命周期阈值)
+  - jc8be722fd6cb49fa87206f0 (param_门店会员占比预警阈值；v1.4.0 原资产误名)
 - **数据输出目标:**
   - dqc_归因清单对账 (目录: 马甲的模拟数据集)
+
+> **v1.4.1 扩展验收：**本页保留 workshop 原有 9 项合流检查；生产合并还必须执行
+> [`ETL/公共口径/04_v1.4.1_业务验收.sql`](../公共口径/04_v1.4.1_业务验收.sql) 的 9 项业务不变量，
+> 覆盖订单归因唯一性、金额上界、Cohort、零销售成本月、连续亏损、回本、SCD2、统一快照和参数命中。
+> 发布包漂移由 GitHub Actions 另行执行 `python3 tools/build_skillhub_bundle.py --check`。
+> 所有时间检查共享同批次 `as_of_date`，不得读取运行机器当前日期。
 ---
 ## ETL 节点详细信息
 
@@ -33,7 +39,7 @@
   - id_1003 (ads_单店利润健康)
   - id_1004 (dws_体验口碑汇总)
   - id_1005 (param_利润健康阈值)
-  - id_1006 (param_会员生命周期阈值)
+  - id_1006 (param_门店会员占比预警阈值)
 
 - **Used By (Outputs):**
   - id_3001 (dqc_归因清单对账)
@@ -123,7 +129,7 @@ SELECT '08', '参数覆盖', '利润健康阈值 9 店型齐全（判定不静�
        CASE WHEN param1_cov.c = 9 THEN '通过' ELSE '异常' END
 FROM param1_cov
 UNION ALL
-SELECT '09', '参数覆盖', '会员生命周期阈值 9 店型齐全',
+SELECT '09', '参数覆盖', '门店会员占比预警阈值 9 店型齐全',
        '9', CAST(param2_cov.c AS STRING),
        CASE WHEN param2_cov.c = 9 THEN '通过' ELSE '异常' END
 FROM param2_cov
@@ -214,7 +220,7 @@ SELECT '08', '参数覆盖', '利润健康阈值 9 店型齐全（判定不静�
        CASE WHEN param1_cov.c = 9 THEN '通过' ELSE '异常' END
 FROM param1_cov
 UNION ALL
-SELECT '09', '参数覆盖', '会员生命周期阈值 9 店型齐全',
+SELECT '09', '参数覆盖', '门店会员占比预警阈值 9 店型齐全',
        '9', CAST(param2_cov.c AS STRING),
        CASE WHEN param2_cov.c = 9 THEN '通过' ELSE '异常' END
 FROM param2_cov
@@ -299,7 +305,7 @@ SELECT * FROM input
 
 ### 节点7
 - Id: id_1006
-- Name: param_会员生命周期阈值
+- Name: param_门店会员占比预警阈值
 - Type: INPUT_DATASET
 - **Used By (Outputs):**
   - id_2001 (合流对账自检)
@@ -338,7 +344,7 @@ SELECT * FROM input1
 ### 上游资源 (6)
 - **ads_单店利润健康** (DATA_SET_ETL)
   - ID: p39cc9d0866ac442bb777c63
-- **param_会员生命周期阈值** (DATA_SET_FILE)
+- **param_门店会员占比预警阈值** (DATA_SET_FILE)
   - ID: jc8be722fd6cb49fa87206f0
 - **ads_门店每日指挥台** (DATA_SET_ETL)
   - ID: nd177a0ac0eda44ac98c75bc

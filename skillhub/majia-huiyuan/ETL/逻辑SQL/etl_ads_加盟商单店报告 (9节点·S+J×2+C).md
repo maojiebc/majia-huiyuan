@@ -19,6 +19,7 @@
   - vf66c6e915ad048c49cbcf25 (dws_加盟回本测算)
 - **数据输出目标:**
   - ads_加盟商单店报告 (目录: 马甲的demo-0523)
+- **时间口径:** 继承 `dws_单店利润月汇总.数据快照日期`，与同批次 `as_of_date` 一致
 ---
 ## ETL 节点详细信息
 
@@ -40,10 +41,21 @@
 - 等价SQL:
 ```sql
 SELECT
-  *,
+  `门店ID`, `门店名称`, `省份`, `城市`, `城市层级`, `门店类型`, `商圈`,
+  `加盟商ID`, `加盟商名称`, `加盟商类型`, `合作状态`, `信用等级`, `签约日期`,
+  `月份`, `月营收`, `堂食营收`, `外卖营收`, `订单数`,
+  `毛利`, `店面贡献利润`, `单店净利润`, `毛利率`, `店面贡献利润率`,
+  `堂食占比`, `外卖占比`, `人工占比`, `房租占比`, `客单价`,
+  `同侪门店数`, `城市同店型_营收_P25`, `城市同店型_营收_中位数`, `城市同店型_营收_P75`,
+  `城市同店型_利润率_P25`, `城市同店型_利润率_中位数`, `城市同店型_利润率_P75`,
+  `城市同店型_堂食占比_中位数`, `营收_对中位数比`, `利润率_对中位数差`, `堂食占比_对中位数差`,
+  `总投资额`, `累计店面贡献利润`, `累计回本率`, `预计完整回本月数`, `已开业月数`,
+  `投资起始日`, `剩余回本月数`, `回本状态`, `预计完整回本日期`,
+  `招商承诺回本月数`, `回本偏离度`, `回本风险等级`, `标杆门店标志`,
   case when `营收_对中位数比` >= 1.5 then '顶部 Top 25%' when `营收_对中位数比` >= 1.1 then '中上 P50-P75' when `营收_对中位数比` >= 0.9 then '中位 ±10%' when `营收_对中位数比` >= 0.7 then '中下 P25-P50' else '尾部 Bottom 25%' end AS `本店位置标签`,
   case when `店面贡献利润` < 0 then '亏损中, 建议联系督导专项支持' when `营收_对中位数比` < 0.7 then '营收低于同侪 30%+, 建议会员拉新+私域引流' when `堂食占比_对中位数差` < -0.10 then '堂食占比低于同侪 10pp+, 建议堂食提振专题' when `人工占比` > 0.25 then '人工占比偏高, 建议优化排班' when `房租占比` > 0.30 then '房租压力大, 建议提升日均营收' when `利润率_对中位数差` >= 0.05 then '同侪标杆, 持续优秀!' else '运营正常, 继续保持' end AS `可改进项`,
-  case when `合作状态` = '正常合作' then '提供品牌活动 + 私域内容 + 督导巡店' when `合作状态` = '续约预警' then '加强督导 + 专项营销补贴' when `合作状态` = '关注名单' then '高频督导 + 定制运营方案' else '专项处理' end AS `总部本月支持`
+  case when `合作状态` = '正常合作' then '提供品牌活动 + 私域内容 + 督导巡店' when `合作状态` = '续约预警' then '加强督导 + 专项营销补贴' when `合作状态` = '关注名单' then '高频督导 + 定制运营方案' else '专项处理' end AS `总部本月支持`,
+  `数据快照日期`
 FROM input1
 ```
 
@@ -81,9 +93,17 @@ SELECT * FROM input1
 - 等价SQL:
 ```sql
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`加盟商ID` = input2.`加盟商ID`
+  f.`门店ID`, f.`门店名称`, f.`省份`, f.`城市`, f.`城市层级`, f.`门店类型`, f.`商圈`,
+  f.`加盟商ID`, d.`加盟商名称`, d.`加盟商类型`, d.`合作状态`, d.`信用等级`, f.`签约日期`,
+  f.`月份`, f.`月营收`, f.`堂食营收`, f.`外卖营收`, f.`订单数`,
+  f.`毛利`, f.`店面贡献利润`, f.`单店净利润`, f.`毛利率`, f.`店面贡献利润率`,
+  f.`堂食占比`, f.`外卖占比`, f.`人工占比`, f.`房租占比`, f.`客单价`,
+  f.`同侪门店数`, f.`城市同店型_营收_P25`, f.`城市同店型_营收_中位数`, f.`城市同店型_营收_P75`,
+  f.`城市同店型_利润率_P25`, f.`城市同店型_利润率_中位数`, f.`城市同店型_利润率_P75`,
+  f.`城市同店型_堂食占比_中位数`, f.`营收_对中位数比`, f.`利润率_对中位数差`, f.`堂食占比_对中位数差`,
+  f.`数据快照日期`
+FROM input1 f
+LEFT JOIN input2 d ON f.`加盟商ID` = d.`加盟商ID`
 ```
 
 
@@ -101,9 +121,22 @@ LEFT_OUTER JOIN input2 ON input1.`加盟商ID` = input2.`加盟商ID`
 - 等价SQL:
 ```sql
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
+  f.`门店ID`, f.`门店名称`, f.`省份`, f.`城市`, f.`城市层级`, f.`门店类型`, f.`商圈`,
+  f.`加盟商ID`, f.`加盟商名称`, f.`加盟商类型`, f.`合作状态`, f.`信用等级`, f.`签约日期`,
+  f.`月份`, f.`月营收`, f.`堂食营收`, f.`外卖营收`, f.`订单数`,
+  f.`毛利`, f.`店面贡献利润`, f.`单店净利润`, f.`毛利率`, f.`店面贡献利润率`,
+  f.`堂食占比`, f.`外卖占比`, f.`人工占比`, f.`房租占比`, f.`客单价`,
+  f.`同侪门店数`, f.`城市同店型_营收_P25`, f.`城市同店型_营收_中位数`, f.`城市同店型_营收_P75`,
+  f.`城市同店型_利润率_P25`, f.`城市同店型_利润率_中位数`, f.`城市同店型_利润率_P75`,
+  f.`城市同店型_堂食占比_中位数`, f.`营收_对中位数比`, f.`利润率_对中位数差`, f.`堂食占比_对中位数差`,
+  r.`总投资额`, r.`累计店面贡献利润`, r.`累计回本率`, r.`预计完整回本月数`, r.`已开业月数`,
+  r.`投资起始日`, r.`剩余回本月数`, r.`回本状态`, r.`预计完整回本日期`,
+  r.`招商承诺回本月数`, r.`回本偏离度`, r.`回本风险等级`, r.`标杆门店标志`,
+  f.`数据快照日期`
+FROM input1 f
+LEFT JOIN input2 r
+  ON f.`门店ID` = r.`门店ID`
+ AND f.`数据快照日期` = r.`数据快照日期`
 ```
 
 
@@ -184,11 +217,22 @@ SELECT * FROM input
 - Position: (431,64)
 - SqlScript:
 ```sql
-WITH franchise_profit AS (
+WITH franchise_profit_ranked AS (
   SELECT
-    p.*, c.`加盟商ID`, c.`签约日期`
+    p.*, c.`加盟商ID`, c.`签约日期`,
+    ROW_NUMBER() OVER (
+      PARTITION BY p.`门店ID`, p.`月份`
+      ORDER BY c.`签约日期` DESC, c.`合同ID` DESC
+    ) AS contract_rn
   FROM input1 p
-  JOIN input2 c ON p.`门店ID` = c.`门店ID`
+  JOIN input2 c
+    ON p.`门店ID` = c.`门店ID`
+   AND CAST(CONCAT(p.`月份`, '-01') AS DATE) BETWEEN c.`签约日期`
+                                                   AND COALESCE(c.`到期日`, DATE '9999-12-31')
+   AND c.`合同状态` <> '已作废'
+),
+franchise_profit AS (
+  SELECT * FROM franchise_profit_ranked WHERE contract_rn = 1
 ),
 peer_baseline AS (
   SELECT
@@ -206,7 +250,7 @@ peer_baseline AS (
 )
 SELECT
   s.`门店ID`, s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`门店类型`, s.`商圈`,
-  s.`加盟商ID`, s.`签约日期`,
+  s.`加盟商ID`, s.`签约日期`, s.`数据快照日期`,
   s.`月份`, s.`月营收`, s.`堂食营收`, s.`外卖营收`, s.`订单数`,
   s.`毛利`, s.`店面贡献利润`, s.`单店净利润`,
   s.`毛利率`, s.`店面贡献利润率`, s.`堂食占比`, s.`外卖占比`,
@@ -225,11 +269,22 @@ LEFT JOIN peer_baseline b ON s.`城市层级` = b.`城市层级` AND s.`门店�
 ```
 - 等价SQL:
 ```sql
-WITH franchise_profit AS (
+WITH franchise_profit_ranked AS (
   SELECT
-    p.*, c.`加盟商ID`, c.`签约日期`
+    p.*, c.`加盟商ID`, c.`签约日期`,
+    ROW_NUMBER() OVER (
+      PARTITION BY p.`门店ID`, p.`月份`
+      ORDER BY c.`签约日期` DESC, c.`合同ID` DESC
+    ) AS contract_rn
   FROM input1 p
-  JOIN input2 c ON p.`门店ID` = c.`门店ID`
+  JOIN input2 c
+    ON p.`门店ID` = c.`门店ID`
+   AND CAST(CONCAT(p.`月份`, '-01') AS DATE) BETWEEN c.`签约日期`
+                                                   AND COALESCE(c.`到期日`, DATE '9999-12-31')
+   AND c.`合同状态` <> '已作废'
+),
+franchise_profit AS (
+  SELECT * FROM franchise_profit_ranked WHERE contract_rn = 1
 ),
 peer_baseline AS (
   SELECT
@@ -247,7 +302,7 @@ peer_baseline AS (
 )
 SELECT
   s.`门店ID`, s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`门店类型`, s.`商圈`,
-  s.`加盟商ID`, s.`签约日期`,
+  s.`加盟商ID`, s.`签约日期`, s.`数据快照日期`,
   s.`月份`, s.`月营收`, s.`堂食营收`, s.`外卖营收`, s.`订单数`,
   s.`毛利`, s.`店面贡献利润`, s.`单店净利润`,
   s.`毛利率`, s.`店面贡献利润率`, s.`堂食占比`, s.`外卖占比`,

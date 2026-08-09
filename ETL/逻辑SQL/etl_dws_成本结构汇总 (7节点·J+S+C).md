@@ -53,11 +53,14 @@ SELECT * FROM input
   - P90vsP50差异
 - 等价SQL:
 ```sql
+WITH params AS (SELECT DATE '2026-06-24' AS as_of_date)
 SELECT
-  *,
+  `门店类型`, `月份`, `成本科目ID`, `成本科目名称`, `成本大类`,
+  `门店数`, `成本总额`, `营收总额`, `平均占比`, `中位数占比`, `P90占比`, `最低占比`, `最高占比`,
   case when `营收总额` > 0 then `成本总额` / `营收总额` else 0 end AS `科目营收占比`,
   `最高占比` - `最低占比` AS `离散度`,
-  `P90占比` - `中位数占比` AS `P90vsP50差异`
+  `P90占比` - `中位数占比` AS `P90vsP50差异`,
+  `数据快照日期`
 FROM input1
 ```
 
@@ -103,7 +106,8 @@ SELECT
   PERCENTILE_APPROX(`成本占比`, 0.5) AS `中位数占比`,
   PERCENTILE_APPROX(`成本占比`, 0.9) AS `P90占比`,
   MIN(`成本占比`) AS `最低占比`,
-  MAX(`成本占比`) AS `最高占比`
+  MAX(`成本占比`) AS `最高占比`,
+  MAX(`数据快照日期`) AS `数据快照日期`
 FROM input1
 WHERE `营收基数` > 0
 GROUP BY `门店类型`, `月份`, `成本科目ID`, `成本科目名称`, `成本大类`
@@ -123,7 +127,8 @@ SELECT
   PERCENTILE_APPROX(`成本占比`, 0.5) AS `中位数占比`,
   PERCENTILE_APPROX(`成本占比`, 0.9) AS `P90占比`,
   MIN(`成本占比`) AS `最低占比`,
-  MAX(`成本占比`) AS `最高占比`
+  MAX(`成本占比`) AS `最高占比`,
+  MAX(`数据快照日期`) AS `数据快照日期`
 FROM input1
 WHERE `营收基数` > 0
 GROUP BY `门店类型`, `月份`, `成本科目ID`, `成本科目名称`, `成本大类`
@@ -143,10 +148,32 @@ GROUP BY `门店类型`, `月份`, `成本科目ID`, `成本科目名称`, `成�
 - Position: (300,200)
 - 等价SQL:
 ```sql
+WITH params AS (
+  SELECT DATE '2026-06-24' AS as_of_date
+),
+matched AS (
+  SELECT
+    c.*,
+    s.`门店类型`, s.`店型`, s.`城市`, s.`城市层级`, s.`门店版本ID`,
+    p.as_of_date AS `数据快照日期`,
+    ROW_NUMBER() OVER (
+      PARTITION BY c.`成本明细ID`
+      ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+    ) AS scd_rn
+  FROM input1 c
+  CROSS JOIN params p
+  LEFT JOIN input2 s
+    ON c.`门店ID` = s.`门店ID`
+   AND CAST(c.`月份` AS DATE) BETWEEN CAST(s.`生效起始日期` AS DATE)
+                                 AND COALESCE(CAST(s.`生效截止日期` AS DATE), DATE '9999-12-31')
+  WHERE CAST(c.`月份` AS DATE) <= p.as_of_date
+)
 SELECT
-  *
-FROM input1
-LEFT_OUTER JOIN input2 ON input1.`门店ID` = input2.`门店ID`
+  `成本明细ID`, `门店ID`, `月份`, `成本科目ID`, `成本科目名称`, `成本大类`,
+  `成本金额`, `营收基数`, `成本占比`, `数据来源`, `数据状态`, `录入日期`,
+  `门店类型`, `店型`, `城市`, `城市层级`, `门店版本ID`, `数据快照日期`
+FROM matched
+WHERE scd_rn = 1
 ```
 
 

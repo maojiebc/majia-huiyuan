@@ -64,71 +64,207 @@ SELECT * FROM input
 - Position: (500,100)
 - SqlScript:
 ```sql
-WITH first_orders AS (
+WITH params AS (
+  -- 统一运行参数：调度到其他快照时只替换此处
+  SELECT DATE '2026-06-24' AS as_of_date
+),
+member_base AS (
   SELECT
     m.`会员ID`,
-    DATE_TRUNC('MONTH', CAST(m.`注册日期` AS DATE)) AS `注册月份`,
-    m.`注册日期`,
-    MIN(o.`业务日期`) AS `首单日期`
+    CAST(m.`注册日期` AS DATE) AS `注册日期`,
+    CAST(DATE_TRUNC('MONTH', CAST(m.`注册日期` AS DATE)) AS DATE) AS `同期群月份`
   FROM input1 m
-  LEFT JOIN input2 o ON m.`会员ID` = o.`会员ID` AND o.`订单状态` = '已完成'
-  GROUP BY m.`会员ID`, DATE_TRUNC('MONTH', CAST(m.`注册日期` AS DATE)), m.`注册日期`
+  CROSS JOIN params p
+  WHERE m.`会员ID` IS NOT NULL
+    AND m.`会员ID` <> ''
+    AND m.`注册日期` IS NOT NULL
+    AND CAST(m.`注册日期` AS DATE) <= p.as_of_date
 ),
-retention AS (
+cohort_sizes AS (
   SELECT
-    f.`会员ID`, f.`注册月份`, o.`业务日期`,
-    DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) AS `注册后天数`,
-    CASE
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 7   THEN 'W1'
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 14  THEN 'W2'
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 28  THEN 'W4'
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 56  THEN 'W8'
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 84  THEN 'W12'
-      ELSE 'W12+'
-    END AS `留存桶`
-  FROM first_orders f
-  JOIN input2 o ON f.`会员ID` = o.`会员ID`
-  WHERE o.`业务日期` >= CAST(f.`注册日期` AS DATE)
+    `同期群月份`,
+    COUNT(DISTINCT `会员ID`) AS `同期群人数`
+  FROM member_base
+  GROUP BY `同期群月份`
+),
+completed_orders AS (
+  SELECT DISTINCT
+    o.`会员ID`,
+    CAST(o.`业务日期` AS DATE) AS `订单日期`
+  FROM input2 o
+  CROSS JOIN params p
+  WHERE o.`订单状态` = '已完成'
+    AND o.`会员ID` IS NOT NULL
+    AND o.`会员ID` <> ''
+    AND o.`业务日期` IS NOT NULL
+    AND CAST(o.`业务日期` AS DATE) <= p.as_of_date
+),
+member_activity AS (
+  SELECT DISTINCT
+    m.`会员ID`,
+    m.`同期群月份`,
+    CAST(DATE_TRUNC('MONTH', o.`订单日期`) AS DATE) AS `活跃月份`
+  FROM member_base m
+  JOIN completed_orders o
+    ON m.`会员ID` = o.`会员ID`
+   AND o.`订单日期` >= m.`注册日期`
+),
+retention_counts AS (
+  SELECT
+    `同期群月份`,
+    `活跃月份`,
+    COUNT(DISTINCT `会员ID`) AS `留存人数`
+  FROM member_activity
+  GROUP BY `同期群月份`, `活跃月份`
+),
+cohort_grid AS (
+  SELECT
+    c.`同期群月份`,
+    c.`同期群人数`,
+    p.as_of_date,
+    EXPLODE(
+      SEQUENCE(
+        0,
+        CAST(
+          MONTHS_BETWEEN(
+            CAST(DATE_TRUNC('MONTH', p.as_of_date) AS DATE),
+            c.`同期群月份`
+          ) AS INT
+        )
+      )
+    ) AS `留存月序号`
+  FROM cohort_sizes c
+  CROSS JOIN params p
 )
 SELECT
-  CAST(`注册月份` AS DATE) AS `注册月份`,
-  `留存桶`, COUNT(DISTINCT `会员ID`) AS `留存人数`
-FROM retention
-GROUP BY `注册月份`, `留存桶`
+  g.`同期群月份`,
+  g.`同期群人数`,
+  CONCAT('M', CAST(g.`留存月序号` AS STRING)) AS `留存月份序号`,
+  ADD_MONTHS(g.`同期群月份`, g.`留存月序号`) AS `留存月份`,
+  CASE
+    WHEN g.`留存月序号` = 0 THEN g.`同期群人数`
+    WHEN LAST_DAY(ADD_MONTHS(g.`同期群月份`, g.`留存月序号`)) <= g.as_of_date
+      THEN COALESCE(r.`留存人数`, 0)
+    ELSE CAST(NULL AS BIGINT)
+  END AS `留存人数`,
+  CASE
+    WHEN g.`留存月序号` = 0 THEN CAST(1.0 AS DOUBLE)
+    WHEN LAST_DAY(ADD_MONTHS(g.`同期群月份`, g.`留存月序号`)) <= g.as_of_date
+      THEN ROUND(COALESCE(r.`留存人数`, 0) * 1.0 / g.`同期群人数`, 4)
+    ELSE CAST(NULL AS DOUBLE)
+  END AS `留存率`,
+  CASE
+    WHEN LAST_DAY(ADD_MONTHS(g.`同期群月份`, g.`留存月序号`)) <= g.as_of_date
+      THEN CAST(1 AS BIGINT)
+    ELSE CAST(0 AS BIGINT)
+  END AS `是否完整观察期`,
+  g.as_of_date AS `数据快照日期`
+FROM cohort_grid g
+LEFT JOIN retention_counts r
+  ON g.`同期群月份` = r.`同期群月份`
+ AND ADD_MONTHS(g.`同期群月份`, g.`留存月序号`) = r.`活跃月份`
 ```
 - 等价SQL:
 ```sql
-WITH first_orders AS (
+WITH params AS (
+  -- 统一运行参数：调度到其他快照时只替换此处
+  SELECT DATE '2026-06-24' AS as_of_date
+),
+member_base AS (
   SELECT
     m.`会员ID`,
-    DATE_TRUNC('MONTH', CAST(m.`注册日期` AS DATE)) AS `注册月份`,
-    m.`注册日期`,
-    MIN(o.`业务日期`) AS `首单日期`
+    CAST(m.`注册日期` AS DATE) AS `注册日期`,
+    CAST(DATE_TRUNC('MONTH', CAST(m.`注册日期` AS DATE)) AS DATE) AS `同期群月份`
   FROM input1 m
-  LEFT JOIN input2 o ON m.`会员ID` = o.`会员ID` AND o.`订单状态` = '已完成'
-  GROUP BY m.`会员ID`, DATE_TRUNC('MONTH', CAST(m.`注册日期` AS DATE)), m.`注册日期`
+  CROSS JOIN params p
+  WHERE m.`会员ID` IS NOT NULL
+    AND m.`会员ID` <> ''
+    AND m.`注册日期` IS NOT NULL
+    AND CAST(m.`注册日期` AS DATE) <= p.as_of_date
 ),
-retention AS (
+cohort_sizes AS (
   SELECT
-    f.`会员ID`, f.`注册月份`, o.`业务日期`,
-    DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) AS `注册后天数`,
-    CASE
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 7   THEN 'W1'
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 14  THEN 'W2'
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 28  THEN 'W4'
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 56  THEN 'W8'
-      WHEN DATEDIFF(o.`业务日期`, CAST(f.`注册日期` AS DATE)) <= 84  THEN 'W12'
-      ELSE 'W12+'
-    END AS `留存桶`
-  FROM first_orders f
-  JOIN input2 o ON f.`会员ID` = o.`会员ID`
-  WHERE o.`业务日期` >= CAST(f.`注册日期` AS DATE)
+    `同期群月份`,
+    COUNT(DISTINCT `会员ID`) AS `同期群人数`
+  FROM member_base
+  GROUP BY `同期群月份`
+),
+completed_orders AS (
+  SELECT DISTINCT
+    o.`会员ID`,
+    CAST(o.`业务日期` AS DATE) AS `订单日期`
+  FROM input2 o
+  CROSS JOIN params p
+  WHERE o.`订单状态` = '已完成'
+    AND o.`会员ID` IS NOT NULL
+    AND o.`会员ID` <> ''
+    AND o.`业务日期` IS NOT NULL
+    AND CAST(o.`业务日期` AS DATE) <= p.as_of_date
+),
+member_activity AS (
+  SELECT DISTINCT
+    m.`会员ID`,
+    m.`同期群月份`,
+    CAST(DATE_TRUNC('MONTH', o.`订单日期`) AS DATE) AS `活跃月份`
+  FROM member_base m
+  JOIN completed_orders o
+    ON m.`会员ID` = o.`会员ID`
+   AND o.`订单日期` >= m.`注册日期`
+),
+retention_counts AS (
+  SELECT
+    `同期群月份`,
+    `活跃月份`,
+    COUNT(DISTINCT `会员ID`) AS `留存人数`
+  FROM member_activity
+  GROUP BY `同期群月份`, `活跃月份`
+),
+cohort_grid AS (
+  SELECT
+    c.`同期群月份`,
+    c.`同期群人数`,
+    p.as_of_date,
+    EXPLODE(
+      SEQUENCE(
+        0,
+        CAST(
+          MONTHS_BETWEEN(
+            CAST(DATE_TRUNC('MONTH', p.as_of_date) AS DATE),
+            c.`同期群月份`
+          ) AS INT
+        )
+      )
+    ) AS `留存月序号`
+  FROM cohort_sizes c
+  CROSS JOIN params p
 )
 SELECT
-  CAST(`注册月份` AS DATE) AS `注册月份`,
-  `留存桶`, COUNT(DISTINCT `会员ID`) AS `留存人数`
-FROM retention
-GROUP BY `注册月份`, `留存桶`
+  g.`同期群月份`,
+  g.`同期群人数`,
+  CONCAT('M', CAST(g.`留存月序号` AS STRING)) AS `留存月份序号`,
+  ADD_MONTHS(g.`同期群月份`, g.`留存月序号`) AS `留存月份`,
+  CASE
+    WHEN g.`留存月序号` = 0 THEN g.`同期群人数`
+    WHEN LAST_DAY(ADD_MONTHS(g.`同期群月份`, g.`留存月序号`)) <= g.as_of_date
+      THEN COALESCE(r.`留存人数`, 0)
+    ELSE CAST(NULL AS BIGINT)
+  END AS `留存人数`,
+  CASE
+    WHEN g.`留存月序号` = 0 THEN CAST(1.0 AS DOUBLE)
+    WHEN LAST_DAY(ADD_MONTHS(g.`同期群月份`, g.`留存月序号`)) <= g.as_of_date
+      THEN ROUND(COALESCE(r.`留存人数`, 0) * 1.0 / g.`同期群人数`, 4)
+    ELSE CAST(NULL AS DOUBLE)
+  END AS `留存率`,
+  CASE
+    WHEN LAST_DAY(ADD_MONTHS(g.`同期群月份`, g.`留存月序号`)) <= g.as_of_date
+      THEN CAST(1 AS BIGINT)
+    ELSE CAST(0 AS BIGINT)
+  END AS `是否完整观察期`,
+  g.as_of_date AS `数据快照日期`
+FROM cohort_grid g
+LEFT JOIN retention_counts r
+  ON g.`同期群月份` = r.`同期群月份`
+ AND ADD_MONTHS(g.`同期群月份`, g.`留存月序号`) = r.`活跃月份`
 ```
 
 

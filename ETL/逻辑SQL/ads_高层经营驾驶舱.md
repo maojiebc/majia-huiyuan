@@ -1,168 +1,136 @@
-你是一个ETL专家, 正在查看如下ETL的定义(注意: 这里的所有节点都会运行在 Apache Spark 3.4上, 所有的SQL语法都是Spark的语法, 当用户让优化性能时, 不要给出建索引等通用的建议, 因为Spark不能建立索引, 并且这个ETL只能使用Spark SQL(不能使用DataFrame API), 主要给出可以"通过优化ETL节点的写法来优化性能"这种优化建议):
+你是一个 ETL 专家，正在查看如下 ETL 的定义。所有节点运行在 Apache Spark 3.4，SQL 只能使用 Spark SQL。
 
 ## 基本信息
+
 - UniformResourceType: DATA_PROCESS_ETL
----
+- 版本口径: v1.4.1
+
 ## ETL 流程摘要
 
-- **总节点数:** 4
-- **节点类型分布:**
-  - INPUT_DATASET: 2
-  - OUTPUT_DATASET: 1
-  - SQL_SCRIPT: 1
 - **数据输入源:**
-  - j23ea7e60564e47458b71d82 (dwd_订单)
-  - xc82fb232ecdc474f84cd43d (dwd_会员触达)
-- **数据输出目标:**
-  - ads_高层经营驾驶舱 (目录: 0523-马甲-demo)
----
-## ETL 节点详细信息
+  - `dwd_订单`
+  - `dwd_会员触达`
+- **数据输出目标:** `ads_高层经营驾驶舱`
+- **运行参数:** `as_of_date`，必填，格式 `yyyy-MM-dd`；调度器在运行前替换 `${as_of_date}`。
+- **归因窗口:** 触达时间起（含）至触达时间后 8×24 小时（不含），即滚动 0–7 天。
 
+## v1.4.1 业务口径
 
-### 节点1
-- Id: id_1779327122009
-- Name: dwd_订单
-- Type: INPUT_DATASET
-- **Used By (Outputs):**
-  - id_1779327122011 (SQL处理)
-- Position: (200,100)
-- InputDsId: j23ea7e60564e47458b71d82
-- DisplayType: CSV
-- PreviewScope: ALL
-- 等价SQL:
+1. 总销售、会员销售、到店销售和关联销售全部按订单发生日汇总，分子分母处于同一天。
+2. 私域订单只允许归属于下单前最近一次有效触达；用 `ROW_NUMBER` 将同一订单的归因优先级固定为 1，杜绝重复归因。
+3. 归因桥保留 `订单ID、触达ID、触达时间、下单时间、归因规则、归因优先级`，便于 DQC 逐单审计。
+4. 没有对照组时，只能称“触达后关联销售”，不能称“私域贡献销售”或增量收入。
+5. 原字段“到店订单占比”实际按销售额计算，v1.4.1 更名为“到店销售额占比”。
+
+## 核心 SQL
+
+输入顺序：`input1 = dwd_订单`，`input2 = dwd_会员触达`。
+
 ```sql
-SELECT * FROM input
-```
-
-
-### 节点2
-- Id: id_1779327122010
-- Name: dwd_会员触达
-- Type: INPUT_DATASET
-- **Used By (Outputs):**
-  - id_1779327122011 (SQL处理)
-- Position: (200,250)
-- InputDsId: xc82fb232ecdc474f84cd43d
-- DisplayType: CSV
-- PreviewScope: ALL
-- 等价SQL:
-```sql
-SELECT * FROM input
-```
-
-
-### 节点3
-- Id: id_1779327122011
-- Name: SQL处理
-- Type: SQL_SCRIPT
-- **Sources (Inputs):**
-  - id_1779327122009 (dwd_订单)
-  - id_1779327122010 (dwd_会员触达)
-
-- **Used By (Outputs):**
-  - id_1779327122012 (ads_高层经营驾驶舱)
-- Position: (500,100)
-- SqlScript:
-```sql
-WITH order_daily AS (
+WITH params AS (
   SELECT
-    `业务日期`,
-    SUM(`实付金额`) AS `总销售`,
-    SUM(CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `实付金额` ELSE 0 END) AS `会员销售`,
-    SUM(CASE WHEN `是否到店` = 1 THEN `实付金额` ELSE 0 END) AS `到店销售`,
-    COUNT(DISTINCT `订单ID`) AS `总订单数`,
-    COUNT(DISTINCT `会员ID`) AS `活跃会员数`,
-    COUNT(DISTINCT CASE WHEN `是否会员首单` = 1 THEN `会员ID` END) AS `新增会员数`
-  FROM input1
-  WHERE `订单状态` = '已完成'
-  GROUP BY `业务日期`
+    CAST('${as_of_date}' AS DATE) AS `as_of_date`,
+    7 AS `归因窗口天数`
 ),
-private_attribution AS (
-  SELECT
-    t.`触达日期` AS `业务日期`,
-    SUM(o.`实付金额`) AS `私域贡献销售`
+valid_order AS (
+  SELECT o.*
+  FROM input1 o
+  CROSS JOIN params p
+  WHERE o.`订单状态` = '已完成'
+    AND o.`业务日期` <= p.`as_of_date`
+),
+valid_touch AS (
+  SELECT t.*
   FROM input2 t
-  JOIN input1 o ON t.`会员ID` = o.`会员ID`
-    AND DATEDIFF(o.`业务日期`, t.`触达日期`) BETWEEN 0 AND 7
-    AND o.`订单状态` = '已完成'
-  GROUP BY t.`触达日期`
+  CROSS JOIN params p
+  WHERE t.`触达状态` = '已发送'
+    AND t.`会员ID` IS NOT NULL AND t.`会员ID` <> ''
+    AND t.`触达日期` <= p.`as_of_date`
+),
+order_daily AS (
+  SELECT
+    o.`业务日期`,
+    SUM(o.`实付金额`) AS `总销售`,
+    SUM(CASE
+      WHEN o.`会员ID` IS NOT NULL AND o.`会员ID` <> '' THEN o.`实付金额`
+      ELSE 0
+    END) AS `会员销售`,
+    SUM(CASE WHEN o.`是否到店` = 1 THEN o.`实付金额` ELSE 0 END) AS `到店销售`,
+    COUNT(DISTINCT o.`订单ID`) AS `总订单数`,
+    COUNT(DISTINCT o.`会员ID`) AS `活跃会员数`,
+    COUNT(DISTINCT CASE WHEN o.`是否会员首单` = 1 THEN o.`会员ID` END) AS `新增会员数`
+  FROM valid_order o
+  GROUP BY o.`业务日期`
+),
+touch_order_candidates AS (
+  SELECT
+    o.`订单ID`,
+    t.`触达ID`,
+    t.`触达时间`,
+    o.`下单时间`,
+    o.`业务日期` AS `订单发生日期`,
+    o.`实付金额`,
+    '下单前最近一次有效触达' AS `归因规则`,
+    ROW_NUMBER() OVER (
+      PARTITION BY o.`订单ID`
+      ORDER BY t.`触达时间` DESC, t.`触达ID` DESC
+    ) AS `归因优先级`
+  FROM valid_order o
+  JOIN valid_touch t
+    ON o.`会员ID` = t.`会员ID`
+   AND o.`会员ID` IS NOT NULL AND o.`会员ID` <> ''
+   AND o.`下单时间` >= t.`触达时间`
+   AND o.`下单时间` < t.`触达时间` + INTERVAL 8 DAYS
+),
+touch_order_bridge AS (
+  SELECT
+    `订单ID`, `触达ID`, `触达时间`, `下单时间`, `订单发生日期`,
+    `实付金额`, `归因规则`, `归因优先级`
+  FROM touch_order_candidates
+  WHERE `归因优先级` = 1
+),
+touch_order_daily AS (
+  SELECT
+    b.`订单发生日期` AS `业务日期`,
+    COUNT(DISTINCT b.`订单ID`) AS `触达后关联订单数`,
+    SUM(b.`实付金额`) AS `触达后关联销售`
+  FROM touch_order_bridge b
+  GROUP BY b.`订单发生日期`
 )
 SELECT
   d.`业务日期`,
-  d.`总销售`, d.`会员销售`, d.`到店销售`, d.`总订单数`, d.`活跃会员数`, d.`新增会员数`,
-  COALESCE(p.`私域贡献销售`, 0) AS `私域贡献销售`,
+  d.`总销售`,
+  d.`会员销售`,
+  d.`到店销售`,
+  d.`总订单数`,
+  d.`活跃会员数`,
+  d.`新增会员数`,
+  COALESCE(a.`触达后关联订单数`, 0) AS `触达后关联订单数`,
+  COALESCE(a.`触达后关联销售`, 0.0) AS `触达后关联销售`,
   CASE WHEN d.`总销售` > 0 THEN d.`会员销售` / d.`总销售` ELSE 0 END AS `会员销售占比`,
-  CASE WHEN d.`总销售` > 0 THEN d.`到店销售` / d.`总销售` ELSE 0 END AS `到店订单占比`,
-  CASE WHEN d.`总销售` > 0 THEN COALESCE(p.`私域贡献销售`, 0) / d.`总销售` ELSE 0 END AS `私域贡献收入占比`
+  CASE WHEN d.`总销售` > 0 THEN d.`到店销售` / d.`总销售` ELSE 0 END AS `到店销售额占比`,
+  CASE
+    WHEN d.`总销售` > 0 THEN COALESCE(a.`触达后关联销售`, 0.0) / d.`总销售`
+    ELSE 0
+  END AS `触达后关联销售占比`,
+  p.`归因窗口天数`,
+  '下单前最近一次有效触达；每订单唯一' AS `归因规则`,
+  p.`as_of_date` AS `数据快照日期`
 FROM order_daily d
-LEFT JOIN private_attribution p ON d.`业务日期` = p.`业务日期`
-```
-- 等价SQL:
-```sql
-WITH order_daily AS (
-  SELECT
-    `业务日期`,
-    SUM(`实付金额`) AS `总销售`,
-    SUM(CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `实付金额` ELSE 0 END) AS `会员销售`,
-    SUM(CASE WHEN `是否到店` = 1 THEN `实付金额` ELSE 0 END) AS `到店销售`,
-    COUNT(DISTINCT `订单ID`) AS `总订单数`,
-    COUNT(DISTINCT `会员ID`) AS `活跃会员数`,
-    COUNT(DISTINCT CASE WHEN `是否会员首单` = 1 THEN `会员ID` END) AS `新增会员数`
-  FROM input1
-  WHERE `订单状态` = '已完成'
-  GROUP BY `业务日期`
-),
-private_attribution AS (
-  SELECT
-    t.`触达日期` AS `业务日期`,
-    SUM(o.`实付金额`) AS `私域贡献销售`
-  FROM input2 t
-  JOIN input1 o ON t.`会员ID` = o.`会员ID`
-    AND DATEDIFF(o.`业务日期`, t.`触达日期`) BETWEEN 0 AND 7
-    AND o.`订单状态` = '已完成'
-  GROUP BY t.`触达日期`
-)
-SELECT
-  d.`业务日期`,
-  d.`总销售`, d.`会员销售`, d.`到店销售`, d.`总订单数`, d.`活跃会员数`, d.`新增会员数`,
-  COALESCE(p.`私域贡献销售`, 0) AS `私域贡献销售`,
-  CASE WHEN d.`总销售` > 0 THEN d.`会员销售` / d.`总销售` ELSE 0 END AS `会员销售占比`,
-  CASE WHEN d.`总销售` > 0 THEN d.`到店销售` / d.`总销售` ELSE 0 END AS `到店订单占比`,
-  CASE WHEN d.`总销售` > 0 THEN COALESCE(p.`私域贡献销售`, 0) / d.`总销售` ELSE 0 END AS `私域贡献收入占比`
-FROM order_daily d
-LEFT JOIN private_attribution p ON d.`业务日期` = p.`业务日期`
+LEFT JOIN touch_order_daily a
+  ON d.`业务日期` = a.`业务日期`
+CROSS JOIN params p
 ```
 
+## 验收约束
 
-### 节点4
-- Id: id_1779327122012
-- Name: ads_高层经营驾驶舱
-- Type: OUTPUT_DATASET
-- **Sources (Inputs):**
-  - id_1779327122011 (SQL处理)
-- Position: (800,100)
-- OutputDsName: ads_高层经营驾驶舱
-- ParentDirId: v2b6bde3d41444cfd9e6d7ef
-- ParentDirName: 0523-马甲-demo
-- DataSourceDsId: r9024c50adcdb45c397cde0a
-- DataSourceCreated: true
-- DirPath: 根目录 > 0523-马甲-demo
-- 等价SQL:
-```sql
-SELECT * FROM input1
-```
-
-
----
+- `touch_order_bridge` 中 `订单ID` 必须唯一。
+- 每日 `触达后关联订单数 <= 总订单数`。
+- 每日 `触达后关联销售 <= 总销售`，允许因退款冲销或负金额数据触发例外并进入 DQC 人工核验。
+- `会员销售占比`、`到店销售额占比`、`触达后关联销售占比` 在正常非负订单口径下均应处于 `[0, 1]`。
+- 所有业务日期不得晚于 `as_of_date`。
 
 ## 血缘关系
 
-### 上游资源 (2)
-- **dwd_会员触达** (DATA_SET_FILE)
-  - ID: xc82fb232ecdc474f84cd43d
-- **dwd_订单** (DATA_SET_FILE)
-  - ID: j23ea7e60564e47458b71d82
-
-### 下游资源 (1)
-- **ads_高层经营驾驶舱** (DATA_SET_ETL)
-  - ID: r9024c50adcdb45c397cde0a
+- 上游：`dwd_订单`、`dwd_会员触达`
+- 下游：`ads_高层经营驾驶舱`
