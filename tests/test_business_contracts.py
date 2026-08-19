@@ -271,9 +271,9 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertEqual(25, len(list((ROOT / "ETL/逻辑SQL").glob("*.md"))))
 
         manifest = json.loads(self.read("manifest.json"))
-        self.assertEqual("1.4.1", manifest["version"])
+        self.assertEqual("1.4.2", manifest["version"])
         for relative in ("README.md", "README.en.md", "SKILL.md", "llms.txt"):
-            self.assertIn("1.4.1", self.read(relative), relative)
+            self.assertIn("1.4.2", self.read(relative), relative)
 
     def test_common_bridges_match_etl_window_and_coupon_validity(self):
         touch_bridge = self.read("ETL/公共口径/01_触达订单归因桥.sql")
@@ -383,9 +383,9 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("流失天数上限", lifecycle)
         self.assertIn("会员占比月降幅预警", store_alert)
 
-    def test_business_acceptance_sql_has_sixteen_checks(self):
+    def test_business_acceptance_sql_has_nineteen_checks(self):
         sql = self.read("ETL/公共口径/04_v1.4.1_业务验收.sql")
-        self.assertEqual(16, len(re.findall(r"(?:SELECT|UNION ALL SELECT) '\d{2}'", sql)))
+        self.assertEqual(19, len(re.findall(r"(?:SELECT|UNION ALL SELECT) '\d{2}'", sql)))
         self.assertIn("`留存月份序号` = 'M0'", sql)
         self.assertIn("previous_streak + 1", sql)
         self.assertIn("expected_streak", sql)
@@ -400,6 +400,52 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("单店利润门店月不重复", sql)
         self.assertIn("未完整观察月Mn必须空值", sql)
         self.assertIn("`留存月份序号` <> 'M0'", sql)
+        self.assertIn("新店爬坡门店日不重复", sql)
+        self.assertIn("体验口碑门店日不重复", sql)
+        self.assertIn("规则生成任务同一会员至多一条", sql)
+        self.assertIn("`bridge_规则任务生成`", sql)
+
+    def test_rule_task_generation_has_nine_types_and_arbitration(self):
+        sql = self.read("ETL/公共口径/08_规则任务生成.sql")
+        for task_type in (
+            "流失预警",
+            "负评修复",
+            "沉睡召回",
+            "新会员首单",
+            "首单后二单",
+            "外卖转到店",
+            "堂食老客召回",
+            "高价值维护",
+            "领券未核销",
+        ):
+            self.assertIn(f"'{task_type}'", sql)
+        self.assertIn("DATE_SUB(p.as_of_date, 7)", sql)
+        self.assertIn("负评修复", sql)
+        self.assertIn("WHERE rn = 1", sql)
+        self.assertIn("REGEXP_REPLACE(r.`会员ID`, '[^0-9]', '')", sql)
+        self.assertIn("WHEN r.`任务类型` = '负评修复' THEN 0", sql)
+        self.assertNotIn("CURRENT_DATE", sql)
+        self.assertIn("08_规则任务生成.sql", self.read("ETL/公共口径/README.md"))
+
+    def test_downstream_etls_use_public_bridge_names(self):
+        funnel = self.read("ETL/逻辑SQL/etl_dws_私域转化漏斗 (10节点·F+C+G+C+G+J+C).md")
+        cockpit = self.read("ETL/逻辑SQL/ads_高层经营驾驶舱.md")
+        coupon = self.read("ETL/逻辑SQL/etl_dws_券效益分析.md")
+        activity = self.read("ETL/逻辑SQL/etl_ads_活动权益复盘 (17节点·C+G+F+C+G×2+S+J×3+C).md")
+        for text in (funnel, cockpit, activity):
+            self.assertIn("bridge_触达订单归因 AS", text)
+        self.assertIn("bridge_券核销订单 AS", coupon)
+        self.assertIn("bridge_券核销订单 AS", activity)
+        self.assertIn("bridge_活动参与订单归因 AS", activity)
+        self.assertNotIn("touch_order_bridge AS", funnel)
+        self.assertNotIn("coupon_order_bridge AS", coupon)
+
+    def test_point_in_time_store_joins_dedupe_with_scd_rn(self):
+        for path in (ROOT / "ETL/逻辑SQL").glob("*.md"):
+            text = path.read_text(encoding="utf-8")
+            if "生效起始日期" in text:
+                self.assertIn("scd_rn", text, path.name)
+                self.assertIn("scd_rn = 1", text, path.name)
 
     def test_time_norms_and_cockpit_enforce_scd2_uniqueness(self):
         calendar_sql = self.read("ETL/公共口径/05_门店营业日历.sql")
@@ -415,6 +461,12 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("WHERE s.scd_rn = 1", cockpit)
         self.assertIn("ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC", cockpit)
         self.assertGreaterEqual(cockpit.count("scd_rn = 1"), 2)
+        new_store = self.read("ETL/逻辑SQL/etl_dws_新店爬坡_Comp老店 (8节点·F+C+G+J).md")
+        review = self.read("ETL/逻辑SQL/etl_dws_体验口碑汇总.md")
+        self.assertIn("WHERE scd_rn = 1", new_store)
+        self.assertIn("ORDER BY d.`生效起始日期` DESC, d.`门店版本ID` DESC", new_store)
+        self.assertIn("store_asof AS", review)
+        self.assertGreaterEqual(review.count("WHERE e.scd_rn = 1"), 2)
         common_readme = self.read("ETL/公共口径/README.md")
         self.assertIn("05_门店营业日历.sql", common_readme)
         self.assertIn("06_门店月份骨架.sql", common_readme)

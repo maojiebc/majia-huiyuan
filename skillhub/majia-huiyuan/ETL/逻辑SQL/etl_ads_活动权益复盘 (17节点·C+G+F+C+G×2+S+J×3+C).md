@@ -23,7 +23,7 @@
 1. 券链按 `券ID -> 订单ID` 建立券实例—核销订单桥，不再按发放日、核销日或订单日做同日连接。只有核销日期位于发放日至失效日内的券才是有效核销；同一订单异常命中多张券时，只保留优惠金额最大的券实例。
 2. 触达链先筛选有效触达，再为每笔已完成订单选择下单前最近一次触达；触达晚于下单的记录不能归因。
 3. 活动参与链以成功的 `参与ID` 为归因事件，为每笔订单选择下单前最近一次成功参与。
-4. 触达归因与活动参与归因是两个不同口径：同一订单在每个口径内最多命中一次，不把两条链的 GMV 相加成“总贡献”。
+4. 触达归因与活动参与归因是两个不同口径：同一订单在每个口径内最多命中一次，不把两条链的 GMV 相加成“总贡献”。三条归因 CTE 必须分别命名为 `bridge_券核销订单`、`bridge_触达订单归因`、`bridge_活动参与订单归因`，口径对齐 `ETL/公共口径/`。生产落地时应先物化公共桥再引用。
 5. 指标分层展示：`核销订单GMV` 是券实例直连结果；`触达后关联GMV` / `参与后关联GMV` 是有限窗口关联结果；只有对照实验或准实验才能产生 `增量GMV`。
 6. 当前数据没有对照组标记，也没有完整的触达、渠道等成本，因此 `增量GMV`、`增量ROI` 必须为 `NULL`。`核销GMV成本比` 只是描述性比值，不叫 ROI。
 
@@ -104,7 +104,7 @@ coupon_order_candidates AS (
                           AND COALESCE(c.`失效日期`, DATE '9999-12-31')
     AND c.`核销日期` <= p.`as_of_date`
 ),
-coupon_order_bridge AS (
+bridge_券核销订单 AS (
   SELECT
     `券ID`, `活动ID`, `订单ID`, `订单发生日期`, `实付金额`, `归因规则`, `归因优先级`
   FROM coupon_order_candidates
@@ -115,7 +115,7 @@ coupon_order_agg AS (
     b.`活动ID`,
     COUNT(DISTINCT b.`订单ID`) AS `核销订单数`,
     SUM(b.`实付金额`) AS `核销订单GMV`
-  FROM coupon_order_bridge b
+  FROM bridge_券核销订单 b
   GROUP BY b.`活动ID`
 ),
 valid_touch AS (
@@ -157,7 +157,7 @@ touch_order_candidates AS (
    AND o.`下单时间` >= t.`触达时间`
    AND o.`下单时间` < t.`触达时间` + INTERVAL 8 DAYS
 ),
-touch_order_bridge AS (
+bridge_触达订单归因 AS (
   SELECT
     `订单ID`, `触达ID`, `触达时间`, `下单时间`, `订单发生日期`,
     `会员ID`, `实付金额`, `活动ID`, `归因规则`, `归因优先级`
@@ -170,7 +170,7 @@ touch_order_agg AS (
     COUNT(DISTINCT b.`会员ID`) AS `触达后关联下单人数`,
     COUNT(DISTINCT b.`订单ID`) AS `触达后关联订单数`,
     SUM(b.`实付金额`) AS `触达后关联GMV`
-  FROM touch_order_bridge b
+  FROM bridge_触达订单归因 b
   GROUP BY b.`活动ID`
 ),
 valid_participation AS (
@@ -211,7 +211,7 @@ participation_order_candidates AS (
    AND o.`下单时间` >= a.`参与时间`
    AND o.`下单时间` < a.`参与时间` + INTERVAL 8 DAYS
 ),
-participation_order_bridge AS (
+bridge_活动参与订单归因 AS (
   SELECT
     `订单ID`, `参与ID`, `参与时间`, `下单时间`, `订单发生日期`,
     `会员ID`, `实付金额`, `活动ID`, `归因规则`, `归因优先级`
@@ -224,7 +224,7 @@ participation_order_agg AS (
     COUNT(DISTINCT b.`会员ID`) AS `参与后关联下单人数`,
     COUNT(DISTINCT b.`订单ID`) AS `参与后关联订单数`,
     SUM(b.`实付金额`) AS `参与后关联GMV`
-  FROM participation_order_bridge b
+  FROM bridge_活动参与订单归因 b
   GROUP BY b.`活动ID`
 )
 SELECT
@@ -292,7 +292,7 @@ WHERE a.`开始日期` <= p.`as_of_date`
 
 ## 验收约束
 
-- `coupon_order_bridge`、`touch_order_bridge`、`participation_order_bridge` 各自的 `订单ID` 必须唯一。
+- `bridge_券核销订单`、`bridge_触达订单归因`、`bridge_活动参与订单归因` 各自的 `订单ID` 必须唯一。
 - 每条桥上的 `归因优先级` 必须恒等于 1，归因事件时间不得晚于下单时间。
 - `券核销数 <= 券发放数`，且 `核销订单数 <= 券核销数`。
 - `触达后关联下单人数 <= 触达人数`，`参与后关联下单人数 <= 活动参与人数`。

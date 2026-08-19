@@ -119,9 +119,23 @@ event_day AS (
   FROM review_agg r
   FULL OUTER JOIN complain_agg c
     ON r.`门店ID` = c.`门店ID` AND r.`业务日期` = c.`业务日期`
+),
+store_asof AS (
+  SELECT
+    e.*,
+    s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`,
+    ROW_NUMBER() OVER (
+      PARTITION BY e.`门店ID`, e.`业务日期`
+      ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+    ) AS scd_rn
+  FROM event_day e
+  LEFT JOIN input3 s
+    ON e.`门店ID` = s.`门店ID`
+   AND e.`业务日期` >= s.`生效起始日期`
+   AND e.`业务日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
 )
 SELECT
-  e.`门店ID`, s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`,
+  e.`门店ID`, e.`门店名称`, e.`省份`, e.`城市`, e.`城市层级`, e.`店型`, e.`门店类型`,
   e.`业务日期`,
   COALESCE(e.`评价数`, 0) AS `评价数`,
   e.`平均评分`,
@@ -138,12 +152,9 @@ SELECT
     ELSE '正常'
   END AS `体验风险等级`,
   p.`as_of_date` AS `数据快照日期`
-FROM event_day e
-LEFT JOIN input3 s
-  ON e.`门店ID` = s.`门店ID`
- AND e.`业务日期` >= s.`生效起始日期`
- AND e.`业务日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
+FROM store_asof e
 CROSS JOIN params p
+WHERE e.scd_rn = 1
 ```
 - 等价SQL:
 ```sql
@@ -184,9 +195,23 @@ event_day AS (
   FROM review_agg r
   FULL OUTER JOIN complain_agg c
     ON r.`门店ID` = c.`门店ID` AND r.`业务日期` = c.`业务日期`
+),
+store_asof AS (
+  SELECT
+    e.*,
+    s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`,
+    ROW_NUMBER() OVER (
+      PARTITION BY e.`门店ID`, e.`业务日期`
+      ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+    ) AS scd_rn
+  FROM event_day e
+  LEFT JOIN input3 s
+    ON e.`门店ID` = s.`门店ID`
+   AND e.`业务日期` >= s.`生效起始日期`
+   AND e.`业务日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
 )
 SELECT
-  e.`门店ID`, s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`,
+  e.`门店ID`, e.`门店名称`, e.`省份`, e.`城市`, e.`城市层级`, e.`店型`, e.`门店类型`,
   e.`业务日期`,
   COALESCE(e.`评价数`, 0) AS `评价数`,
   e.`平均评分`,
@@ -203,12 +228,9 @@ SELECT
     ELSE '正常'
   END AS `体验风险等级`,
   p.`as_of_date` AS `数据快照日期`
-FROM event_day e
-LEFT JOIN input3 s
-  ON e.`门店ID` = s.`门店ID`
- AND e.`业务日期` >= s.`生效起始日期`
- AND e.`业务日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
+FROM store_asof e
 CROSS JOIN params p
+WHERE e.scd_rn = 1
 ```
 
 

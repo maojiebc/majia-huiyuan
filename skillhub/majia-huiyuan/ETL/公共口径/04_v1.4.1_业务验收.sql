@@ -1,8 +1,9 @@
 -- Spark 3.4；建议作为 dqc_归因清单对账 的 v1.4.1 扩展节点。
 -- 约定：三条公共事实桥已物化为同名临时视图
---   bridge_触达订单归因 / bridge_券核销订单 / bridge_活动参与订单归因
+--   bridge_触达订单归因 / bridge_券核销订单 / bridge_活动参与订单归因 / bridge_规则任务生成
 -- 每个检查输出异常数，必须为 0。10–15 验收三条桥的唯一性与金额护栏；
--- 23–25 验收门店日/门店月骨架唯一性，以及未完整观察月的空值。
+-- 23–27 验收门店日/门店月/新店爬坡/体验口碑唯一性，以及未完整观察月的空值；
+-- 28 验收规则生成任务同一会员至多一条。
 WITH params AS (
   SELECT DATE '2026-06-24' AS as_of_date
 ),
@@ -190,6 +191,33 @@ cohort_censor_bad AS (
   WHERE `是否完整观察期` = 0
     AND `留存月份序号` <> 'M0'
     AND (`留存人数` IS NOT NULL OR `留存率` IS NOT NULL)
+),
+new_store_day_dup AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT `门店ID`, `业务日期`
+    FROM `dws_新店爬坡_Comp老店`
+    GROUP BY `门店ID`, `业务日期`
+    HAVING COUNT(*) > 1
+  ) x
+),
+review_day_dup AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT `门店ID`, `业务日期`
+    FROM `dws_体验口碑汇总`
+    GROUP BY `门店ID`, `业务日期`
+    HAVING COUNT(*) > 1
+  ) x
+),
+rule_task_dup AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT `会员ID`
+    FROM `bridge_规则任务生成`
+    GROUP BY `会员ID`
+    HAVING COUNT(*) > 1
+  ) x
 )
 SELECT '10' AS `序号`, '归因唯一性' AS `检查类别`, '触达归因订单ID不重复' AS `检查项`,
        '0' AS `期望值`, CAST(bad_count AS STRING) AS `实际值`, IF(bad_count = 0, '通过', '异常') AS `状态` FROM attr_dup
@@ -207,4 +235,7 @@ UNION ALL SELECT '21','时间','事实日期不晚于统一快照','0',CAST(bad_
 UNION ALL SELECT '22','参数','每个会员在快照日恰好命中一条生命周期参数','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM param_bad
 UNION ALL SELECT '23','时间骨架','门店日报门店日不重复','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM store_day_dup
 UNION ALL SELECT '24','时间骨架','单店利润门店月不重复','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM profit_month_dup
-UNION ALL SELECT '25','留存','未完整观察月Mn必须空值','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM cohort_censor_bad;
+UNION ALL SELECT '25','留存','未完整观察月Mn必须空值','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM cohort_censor_bad
+UNION ALL SELECT '26','时间骨架','新店爬坡门店日不重复','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM new_store_day_dup
+UNION ALL SELECT '27','时间骨架','体验口碑门店日不重复','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM review_day_dup
+UNION ALL SELECT '28','任务仲裁','规则生成任务同一会员至多一条','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM rule_task_dup;

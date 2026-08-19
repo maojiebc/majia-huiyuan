@@ -81,6 +81,14 @@ class TimeNormSampleTests(unittest.TestCase):
         keys = [(row["门店ID"], row["月份"]) for row in _read("dws_单店利润月汇总.csv")]
         self.assertEqual(len(keys), len(set(keys)))
 
+    def test_sample_new_store_day_is_unique(self):
+        keys = [(row["门店ID"], row["业务日期"]) for row in _read("dws_新店爬坡_Comp老店.csv")]
+        self.assertEqual(len(keys), len(set(keys)))
+
+    def test_sample_review_day_is_unique(self):
+        keys = [(row["门店ID"], row["业务日期"]) for row in _read("dws_体验口碑汇总.csv")]
+        self.assertEqual(len(keys), len(set(keys)))
+
     def test_sample_incomplete_non_m0_retention_is_null(self):
         rows = _read("dws_会员同期群留存.csv")
         incomplete = [
