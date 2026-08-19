@@ -143,24 +143,35 @@ GROUP BY `门店ID`, CAST(`业务日期` AS DATE), `数据快照日期`
 - Position: (1043,64)
 - 等价SQL:
 ```sql
+WITH matched AS (
+  SELECT
+    f.`门店ID`,
+    d.`门店名称`,
+    d.`城市`,
+    d.`城市层级`,
+    d.`店型`,
+    d.`商圈`,
+    CAST(d.`开业日期` AS DATE) AS `开业日期`,
+    f.`业务日期`,
+    f.`订单数`,
+    f.`销售额`,
+    f.`会员订单数`,
+    f.`数据快照日期`,
+    ROW_NUMBER() OVER (
+      PARTITION BY f.`门店ID`, f.`业务日期`
+      ORDER BY d.`生效起始日期` DESC, d.`门店版本ID` DESC
+    ) AS scd_rn
+  FROM input1 f
+  LEFT OUTER JOIN input2 d
+    ON f.`门店ID` = d.`门店ID`
+   AND f.`业务日期` >= CAST(d.`生效起始日期` AS DATE)
+   AND f.`业务日期` <= COALESCE(CAST(d.`生效截止日期` AS DATE), DATE '9999-12-31')
+)
 SELECT
-  f.`门店ID`,
-  d.`门店名称`,
-  d.`城市`,
-  d.`城市层级`,
-  d.`店型`,
-  d.`商圈`,
-  CAST(d.`开业日期` AS DATE) AS `开业日期`,
-  f.`业务日期`,
-  f.`订单数`,
-  f.`销售额`,
-  f.`会员订单数`,
-  f.`数据快照日期`
-FROM input1 f
-LEFT OUTER JOIN input2 d
-  ON f.`门店ID` = d.`门店ID`
- AND f.`业务日期` >= CAST(d.`生效起始日期` AS DATE)
- AND f.`业务日期` <= COALESCE(CAST(d.`生效截止日期` AS DATE), DATE '9999-12-31')
+  `门店ID`, `门店名称`, `城市`, `城市层级`, `店型`, `商圈`,
+  `开业日期`, `业务日期`, `订单数`, `销售额`, `会员订单数`, `数据快照日期`
+FROM matched
+WHERE scd_rn = 1
 ```
 
 
