@@ -141,12 +141,26 @@ review_daily AS (
   WHERE r.`评价日期` <= p.`as_of_date`
   GROUP BY r.`门店ID`, r.`评价日期`
 ),
+store_asof AS (
+  SELECT
+    b.`门店ID`, b.`业务日期`, b.`数据快照日期`,
+    s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`, s.`商圈`, s.`开业日期`,
+    ROW_NUMBER() OVER (
+      PARTITION BY b.`门店ID`, b.`业务日期`
+      ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+    ) AS scd_rn
+  FROM store_calendar b
+  LEFT JOIN input2 s
+    ON b.`门店ID` = s.`门店ID`
+   AND b.`业务日期` >= s.`生效起始日期`
+   AND b.`业务日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
+),
 joined AS (
   SELECT
-    b.`门店ID`, s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`, s.`商圈`,
-    CASE WHEN DATEDIFF(b.`业务日期`, s.`开业日期`) BETWEEN 0 AND 89 THEN 'TRUE' ELSE 'FALSE' END AS `是否90天内新店`,
-    CASE WHEN DATEDIFF(b.`业务日期`, s.`开业日期`) BETWEEN 0 AND 89 THEN '90天新店' ELSE '成熟店' END AS `新店标签`,
-    b.`业务日期`, COALESCE(o.`订单数`, 0) AS `订单数`, COALESCE(o.`销售额`, 0) AS `销售额`,
+    s.`门店ID`, s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`, s.`商圈`,
+    CASE WHEN DATEDIFF(s.`业务日期`, s.`开业日期`) BETWEEN 0 AND 89 THEN 'TRUE' ELSE 'FALSE' END AS `是否90天内新店`,
+    CASE WHEN DATEDIFF(s.`业务日期`, s.`开业日期`) BETWEEN 0 AND 89 THEN '90天新店' ELSE '成熟店' END AS `新店标签`,
+    s.`业务日期`, COALESCE(o.`订单数`, 0) AS `订单数`, COALESCE(o.`销售额`, 0) AS `销售额`,
     CASE WHEN COALESCE(o.`订单数`, 0) > 0 THEN o.`销售额` / o.`订单数` ELSE NULL END AS `平均客单价_基线口径`,
     COALESCE(o.`会员订单数`, 0) AS `会员订单数`, COALESCE(o.`到店订单数`, 0) AS `到店订单数`,
     COALESCE(o.`外卖订单数`, 0) AS `外卖订单数`,
@@ -156,14 +170,11 @@ joined AS (
     COALESCE(r.`当日评分`, 5) AS `当日评分`, COALESCE(r.`当日评价数`, 0) AS `当日评价数`,
     COALESCE(r.`未回复负评数`, 0) AS `未回复负评数`,
     COALESCE(o.`折扣总额`, 0) AS `折扣总额`, COALESCE(o.`原价总额`, 0) AS `原价总额`,
-    b.`数据快照日期`
-  FROM store_calendar b
-  LEFT JOIN input2 s
-    ON b.`门店ID` = s.`门店ID`
-   AND b.`业务日期` >= s.`生效起始日期`
-   AND b.`业务日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
-  LEFT JOIN order_daily o ON b.`门店ID` = o.`门店ID` AND b.`业务日期` = o.`业务日期`
-  LEFT JOIN review_daily r ON b.`门店ID` = r.`门店ID` AND b.`业务日期` = r.`业务日期`
+    s.`数据快照日期`
+  FROM store_asof s
+  LEFT JOIN order_daily o ON s.`门店ID` = o.`门店ID` AND s.`业务日期` = o.`业务日期`
+  LEFT JOIN review_daily r ON s.`门店ID` = r.`门店ID` AND s.`业务日期` = r.`业务日期`
+  WHERE s.scd_rn = 1
 ),
 with_baseline AS (
   SELECT *,
@@ -252,12 +263,26 @@ review_daily AS (
   WHERE r.`评价日期` <= p.`as_of_date`
   GROUP BY r.`门店ID`, r.`评价日期`
 ),
+store_asof AS (
+  SELECT
+    b.`门店ID`, b.`业务日期`, b.`数据快照日期`,
+    s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`, s.`商圈`, s.`开业日期`,
+    ROW_NUMBER() OVER (
+      PARTITION BY b.`门店ID`, b.`业务日期`
+      ORDER BY s.`生效起始日期` DESC, s.`门店版本ID` DESC
+    ) AS scd_rn
+  FROM store_calendar b
+  LEFT JOIN input2 s
+    ON b.`门店ID` = s.`门店ID`
+   AND b.`业务日期` >= s.`生效起始日期`
+   AND b.`业务日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
+),
 joined AS (
   SELECT
-    b.`门店ID`, s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`, s.`商圈`,
-    CASE WHEN DATEDIFF(b.`业务日期`, s.`开业日期`) BETWEEN 0 AND 89 THEN 'TRUE' ELSE 'FALSE' END AS `是否90天内新店`,
-    CASE WHEN DATEDIFF(b.`业务日期`, s.`开业日期`) BETWEEN 0 AND 89 THEN '90天新店' ELSE '成熟店' END AS `新店标签`,
-    b.`业务日期`, COALESCE(o.`订单数`, 0) AS `订单数`, COALESCE(o.`销售额`, 0) AS `销售额`,
+    s.`门店ID`, s.`门店名称`, s.`省份`, s.`城市`, s.`城市层级`, s.`店型`, s.`门店类型`, s.`商圈`,
+    CASE WHEN DATEDIFF(s.`业务日期`, s.`开业日期`) BETWEEN 0 AND 89 THEN 'TRUE' ELSE 'FALSE' END AS `是否90天内新店`,
+    CASE WHEN DATEDIFF(s.`业务日期`, s.`开业日期`) BETWEEN 0 AND 89 THEN '90天新店' ELSE '成熟店' END AS `新店标签`,
+    s.`业务日期`, COALESCE(o.`订单数`, 0) AS `订单数`, COALESCE(o.`销售额`, 0) AS `销售额`,
     CASE WHEN COALESCE(o.`订单数`, 0) > 0 THEN o.`销售额` / o.`订单数` ELSE NULL END AS `平均客单价_基线口径`,
     COALESCE(o.`会员订单数`, 0) AS `会员订单数`, COALESCE(o.`到店订单数`, 0) AS `到店订单数`,
     COALESCE(o.`外卖订单数`, 0) AS `外卖订单数`,
@@ -267,14 +292,11 @@ joined AS (
     COALESCE(r.`当日评分`, 5) AS `当日评分`, COALESCE(r.`当日评价数`, 0) AS `当日评价数`,
     COALESCE(r.`未回复负评数`, 0) AS `未回复负评数`,
     COALESCE(o.`折扣总额`, 0) AS `折扣总额`, COALESCE(o.`原价总额`, 0) AS `原价总额`,
-    b.`数据快照日期`
-  FROM store_calendar b
-  LEFT JOIN input2 s
-    ON b.`门店ID` = s.`门店ID`
-   AND b.`业务日期` >= s.`生效起始日期`
-   AND b.`业务日期` <= COALESCE(s.`生效截止日期`, DATE '9999-12-31')
-  LEFT JOIN order_daily o ON b.`门店ID` = o.`门店ID` AND b.`业务日期` = o.`业务日期`
-  LEFT JOIN review_daily r ON b.`门店ID` = r.`门店ID` AND b.`业务日期` = r.`业务日期`
+    s.`数据快照日期`
+  FROM store_asof s
+  LEFT JOIN order_daily o ON s.`门店ID` = o.`门店ID` AND s.`业务日期` = o.`业务日期`
+  LEFT JOIN review_daily r ON s.`门店ID` = r.`门店ID` AND s.`业务日期` = r.`业务日期`
+  WHERE s.scd_rn = 1
 ),
 with_baseline AS (
   SELECT *,

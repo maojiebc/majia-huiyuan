@@ -1,5 +1,8 @@
 -- Spark 3.4；建议作为 dqc_归因清单对账 的 v1.4.1 扩展节点。
--- 约定：三条公共事实桥已物化为同名临时视图；每个检查输出异常数，必须为 0。
+-- 约定：三条公共事实桥已物化为同名临时视图
+--   bridge_触达订单归因 / bridge_券核销订单 / bridge_活动参与订单归因
+-- 每个检查输出异常数，必须为 0。10–15 验收三条桥的唯一性与金额护栏；
+-- 23–25 验收门店日/门店月骨架唯一性，以及未完整观察月的空值。
 WITH params AS (
   SELECT DATE '2026-06-24' AS as_of_date
 ),
@@ -12,6 +15,32 @@ attr_dup AS (
     HAVING COUNT(*) > 1
   ) x
 ),
+coupon_dup AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT `订单ID`
+    FROM `bridge_券核销订单`
+    GROUP BY `订单ID`
+    HAVING COUNT(*) > 1
+  ) x
+),
+participation_dup AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT `订单ID`
+    FROM `bridge_活动参与订单归因`
+    GROUP BY `订单ID`
+    HAVING COUNT(*) > 1
+  ) x
+),
+eligible_order_gmv AS (
+  SELECT `业务日期`, SUM(`实付金额`) AS gmv
+  FROM `dwd_订单`
+  CROSS JOIN params p
+  WHERE `订单状态` = '已完成'
+    AND `业务日期` <= p.as_of_date
+  GROUP BY `业务日期`
+),
 attr_gmv_over AS (
   SELECT COUNT(*) AS bad_count
   FROM (
@@ -21,14 +50,33 @@ attr_gmv_over AS (
       FROM `bridge_触达订单归因`
       GROUP BY `订单日期`
     ) a
-    JOIN (
-      SELECT `业务日期`, SUM(`实付金额`) AS gmv
-      FROM `dwd_订单`
-      CROSS JOIN params p
-      WHERE `订单状态` = '已完成'
-        AND `业务日期` <= p.as_of_date
-      GROUP BY `业务日期`
-    ) o ON a.`订单日期` = o.`业务日期`
+    JOIN eligible_order_gmv o ON a.`订单日期` = o.`业务日期`
+    WHERE a.gmv > o.gmv
+  ) x
+),
+coupon_gmv_over AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT a.`订单日期`
+    FROM (
+      SELECT `订单日期`, SUM(`核销订单GMV`) AS gmv
+      FROM `bridge_券核销订单`
+      GROUP BY `订单日期`
+    ) a
+    JOIN eligible_order_gmv o ON a.`订单日期` = o.`业务日期`
+    WHERE a.gmv > o.gmv
+  ) x
+),
+participation_gmv_over AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT a.`订单日期`
+    FROM (
+      SELECT `订单日期`, SUM(`实付金额`) AS gmv
+      FROM `bridge_活动参与订单归因`
+      GROUP BY `订单日期`
+    ) a
+    JOIN eligible_order_gmv o ON a.`订单日期` = o.`业务日期`
     WHERE a.gmv > o.gmv
   ) x
 ),
@@ -117,14 +165,46 @@ param_bad AS (
     GROUP BY m.`会员ID`
     HAVING COUNT(p.`会员类型`) <> 1
   ) x
+),
+store_day_dup AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT `门店ID`, `业务日期`
+    FROM `dws_门店日报`
+    GROUP BY `门店ID`, `业务日期`
+    HAVING COUNT(*) > 1
+  ) x
+),
+profit_month_dup AS (
+  SELECT COUNT(*) AS bad_count
+  FROM (
+    SELECT `门店ID`, `月份`
+    FROM `dws_单店利润月汇总`
+    GROUP BY `门店ID`, `月份`
+    HAVING COUNT(*) > 1
+  ) x
+),
+cohort_censor_bad AS (
+  SELECT COUNT(*) AS bad_count
+  FROM `dws_会员同期群留存`
+  WHERE `是否完整观察期` = 0
+    AND `留存月份序号` <> 'M0'
+    AND (`留存人数` IS NOT NULL OR `留存率` IS NOT NULL)
 )
 SELECT '10' AS `序号`, '归因唯一性' AS `检查类别`, '触达归因订单ID不重复' AS `检查项`,
        '0' AS `期望值`, CAST(bad_count AS STRING) AS `实际值`, IF(bad_count = 0, '通过', '异常') AS `状态` FROM attr_dup
-UNION ALL SELECT '11','金额护栏','归因GMV不大于同期已完成订单GMV','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM attr_gmv_over
-UNION ALL SELECT '12','留存','M0=同期群人数且Mn不超过M0','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM cohort_bad
-UNION ALL SELECT '13','利润骨架','零销售但有成本的门店月份仍存在','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM zero_sale_cost_missing
-UNION ALL SELECT '14','连续性','连续亏损在盈利月或月份断点后重置','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM loss_streak_bad
-UNION ALL SELECT '15','回本','回本日期/状态/剩余月数合法','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM payback_bad
-UNION ALL SELECT '16','SCD2','事实日期只命中一个门店版本','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM scd2_bad
-UNION ALL SELECT '17','时间','事实日期不晚于统一快照','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM late_fact_bad
-UNION ALL SELECT '18','参数','每个会员在快照日恰好命中一条生命周期参数','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM param_bad;
+UNION ALL SELECT '11','归因唯一性','券核销订单ID不重复','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM coupon_dup
+UNION ALL SELECT '12','归因唯一性','活动参与归因订单ID不重复','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM participation_dup
+UNION ALL SELECT '13','金额护栏','触达归因GMV不大于同期已完成订单GMV','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM attr_gmv_over
+UNION ALL SELECT '14','金额护栏','券核销GMV不大于同期已完成订单GMV','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM coupon_gmv_over
+UNION ALL SELECT '15','金额护栏','活动归因GMV不大于同期已完成订单GMV','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM participation_gmv_over
+UNION ALL SELECT '16','留存','M0=同期群人数且Mn不超过M0','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM cohort_bad
+UNION ALL SELECT '17','利润骨架','零销售但有成本的门店月份仍存在','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM zero_sale_cost_missing
+UNION ALL SELECT '18','连续性','连续亏损在盈利月或月份断点后重置','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM loss_streak_bad
+UNION ALL SELECT '19','回本','回本日期/状态/剩余月数合法','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM payback_bad
+UNION ALL SELECT '20','SCD2','事实日期只命中一个门店版本','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM scd2_bad
+UNION ALL SELECT '21','时间','事实日期不晚于统一快照','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM late_fact_bad
+UNION ALL SELECT '22','参数','每个会员在快照日恰好命中一条生命周期参数','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM param_bad
+UNION ALL SELECT '23','时间骨架','门店日报门店日不重复','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM store_day_dup
+UNION ALL SELECT '24','时间骨架','单店利润门店月不重复','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM profit_month_dup
+UNION ALL SELECT '25','留存','未完整观察月Mn必须空值','0',CAST(bad_count AS STRING),IF(bad_count=0,'通过','异常') FROM cohort_censor_bad;
