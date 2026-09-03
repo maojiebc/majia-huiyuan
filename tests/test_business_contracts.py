@@ -271,9 +271,9 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertEqual(25, len(list((ROOT / "ETL/逻辑SQL").glob("*.md"))))
 
         manifest = json.loads(self.read("manifest.json"))
-        self.assertEqual("1.4.2", manifest["version"])
+        self.assertEqual("1.4.3", manifest["version"])
         for relative in ("README.md", "README.en.md", "SKILL.md", "llms.txt"):
-            self.assertIn("1.4.2", self.read(relative), relative)
+            self.assertIn("1.4.3", self.read(relative), relative)
 
     def test_common_bridges_match_etl_window_and_coupon_validity(self):
         touch_bridge = self.read("ETL/公共口径/01_触达订单归因桥.sql")

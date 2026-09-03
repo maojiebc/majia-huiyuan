@@ -1,6 +1,6 @@
 # majia-huiyuan · 会员运营家底（开源样板间）
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.4.2-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.4.3-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
@@ -31,9 +31,10 @@
 | 理解某条 ETL 的加工逻辑和 SQL 口径 | [ETL/逻辑SQL/](./ETL/逻辑SQL/) 按表名找对应 md |
 | 搭观远 BI，理解原 workshop DAG / 布局 | [ETL/原始JSON/](./ETL/原始JSON/) + [数据集/原始JSON/](./数据集/原始JSON/) + [看板/页面JSON/](./看板/页面JSON/)（均为历史快照，不含 v1.4.1 字段修复；资源 ID 也不可移植） |
 | 用 AI 工具直接问会员数据问题 | [SKILL.md](./SKILL.md) 装成 Agent Skill，或把仓库地址扔给 AI |
+| 发布到 WorkBuddy 开放平台 | [workbuddy/README.md](./workbuddy/README.md) → 生成自包含单专家 ZIP，并先跑平台契约测试 |
 | 先看故事再翻表 | [分享/区域运营的一天/](./分享/区域运营的一天/README.md) |
 
-> **v1.4.2 可信边界：**`ETL/逻辑SQL/`、[`ETL/公共口径/`](./ETL/公共口径/) 与 `看板/页面文档/` 是当前校正后的参考口径；仍需用自家数据验证后再生产化。`*/原始JSON/` 和 `看板/页面JSON/` 是 2026-06-24 的 workshop 历史快照，保留用于审计原 DAG / 布局，**未同步改造成可直接导入包**，其中仍可能出现旧字段名。当前 SQL 定位是“待验证示例”，不是标准答案。未做 Spark 全量回放。
+> **v1.4.3 可信边界：**`ETL/逻辑SQL/`、[`ETL/公共口径/`](./ETL/公共口径/) 与 `看板/页面文档/` 是当前校正后的参考口径；本次只新增 WorkBuddy 发布适配，会员数据逻辑沿用 v1.4.2，仍需用自家数据验证后再生产化。`*/原始JSON/` 和 `看板/页面JSON/` 是 2026-06-24 的 workshop 历史快照，保留用于审计原 DAG / 布局，**未同步改造成可直接导入包**，其中仍可能出现旧字段名。当前 SQL 定位是“待验证示例”，不是标准答案。未做 Spark 全量回放。
 
 ---
 
@@ -269,15 +270,11 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 
 ## 📋 版本记录
 
-**最新：V1.4.2** (2026-08-19) — **验收与任务生成加固**：三条事实桥都验收唯一性与金额护栏；抽出门店营业日历、月份骨架和 SCD2 规范；堵住指挥台、新店爬坡、体验口碑的版本重叠膨胀；规则任务九类圈选、防打扰、仲裁与 10% holdout；下游归因 CTE 对齐公共桥名。业务验收扩到 19 项。SQL 仍是待验证示例，未做 Spark 全量回放。
+**最新：V1.4.3** (2026-09-03) — **WorkBuddy 发布适配**：新增单专家配置、审核头像、自包含 ZIP 构建器与 6 项平台契约测试；加入专家名称不超过 15 字的实际解析限制。会员数据口径与 V1.4.2 保持一致。
+
+**V1.4.2** (2026-08-19) — **验收与任务生成加固**：三条事实桥都验收唯一性与金额护栏；抽出门店营业日历、月份骨架和 SCD2 规范；堵住指挥台、新店爬坡、体验口碑的版本重叠膨胀；规则任务九类圈选、防打扰、仲裁与 10% holdout；下游归因 CTE 对齐公共桥名。业务验收扩到 19 项。SQL 仍是待验证示例，未做 Spark 全量回放。
 
 **V1.4.1** (2026-08-09) — **业务正确性修复**：重做触达、券实例、活动参与三条订单事实桥；统一 `as_of_date` 和 SCD2 时间关联；修复同期群留存、零销售成本月、连续亏损、加盟回本、零订单日和投诉-only 日期；拆分误名参数表；新增 9 项业务不变量回归测试、GitHub Actions 与发布包漂移检查。SQL 对外定位从“可直接复制”调整为“待验证示例”。
-
-**V1.4.0** (2026-08-07) — **能力边界深挖**：SKILL.md 十类活（新增"业务动作的数据依据"与"CDP/标签体系"两类）；公式库新增第 10 册《任务与触达回收》；与 majia-siyu 的边界改为"同一动作两半"协同。
-
-**V1.3.2** (2026-07-28) — **触发边界修复**：聚焦会员数据、指标口径、SQL、数仓与看板；私域内容、触达和经营动作明确交给 `majia-siyu`。
-
-**V1.3.1** (2026-07-23) — **文档装修**：新增功能架构图（`docs/architecture.svg` + PNG，三大资产 / 五层数仓 / 八类活一图看全）、README.en.md 英文版、品牌后缀「· 马甲实战版」pixel-perfect 落到各展示面。内容零改动。
 
 完整历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
 

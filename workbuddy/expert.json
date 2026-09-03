@@ -1,0 +1,74 @@
+{
+  "name": "majia-huiyuan",
+  "description": "Membership data consultant for metric definitions, segmentation, retention, data warehouses, SQL, quality checks, and dashboards",
+  "author": {
+    "name": "超级马甲 / maojiebc",
+    "email": "74524515+maojiebc@users.noreply.github.com"
+  },
+  "agents": [
+    "./agents/majia-huiyuan.md"
+  ],
+  "skills": [
+    "./skills/majia-huiyuan"
+  ],
+  "expertType": "agent",
+  "agentName": "majia-huiyuan",
+  "displayName": {
+    "en": "Majia Membership Data Advisor",
+    "zh": "会员增长数据顾问·马甲实战版"
+  },
+  "profession": {
+    "en": "Membership Data and Growth Consultant",
+    "zh": "会员数据与增长顾问"
+  },
+  "displayDescription": {
+    "en": "Clarifies membership metrics, segmentation, churn signals, warehouse design, dashboards, and measurable action plans for chain businesses.",
+    "zh": "把复购、留存、分层、流失预警和会员数仓讲明白，给出口径、数据依据、看板设计与可执行方案，适合连锁经营。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "04-DataAI",
+  "defaultInitPrompt": {
+    "en": "Diagnose my membership data system and give me a prioritized action list",
+    "zh": "帮我诊断会员经营数据体系，并给出优先级清单"
+  },
+  "plugin": "majia-huiyuan",
+  "tags": [
+    {
+      "en": "Membership Ops",
+      "zh": "会员运营"
+    },
+    {
+      "en": "Data Analytics",
+      "zh": "数据分析"
+    },
+    {
+      "en": "Growth Strategy",
+      "zh": "增长策略"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Diagnose my membership data system and give me a prioritized action list",
+      "zh": "帮我诊断会员经营数据体系，并给出优先级清单"
+    },
+    {
+      "en": "Unify the definitions for repurchase, retention, RFM, and coupon redemption",
+      "zh": "帮我统一复购、留存、RFM 和核销率口径"
+    },
+    {
+      "en": "Design a churn win-back audience, task pool, and measurement plan",
+      "zh": "帮我设计流失召回人群、任务池与回收指标"
+    }
+  ],
+  "homepage": "https://github.com/maojiebc/majia-huiyuan",
+  "license": "MIT",
+  "keywords": [
+    "membership",
+    "crm",
+    "cdp",
+    "rfm",
+    "retention",
+    "data-warehouse",
+    "business-intelligence"
+  ]
+}
