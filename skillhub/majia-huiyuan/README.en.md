@@ -1,6 +1,6 @@
 # majia-huiyuan · Membership Ops Playbook <!-- plain-ok -->
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.4.3-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.4.4-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
@@ -51,7 +51,7 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.claude/skills/majia-h
 - Up to 200 simulated rows per table (parameter and naturally small tables keep their actual sample size); full scale (80k members, 1.29M orders) is noted in each structure-definition file.
 - Structures, fields, and calibers are citable; **numbers must never be used as real business data**.
 - SQL dialect is Spark 3.4 — mind function differences on other engines.
-- v1.4.3 only adds WorkBuddy release packaging; its SQL remains the v1.4.2 **reference example that still requires validation** against your own schemas, edge cases, and controls. It is not drop-in production code, and Spark full replay of the 1.29M-order sample has not been run.
+- v1.4.4 improves WorkBuddy packaging and knowledge navigation; its SQL remains the v1.4.2 **reference example that still requires validation** against your own schemas, edge cases, and controls. It is not drop-in production code, and Spark full replay of the 1.29M-order sample has not been run.
 - `*/原始JSON/` and `看板/页面JSON/` are historical v1.4.0 workshop snapshots and do not contain the v1.4.1 logic or field corrections; they are not drop-in import bundles.
 - Where a structure file retains historical platform fields, its top-level `v1.4.1 结构覆盖` note is authoritative; current CSV sample headers follow that override.
 
@@ -64,9 +64,10 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.claude/skills/majia-h
 
 ## Version History
 
+- **v1.4.4** (2026-09-07): Three practical entry scenarios, corrected package links and platform labels, pre-build validation, reproducible ZIPs, archive-content verification, and preservation of previous output on build failure.
+
 - **v1.4.3** (2026-09-03): WorkBuddy release adapter — single-expert metadata, a review-ready avatar, a self-contained ZIP builder, six platform contract tests, and a regression guard for the platform's 15-character expert-name limit. Membership data logic is unchanged from v1.4.2.
 - **v1.4.2** (2026-08-19): Acceptance and task-generation hardening — uniqueness and GMV caps for all three fact bridges; extracted store calendar, month skeleton, and SCD2 join specs; stopped SCD2 fan-out on the daily cockpit, new-store ramp, and review summary; rule-based NBA generation with anti-disturb, priority arbitration, and 10% holdout; downstream attribution CTEs renamed to the public bridge names. Business acceptance now has 19 checks. SQL remains a reference example; Spark full replay has not been run.
-- **v1.4.1** (2026-08-09): Business-correctness release — canonical touch/order, coupon-instance/order, and activity/order bridges; one-clock `as_of_date`; point-in-time SCD2 joins; corrected cohort retention, zero-sales cost months, consecutive losses, franchise payback, zero-order days, and complaint-only dates; split the mislabeled parameter table; added nine business-invariant regression checks, GitHub Actions, and bundle-drift verification. Copy-paste production claims were removed.
 
 Full history: [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases).
 

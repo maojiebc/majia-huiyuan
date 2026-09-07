@@ -1,6 +1,6 @@
 # majia-huiyuan · 会员运营家底（开源样板间）
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.4.3-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.4.4-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
@@ -34,7 +34,7 @@
 | 发布到 WorkBuddy 开放平台 | [workbuddy/README.md](./workbuddy/README.md) → 生成自包含单专家 ZIP，并先跑平台契约测试 |
 | 先看故事再翻表 | [分享/区域运营的一天/](./分享/区域运营的一天/README.md) |
 
-> **v1.4.3 可信边界：**`ETL/逻辑SQL/`、[`ETL/公共口径/`](./ETL/公共口径/) 与 `看板/页面文档/` 是当前校正后的参考口径；本次只新增 WorkBuddy 发布适配，会员数据逻辑沿用 v1.4.2，仍需用自家数据验证后再生产化。`*/原始JSON/` 和 `看板/页面JSON/` 是 2026-06-24 的 workshop 历史快照，保留用于审计原 DAG / 布局，**未同步改造成可直接导入包**，其中仍可能出现旧字段名。当前 SQL 定位是“待验证示例”，不是标准答案。未做 Spark 全量回放。
+> **v1.4.4 可信边界：**`ETL/逻辑SQL/`、[`ETL/公共口径/`](./ETL/公共口径/) 与 `看板/页面文档/` 是当前校正后的参考口径；本次改进 WorkBuddy 打包与资料入口，会员数据逻辑沿用 v1.4.2，仍需用自家数据验证后再生产化。`*/原始JSON/` 和 `看板/页面JSON/` 是 2026-06-24 的 workshop 历史快照，保留用于审计原 DAG / 布局，**未同步改造成可直接导入包**，其中仍可能出现旧字段名。当前 SQL 定位是“待验证示例”，不是标准答案。未做 Spark 全量回放。
 
 ---
 
@@ -270,11 +270,12 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 
 ## 📋 版本记录
 
-**最新：V1.4.3** (2026-09-03) — **WorkBuddy 发布适配**：新增单专家配置、审核头像、自包含 ZIP 构建器与 6 项平台契约测试；加入专家名称不超过 15 字的实际解析限制。会员数据口径与 V1.4.2 保持一致。
+**最新：V1.4.4** (2026-09-07) — **使用与打包修复**：补齐三个实战问题入口；修复包内链接与平台称呼；构建前校验名称、头像和路径；ZIP 可重复生成、实际内容校验与失败保护。
+
+**V1.4.3** (2026-09-03) — **WorkBuddy 发布适配**：新增单专家配置、审核头像、自包含 ZIP 构建器与 6 项平台契约测试；加入专家名称不超过 15 字的实际解析限制。会员数据口径与 V1.4.2 保持一致。
 
 **V1.4.2** (2026-08-19) — **验收与任务生成加固**：三条事实桥都验收唯一性与金额护栏；抽出门店营业日历、月份骨架和 SCD2 规范；堵住指挥台、新店爬坡、体验口碑的版本重叠膨胀；规则任务九类圈选、防打扰、仲裁与 10% holdout；下游归因 CTE 对齐公共桥名。业务验收扩到 19 项。SQL 仍是待验证示例，未做 Spark 全量回放。
 
-**V1.4.1** (2026-08-09) — **业务正确性修复**：重做触达、券实例、活动参与三条订单事实桥；统一 `as_of_date` 和 SCD2 时间关联；修复同期群留存、零销售成本月、连续亏损、加盟回本、零订单日和投诉-only 日期；拆分误名参数表；新增 9 项业务不变量回归测试、GitHub Actions 与发布包漂移检查。SQL 对外定位从“可直接复制”调整为“待验证示例”。
 
 完整历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
 

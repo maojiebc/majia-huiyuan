@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import json
+import importlib.util
 import os
+import posixpath
 from pathlib import Path
 import re
 import struct
@@ -11,11 +13,16 @@ import sys
 import tempfile
 from typing import Any, ClassVar
 import unittest
+from unittest import mock
 import zipfile
+from urllib.parse import unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD_SCRIPT = ROOT / "tools/build_workbuddy_bundle.py"
+SPEC = importlib.util.spec_from_file_location("workbuddy_builder", BUILD_SCRIPT)
+BUILDER = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(BUILDER)
 
 
 def _run(command: list[object], *, cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -190,6 +197,146 @@ class WorkBuddyBundleTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, _output(result))
         self.assertIn("临时构建校验通过", result.stdout)
         self.assertFalse(missing_output.exists())
+
+    def test_zip_is_reproducible_despite_file_timestamp_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            bundle = root / "custom-output"
+            bundle.mkdir()
+            source = bundle / "README.md"
+            source.write_text("same content", encoding="utf-8")
+            os.utime(source, (1_600_000_000, 1_600_000_000))
+            BUILDER._write_archive(bundle, root / "one.zip")
+            os.utime(source, (1_700_000_000, 1_700_000_000))
+            BUILDER._write_archive(bundle, root / "two.zip")
+            self.assertEqual((root / "one.zip").read_bytes(), (root / "two.zip").read_bytes())
+            with zipfile.ZipFile(root / "one.zip") as archive:
+                self.assertEqual(archive.namelist(), ["majia-huiyuan/README.md"])
+
+    def test_check_rejects_corrupt_or_stale_archive(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / "broken.zip"
+            for payload in (b"broken zip",):
+                archive.write_bytes(payload)
+                result = _run([sys.executable, BUILD_SCRIPT, "--check", "--output", self.bundle,
+                               "--archive", archive], cwd=root)
+                self.assertNotEqual(result.returncode, 0, _output(result))
+            with zipfile.ZipFile(archive, "w") as target:
+                target.writestr("majia-huiyuan/README.md", "stale")
+            result = _run([sys.executable, BUILD_SCRIPT, "--check", "--output", self.bundle,
+                           "--archive", archive], cwd=root)
+            self.assertNotEqual(result.returncode, 0, _output(result))
+
+    def test_build_preserves_unrelated_output_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "documents"
+            output.mkdir()
+            sentinel = output / "my-notes.txt"
+            sentinel.write_text("keep me", encoding="utf-8")
+            with self.assertRaises(ValueError):
+                BUILDER.build(output, root / "bundle.zip")
+            self.assertEqual(sentinel.read_text(), "keep me")
+
+    def test_invalid_manifest_is_rejected_before_replacing_previous_bundle(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output, archive = root / "bundle", root / "bundle.zip"
+            BUILDER.build(output, archive)
+            previous = archive.read_bytes()
+            manifest = BUILDER._read_manifest()
+            for value in ("名" * 16, ""):
+                manifest["displayName"]["zh"] = value
+                with mock.patch.object(BUILDER, "_read_manifest", return_value=manifest):
+                    with self.assertRaises(ValueError):
+                        BUILDER.build(output, archive)
+                self.assertEqual(archive.read_bytes(), previous)
+
+    def test_bundle_identifies_workbuddy_and_has_its_own_entrypoint(self):
+        text = (self.bundle / "skills/majia-huiyuan/SKILL.md").read_text()
+        self.assertNotIn("SkillHub 为文本精简包", text)
+        readme = (self.bundle / "README.md").read_text()
+        self.assertIn("skills/majia-huiyuan/SKILL.md", readme)
+        self.assertTrue((self.bundle / "skills/majia-huiyuan/公式库/实战问题入口.md").is_file())
+
+    def test_absent_source_links_point_to_versioned_github(self):
+        readme = (self.bundle / "skills/majia-huiyuan/README.md").read_text()
+        version = _json_object(ROOT / "manifest.json")["version"]
+        self.assertIn(f"https://github.com/maojiebc/majia-huiyuan/blob/v{version}/workbuddy/README.md", readme)
+        self.assertNotIn("](./数据集/数据样本/)", readme)
+        self.assertIn("](./LICENSE.md)", readme)
+
+    def test_unsafe_targets_and_symlinks_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            target = root / "existing"
+            target.mkdir()
+            (target / "keep.txt").write_text("keep")
+            link = root / "link"
+            link.symlink_to(target, target_is_directory=True)
+            for output, archive in ((ROOT, root / "out.zip"),
+                                    (root / "new", ROOT / "manifest.json"),
+                                    (root / "new", root / "new" / "recursive.zip"),
+                                    (link, root / "out.zip")):
+                with self.subTest(output=output, archive=archive):
+                    with self.assertRaises(ValueError):
+                        BUILDER.build(output, archive)
+            self.assertEqual((target / "keep.txt").read_text(), "keep")
+
+    def test_failed_zip_write_preserves_previous_outputs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output, archive = root / "bundle", root / "bundle.zip"
+            BUILDER.build(output, archive)
+            before, zip_before = BUILDER._snapshot(output), archive.read_bytes()
+            with mock.patch.object(BUILDER, "_write_archive", side_effect=OSError("disk full")):
+                with self.assertRaises(OSError):
+                    BUILDER.build(output, archive)
+            self.assertEqual(BUILDER._snapshot(output), before)
+            self.assertEqual(archive.read_bytes(), zip_before)
+
+    def test_invalid_paths_and_avatar_are_rejected(self):
+        manifest = BUILDER._read_manifest()
+        for key, value in (("agents", ["../outside.md"]), ("skills", ["/tmp/external"]),
+                           ("avatar", "../../outside.png"), ("tags", []), ("version", "99.0.0")):
+            with self.subTest(key=key), mock.patch.dict(manifest, {key: value}):
+                with self.assertRaises(ValueError):
+                    BUILDER._validate_manifest(manifest)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "avatars").mkdir()
+            (root / "avatars/expert.png").write_bytes(b"not a png")
+            with mock.patch.object(BUILDER, "SOURCE", root):
+                with self.assertRaises(ValueError):
+                    BUILDER._validate_manifest(manifest)
+
+    def test_check_rejects_archive_without_output_and_duplicate_entries(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / "duplicate.zip"
+            import warnings
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", UserWarning)
+                with zipfile.ZipFile(archive, "w") as target:
+                    target.writestr("majia-huiyuan/README.md", "one")
+                    target.writestr("majia-huiyuan/README.md", "two")
+            with self.assertRaises(ValueError):
+                BUILDER.check(root / "absent", archive)
+
+    def test_all_local_markdown_link_targets_exist_in_zip(self):
+        with zipfile.ZipFile(self.archive) as archive:
+            names = set(archive.namelist())
+            for name in sorted(names):
+                if not name.endswith((".md", ".txt")):
+                    continue
+                for raw in re.findall(r"\]\(([^\s)]+)\)", archive.read(name).decode("utf-8")):
+                    parsed = urlsplit(raw)
+                    if parsed.scheme or parsed.netloc or not parsed.path:
+                        continue
+                    target = posixpath.normpath(posixpath.join(posixpath.dirname(name), unquote(parsed.path)))
+                    self.assertTrue(target in names or any(n.startswith(target.rstrip("/") + "/") for n in names),
+                                    f"{name}: {raw}")
 
 
 if __name__ == "__main__":

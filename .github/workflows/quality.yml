@@ -24,3 +24,7 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Verify deterministic SkillHub bundle
         run: python tools/build_skillhub_bundle.py --check
+      - name: Build and verify WorkBuddy ZIP
+        run: |
+          python tools/build_workbuddy_bundle.py
+          python tools/build_workbuddy_bundle.py --check
