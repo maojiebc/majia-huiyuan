@@ -3,7 +3,7 @@ name: majia-huiyuan
 description: "会员数据顾问·马甲实战版（majia-huiyuan）。当核心交付物是会员指标口径、RFM、复购/留存/流失公式、核销率、客单价、会员分层/分群、人群圈选、标签体系、CDP、OneID 身份打通、Cohort、CRM/私域数据分析、会员数仓（DIM/DWD/DWS/ADS）、SQL/DDL、字段词典、数据质量、会员看板或观远 BI 复刻时使用。用户提出召回、提频、防流失、流失预警、新客转化、渠道迁移（外卖↔堂食）、导购任务分派等会员运营动作时，动作背后的数据依据（圈谁/何时/力度/派给谁/怎么回收）由本 Skill 负责；动作的执行内容（朋友圈、群发、欢迎语、社群 SOP、企微操作）与私域整盘经营诊断走 majia-siyu——同一动作的两半，先数据后执行。全部数值为模拟数据，仅结构与口径可引用。"
 license: MIT
 metadata:
-  version: "1.4.4"
+  version: "1.4.5"
   author: "超级马甲 / maojiebc"
   homepage: https://github.com/maojiebc/majia-huiyuan
   openclaw:
@@ -77,9 +77,8 @@ metadata:
 
 ## 📋 版本记录
 
-- **v1.4.4**（2026-09-07）使用与打包修复：补齐三个实战问题入口；修复包内链接与平台称呼；构建前校验名称、头像和路径；ZIP 可重复生成、实际内容校验与失败保护。
+- **v1.4.5**（2026-09-14）补齐有效新增、奖励结算、券批次与观察期、开业回收和储值事件；明确模拟示例与经营效果边界。
+- **v1.4.4**（2026-09-07）实战问题入口、包内链接与 WorkBuddy ZIP 检查。
+- **v1.4.3**（2026-09-03）WorkBuddy 单专家适配与平台契约检查。
 
-- **v1.4.3**（2026-09-03）WorkBuddy 发布适配：新增单专家配置、审核头像、自包含 ZIP 构建器与 6 项平台契约测试；补上专家名称不超过 15 字的实际解析限制；会员数据口径与 v1.4.2 保持一致。
-- **v1.4.2**（2026-08-19）验收与任务生成加固：三条事实桥都验收唯一性与金额护栏；抽出营业日历 / 月份骨架 / SCD2 规范；堵住指挥台、新店爬坡、体验口碑的版本重叠膨胀；规则任务九类圈选 + 防打扰 + 仲裁 + 10% holdout；下游归因 CTE 对齐公共桥名。业务验收扩到 19 项。SQL 仍是待验证示例，未做 Spark 全量回放。
-
-完整历史见 [GitHub Releases](https://github.com/maojiebc/majia-huiyuan/releases)。
+完整历史见 [CHANGELOG](https://github.com/maojiebc/majia-huiyuan/blob/main/CHANGELOG.md)。
