@@ -39,7 +39,7 @@ ClickHouse 使用 MergeTree，ORDER BY 取契约中的自然粒度键，可空�
 
 建表成功也不代表 ETL 能跨引擎执行。Spark/MySQL 的 DATEDIFF 使用“结束、开始”，PostgreSQL 常用日期相减，ClickHouse 的 dateDiff 使用“单位、开始、结束”；日期截断和格式化函数也不同。字符串拼接在 Spark/MySQL/ClickHouse 常用 CONCAT，PostgreSQL 可用 CONCAT 或 `||`。移植时须逐段调整原始 Spark SQL 并验证 NULL、时间窗和精度语义。
 
-轻量测试解析四种方言的中文与英文 DDL，并核对原样本粒度唯一性。独立 Spark 测试真实创建英文命名的 55 张表，用声明类型严格读取 30 张微型宇宙基础表，载入 25 张当场执行的派生表，核对类型、粒度唯一性与每一行的完整读回值。可空分组键和字面量 `'null'` 会员ID保留当前 SQL 结果，不由 DDL 改口径。Spark 的 Parquet 表读取会放宽字段 nullable 元信息，非空输出信息保留在契约中；它不替代生产约束验证。MySQL、PostgreSQL、ClickHouse 仅做语法解析，尚未在对应服务器上执行。
+轻量测试解析四种方言的中文与英文 DDL，并核对原样本粒度唯一性。独立 Spark 测试真实创建英文命名的 55 张表，用声明类型严格读取 30 张微型宇宙基础表，载入 25 张当场执行的派生表，核对类型、粒度唯一性与每一行的完整读回值。可空分组键保留当前 SQL 结果，不由 DDL 改口径。原始输入中的字面量 `'null'` 保留原值；会员统计按作者确认的缺失身份规则排除，不影响订单总销售。Spark 的 Parquet 表读取会放宽字段 nullable 元信息，非空输出信息保留在契约中；它不替代生产约束验证。MySQL、PostgreSQL、ClickHouse 仅做语法解析，尚未在对应服务器上执行。
 
 ```sh
 REQUIRE_SPARK=1 python -m unittest tests.test_spark_ddl -v

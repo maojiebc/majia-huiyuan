@@ -99,7 +99,7 @@ WHERE o.`订单状态` = '已完成'
 SELECT
   *,
   1 AS `订单计数`,
-  case when `会员ID` is not null and `会员ID` <> '' then 1 else 0 end AS `会员订单计数`
+  case when `会员ID` is not null and LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') then 1 else 0 end AS `会员订单计数`
 FROM input1
 ```
 
@@ -123,7 +123,7 @@ SELECT
   COUNT(DISTINCT `订单ID`) AS `订单数`,
   SUM(COALESCE(`实付金额`, 0)) AS `销售额`,
   COUNT(DISTINCT CASE
-    WHEN `会员ID` IS NOT NULL AND `会员ID` <> '' THEN `订单ID`
+    WHEN `会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `订单ID`
   END) AS `会员订单数`
 FROM input1
 GROUP BY `门店ID`, CAST(`业务日期` AS DATE), `数据快照日期`

@@ -17,7 +17,7 @@
 | NULL / 空字符串 / 'null' 字面值三态 / 字段口径歧义 / 通用字段词典 | [07-data-quality-traps.md](07-data-quality-traps.md) |
 | **ETL 工程范式**（10-CTE DWD 宽表 / 轻节点重 SQL vs 重节点轻 SQL / 财务双源对账 / POS 归一化 / Cohort 网格）| [08-etl-engineering-patterns.md](08-etl-engineering-patterns.md) |
 | **39 个 V1 生产 ETL 索引清单**（按 11 个业务域分类 + 每 ETL 的节点/输入/输出/SQL 节点速查 + 复用决策表）| [09-etl-catalog.md](09-etl-catalog.md) |
-| **任务与触达回收**（白盒 NBA 任务池模型 / 九类任务×优先级×圈选依据 / 任务生成 SQL / 防打扰与仲裁 / 漏斗四率回收 / **差评客户挽回**）| [10-task-and-touch-recovery.md](10-task-and-touch-recovery.md) |
+| **任务与触达回收**（白盒 NBA 任务池模型 / 九类任务×优先级×圈选依据 / 任务生成 SQL / 防打扰与仲裁 / 漏斗三率回收 / **差评客户挽回**）| [10-task-and-touch-recovery.md](10-task-and-touch-recovery.md) |
 
 ## 通用字段词典
 

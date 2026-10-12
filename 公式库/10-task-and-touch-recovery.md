@@ -6,6 +6,8 @@
 
 ## 任务池字段模型：NBA 四段 🏠
 
+会员任务只使用有效会员ID：排除实际NULL、空白以及忽略大小写和首尾空白后的字面量 `null`。原始记录保留，未识别会员差评仍走门店客服流程；身份判断见 [公共口径](../ETL/公共口径/README.md#会员身份有效性)。
+
 一张任务表 21 列，正好切成 MA 系统的四段。搭自己的任务池时按段检查，缺哪段补哪段：
 
 | 段 | 字段 | 作用 |
@@ -124,7 +126,7 @@ FROM input1;
 
 **口径解读**：`执行状态`管流程（做没做），`转化阶段`管效果（做了有没有用），**两个维度必须分开建字段**——只有一个"状态"字段的任务系统，月底一定算不清"完成率 90% 但转化率 8%"到底是执行问题还是规则问题。
 
-## 回收口径：任务漏斗四率 🏠⚪
+## 回收口径：任务漏斗三率
 
 ```sql
 SELECT
@@ -171,7 +173,7 @@ SELECT
 FROM `dwd_评价` e
 WHERE (e.`评分` <= 2 OR (e.`负评标签` IS NOT NULL AND e.`负评标签` <> ''))
   AND e.`回复状态` <> '已回复'
-  AND e.`会员ID` IS NOT NULL AND e.`会员ID` <> ''      -- 非会员差评走门店客服流程，进不了会员任务池
+  AND e.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(e.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')      -- 非会员差评走门店客服流程，进不了会员任务池
   AND e.`评价日期` BETWEEN date_sub((SELECT params.as_of_date FROM params), 3)
                          AND (SELECT params.as_of_date FROM params);        -- 只圈近 3 天：差评修复拼时效
 ```

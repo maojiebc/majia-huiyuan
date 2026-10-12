@@ -11,6 +11,7 @@ from pathlib import Path
 
 from tests.fact_bridges import (
     AS_OF,
+    invalid_member_id,
     attributed_gmv,
     coupon_order_bridge,
     eligible_order_gmv,
@@ -47,6 +48,8 @@ def _order(order_id, member_id, when, gmv, status="已完成"):
 def cohort_grid(members, orders, as_of: date, max_month: int = 3):
     cohorts = defaultdict(list)
     for member in members:
+        if invalid_member_id(member["member_id"]):
+            continue
         cohorts[month_start(member["registered"])].append(member["member_id"])
     completed_order_months = defaultdict(set)
     for order in orders:
@@ -302,7 +305,7 @@ class RepositoryContractTests(unittest.TestCase):
             "ETL/公共口径/03_活动参与订单归因桥.sql",
         ):
             sql = self.read(relative)
-            self.assertGreaterEqual(sql.count("`会员ID` <> ''"), 2, relative)
+            self.assertGreaterEqual(sql.count("LOWER(REGEXP_REPLACE("), 2, relative)
 
     def test_group_by_nodes_export_real_aggregation(self):
         for path in (ROOT / "ETL/逻辑SQL").glob("*.md"):

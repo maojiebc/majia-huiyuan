@@ -70,7 +70,7 @@ order_agg AS (
     `门店ID`,
     TRUNC(CAST(`业务日期` AS DATE), 'MM') AS `年月`,
     SUM(`实付金额`) AS `实际销售额`,
-    COUNT(DISTINCT CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `订单ID` END) AS `实际会员订单数`
+    COUNT(DISTINCT CASE WHEN (`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')) THEN `订单ID` END) AS `实际会员订单数`
   FROM input2 CROSS JOIN params p
   WHERE `订单状态` = '已完成' AND `业务日期` <= p.as_of_date
   GROUP BY `门店ID`, TRUNC(CAST(`业务日期` AS DATE), 'MM')
@@ -110,7 +110,7 @@ order_agg AS (
     `门店ID`,
     TRUNC(CAST(`业务日期` AS DATE), 'MM') AS `年月`,
     SUM(`实付金额`) AS `实际销售额`,
-    COUNT(DISTINCT CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `订单ID` END) AS `实际会员订单数`
+    COUNT(DISTINCT CASE WHEN (`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')) THEN `订单ID` END) AS `实际会员订单数`
   FROM input2 CROSS JOIN params p
   WHERE `订单状态` = '已完成' AND `业务日期` <= p.as_of_date
   GROUP BY `门店ID`, TRUNC(CAST(`业务日期` AS DATE), 'MM')

@@ -44,7 +44,7 @@ valid_touch AS (
   FROM input2 t
   CROSS JOIN params p
   WHERE t.`触达状态` = '已发送'
-    AND t.`会员ID` IS NOT NULL AND t.`会员ID` <> ''
+    AND t.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(t.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND t.`触达日期` <= p.`as_of_date`
 ),
 order_daily AS (
@@ -52,13 +52,13 @@ order_daily AS (
     o.`业务日期`,
     SUM(o.`实付金额`) AS `总销售`,
     SUM(CASE
-      WHEN o.`会员ID` IS NOT NULL AND o.`会员ID` <> '' THEN o.`实付金额`
+      WHEN o.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN o.`实付金额`
       ELSE 0
     END) AS `会员销售`,
     SUM(CASE WHEN o.`是否到店` = 1 THEN o.`实付金额` ELSE 0 END) AS `到店销售`,
     COUNT(DISTINCT o.`订单ID`) AS `总订单数`,
-    COUNT(DISTINCT o.`会员ID`) AS `活跃会员数`,
-    COUNT(DISTINCT CASE WHEN o.`是否会员首单` = 1 THEN o.`会员ID` END) AS `新增会员数`
+    COUNT(DISTINCT CASE WHEN LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN o.`会员ID` END) AS `活跃会员数`,
+    COUNT(DISTINCT CASE WHEN o.`是否会员首单` = 1 AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN o.`会员ID` END) AS `新增会员数`
   FROM valid_order o
   GROUP BY o.`业务日期`
 ),
@@ -78,7 +78,7 @@ touch_order_candidates AS (
   FROM valid_order o
   JOIN valid_touch t
     ON o.`会员ID` = t.`会员ID`
-   AND o.`会员ID` IS NOT NULL AND o.`会员ID` <> ''
+   AND o.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
    AND o.`下单时间` >= t.`触达时间`
    AND o.`下单时间` < t.`触达时间` + INTERVAL 8 DAYS
 ),

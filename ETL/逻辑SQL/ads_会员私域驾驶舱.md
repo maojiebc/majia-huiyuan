@@ -68,10 +68,10 @@ WITH params AS (SELECT DATE '2026-06-24' AS as_of_date),
 order_monthly AS (
   SELECT
     DATE_TRUNC('MONTH', CAST(`业务日期` AS DATE)) AS `年月`,
-    COUNT(DISTINCT `会员ID`) AS `当月活跃会员`,
-    COUNT(DISTINCT CASE WHEN `是否会员首单` = 1 THEN `会员ID` END) AS `新增首单会员`,
+    COUNT(DISTINCT CASE WHEN LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `会员ID` END) AS `当月活跃会员`,
+    COUNT(DISTINCT CASE WHEN `是否会员首单` = 1 AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `会员ID` END) AS `新增首单会员`,
     SUM(`实付金额`) AS `总销售`,
-    SUM(CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `实付金额` ELSE 0 END) AS `会员销售`,
+    SUM(CASE WHEN (`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')) THEN `实付金额` ELSE 0 END) AS `会员销售`,
     SUM(CASE WHEN `是否到店` = 1 THEN `实付金额` ELSE 0 END) AS `到店销售`,
     COUNT(DISTINCT `订单ID`) AS `总订单数`
   FROM input1 CROSS JOIN params p
@@ -82,7 +82,7 @@ touch_monthly AS (
   SELECT
     DATE_TRUNC('MONTH', CAST(`触达日期` AS DATE)) AS `年月`,
     COUNT(DISTINCT `触达ID`) AS `触达次数`,
-    COUNT(DISTINCT `会员ID`) AS `触达会员数`
+    COUNT(DISTINCT CASE WHEN LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `会员ID` END) AS `触达会员数`
   FROM input2 CROSS JOIN params p
   WHERE `触达状态` = '已发送' AND `触达日期` <= p.as_of_date
   GROUP BY DATE_TRUNC('MONTH', CAST(`触达日期` AS DATE))
@@ -106,10 +106,10 @@ WITH params AS (SELECT DATE '2026-06-24' AS as_of_date),
 order_monthly AS (
   SELECT
     DATE_TRUNC('MONTH', CAST(`业务日期` AS DATE)) AS `年月`,
-    COUNT(DISTINCT `会员ID`) AS `当月活跃会员`,
-    COUNT(DISTINCT CASE WHEN `是否会员首单` = 1 THEN `会员ID` END) AS `新增首单会员`,
+    COUNT(DISTINCT CASE WHEN LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `会员ID` END) AS `当月活跃会员`,
+    COUNT(DISTINCT CASE WHEN `是否会员首单` = 1 AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `会员ID` END) AS `新增首单会员`,
     SUM(`实付金额`) AS `总销售`,
-    SUM(CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `实付金额` ELSE 0 END) AS `会员销售`,
+    SUM(CASE WHEN (`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')) THEN `实付金额` ELSE 0 END) AS `会员销售`,
     SUM(CASE WHEN `是否到店` = 1 THEN `实付金额` ELSE 0 END) AS `到店销售`,
     COUNT(DISTINCT `订单ID`) AS `总订单数`
   FROM input1 CROSS JOIN params p
@@ -120,7 +120,7 @@ touch_monthly AS (
   SELECT
     DATE_TRUNC('MONTH', CAST(`触达日期` AS DATE)) AS `年月`,
     COUNT(DISTINCT `触达ID`) AS `触达次数`,
-    COUNT(DISTINCT `会员ID`) AS `触达会员数`
+    COUNT(DISTINCT CASE WHEN LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `会员ID` END) AS `触达会员数`
   FROM input2 CROSS JOIN params p
   WHERE `触达状态` = '已发送' AND `触达日期` <= p.as_of_date
   GROUP BY DATE_TRUNC('MONTH', CAST(`触达日期` AS DATE))

@@ -11,7 +11,7 @@ valid_touch AS (
   CROSS JOIN params p
   WHERE t.`触达状态` = '已发送'
     AND t.`会员ID` IS NOT NULL
-    AND t.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(t.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND t.`触达日期` <= p.as_of_date
 ),
 valid_order AS (
@@ -20,7 +20,7 @@ valid_order AS (
   CROSS JOIN params p
   WHERE o.`订单状态` = '已完成'
     AND o.`会员ID` IS NOT NULL
-    AND o.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND o.`业务日期` <= p.as_of_date
 ),
 candidates AS (

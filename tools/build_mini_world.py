@@ -107,7 +107,7 @@ def build_world(out=DEFAULT_OUT, seed=41, scale='small', as_of='2026-06-24', sce
         members.append(add('dim_会员主档',会员ID=mid,注册日期=as_of-timedelta(days=200 if mid!='M900003' else 2),注册门店ID='S900001',注册渠道='企微',会员等级='普卡',性别='未知',年龄段='30-39',生日='1990-01-01',城市='演示市',手机号='156****0925',会员状态='正常'))
     def order(oid,mid,sid,when,amount=100,status='已完成',takeaway=0):
         if isinstance(when,date) and not isinstance(when,datetime): when=datetime.combine(when,datetime.min.time()).replace(hour=12)
-        row=add('dwd_订单',订单ID=oid,门店ID=sid,会员ID=mid,顾客识别键='synthetic_'+str(mid),身份匹配置信度=1,下单时间=when.isoformat(' '),业务日期=when.date(),原价金额=amount+10,折扣金额=10,实付金额=amount,收入口径金额=amount,支付方式='微信',销售渠道='美团' if takeaway else '到店',履约方式='外卖' if takeaway else '堂食',是否到店=1-takeaway,订单状态=status,是否用券=0,是否会员首单=0,商品件数=1)
+        row=add('dwd_订单',订单ID=oid,门店ID=sid,会员ID=mid,顾客识别键=('anonymous_'+oid if (mid == NULL or str(mid).strip().lower() in ('','null')) else 'synthetic_'+str(mid)),身份匹配置信度=(0 if (mid == NULL or str(mid).strip().lower() in ('','null')) else 1),下单时间=when.isoformat(' '),业务日期=when.date(),原价金额=amount+10,折扣金额=10,实付金额=amount,收入口径金额=amount,支付方式='微信',销售渠道='美团' if takeaway else '到店',履约方式='外卖' if takeaway else '堂食',是否到店=1-takeaway,订单状态=status,是否用券=0,是否会员首单=0,商品件数=1)
         add('dwd_订单商品',订单ID=oid,商品序号=1,商品ID=f'P{1+rng.randrange(20):03d}',数量=1,单价=amount,行金额=amount,是否主商品=1)
         return row
     for i in range(norder):
@@ -125,6 +125,18 @@ def build_world(out=DEFAULT_OUT, seed=41, scale='small', as_of='2026-06-24', sce
     order('O900003','M900002','S900001',as_of-timedelta(days=100))
     order('O900010','M900010','S900001',as_of-timedelta(days=100))
     for i,mid in enumerate((NULL,'','null')): order(f'O90000{i+4}',mid,'S900001',as_of-timedelta(days=10))
+    # Three different customers share the missing-ID placeholder; never merge them.
+    order('O900021','null','S900001',as_of-timedelta(days=9))
+    order('O900022','null','S900001',as_of-timedelta(days=8))
+    order('O900023','NULL','S900001',as_of-timedelta(days=10))
+    order('O900024',' null ','S900001',as_of-timedelta(days=10))
+    invalid_members=[('null','NULL'),('NULL','UPPER'),(' null ','SPACE'),('\t','TAB'),('\tNULL\t','TAB_NULL'),('\u00a0null\u00a0','NBSP_NULL'),('\u00a0','NBSP'),('   ','BLANK')]
+    for i,(mid,suffix) in enumerate(invalid_members[3:],start=25):
+        order(f'O9000{i:02d}',mid,'S900001',as_of-timedelta(days=10))
+    for mid,suffix in invalid_members:
+        add('dim_会员主档',会员ID=mid,注册日期=as_of-timedelta(days=200),注册门店ID='S900001',注册渠道='企微',会员等级='普卡',性别='未知',手机号='156****0925',会员状态='正常')
+        add('dwd_评价',评价ID='R_'+suffix,会员ID=mid,门店ID='S900001',评分=1,评价日期=as_of-timedelta(days=1),评价时间=as_of-timedelta(days=1),评价平台='演示平台',负评标签='服务',回复状态='未回复')
+        add('dwd_会员经营任务',任务ID='TASK_'+suffix,会员ID=mid,归属门店ID='S900001',员工导购ID='E0001',任务来源='人工',任务优先级='P0',任务类型='负评修复',任务生成时间=as_of-timedelta(days=1),任务截止时间=as_of,任务失效时间=as_of,触达状态='未触达',触达后下单=0,任务结果='待处理')
     order('O900007','M900001','S900001',as_of-timedelta(days=1),status='已取消')
     order('O900008','M900001','S900001',as_of-timedelta(days=1),status='已退款')
     def touch(tid,mid,when):
@@ -133,6 +145,12 @@ def build_world(out=DEFAULT_OUT, seed=41, scale='small', as_of='2026-06-24', sce
     touch('T900002','M900001',anchor);touch('T900003','M900001',anchor)
     touch('T900004','M900004',datetime.combine(as_of-timedelta(days=1),datetime.min.time()))
     touch('T900020','M900020',datetime.combine(as_of-timedelta(days=1),datetime.min.time()))
+    for mid,suffix in invalid_members:
+        when=datetime.combine(as_of-timedelta(days=11),datetime.min.time())
+        touch('T_'+suffix,mid,when)
+        add('dwd_活动参与',参与ID='AP_'+suffix,会员ID=mid,活动ID='A1',参与时间=when,参与日期=when.date(),行为类型='报名',结果='成功')
+    # A coupon/order-ID fact remains valid without a known member identity.
+    add('dwd_券事件',券ID='C_NULL',券模板ID='CT1',来源活动ID='A1',会员ID='null',发放日期=as_of-timedelta(days=11),失效日期=as_of,核销日期=as_of-timedelta(days=10),门店ID='S900001',订单ID='O900006',折扣金额=10,发放渠道='企微')
     for i,row in enumerate(tables['dwd_订单'][:250 if scale=='small' else 500000]):
         when=datetime.fromisoformat(str(row['下单时间']))-timedelta(hours=1)
         touch(f'T{i+1:07d}',row['会员ID'],when)
@@ -219,7 +237,7 @@ def build_world(out=DEFAULT_OUT, seed=41, scale='small', as_of='2026-06-24', sce
 
 O900001：并列触达 T900003 胜 T900002，7天末归因；O900002：8天初不归因。对应三桥差分与 known answers，验收10/13。
 O900001：多券按金额取 C900002；过期 C900003 排除。对应验收11/14。
-O900004/5/6：SQL NULL（CSV \\N）、空串、字面量 null 分开保留；literal null 仍按现有规则处理，不擅改会员含义。
+O900004/5/6/21–29：SQL NULL（CSV \\N）、空串、字面量 null、大小写/空白、制表符、不换行空格变体保留原值；按作者确认规则排除会员统计与身份归因，12笔共1200元仍计总销售。三笔null订单代表不同顾客；C_NULL按券/订单ID直连保留核销事实。
 O900007/8：已取消/已退款排除，桥非空并逐键对账。
 S900009：零销售有成本，利润骨架保留；所有门店有零订单营业日。对应17和时间参照。
 S900011：闭店；S900012：90天内新店；新店输出保留零单日。对应23/26。

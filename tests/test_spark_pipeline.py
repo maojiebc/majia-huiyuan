@@ -76,6 +76,32 @@ class SparkPipelineTests(unittest.TestCase):
             self.assertTrue(entry['schema']['fields'])
             self.assertGreaterEqual(entry['seconds'],0)
 
+    def test_missing_member_placeholders_keep_order_sales_without_creating_members(self):
+        # Catches either forgotten member filters or filtering unknown orders out
+        # of total sales. Raw values stay distinct; only membership use is rejected.
+        invalid={None,'','null','NULL',' null ','\t','\tNULL\t','\u00a0null\u00a0','\u00a0','   '}
+        orders=[r for r in self.rows('dwd_订单') if r['订单状态']=='已完成']
+        unknown=[r for r in orders if r['会员ID'] in invalid]
+        self.assertEqual(12,len(unknown))
+        self.assertEqual(1200,sum(r['实付金额'] for r in unknown))
+        for table in ('dws_会员RFM分层','dws_会员生命周期','dws_渠道迁移分析',
+                      'bridge_触达订单归因','bridge_活动参与订单归因',
+                      'bridge_规则任务生成','ads_会员经营任务池'):
+            with self.subTest(table=table):
+                self.assertFalse(any(r['会员ID'] in invalid for r in self.rows(table)))
+        expected_total=sum(r['实付金额'] for r in orders)
+        expected_member=sum(r['实付金额'] for r in orders if r['会员ID'] not in invalid)
+        for table in ('ads_高层经营驾驶舱','ads_会员私域驾驶舱'):
+            rows=self.rows(table)
+            self.assertEqual(expected_total,sum(r['总销售'] for r in rows),table)
+            self.assertEqual(expected_member,sum(r['会员销售'] for r in rows),table)
+            self.assertEqual(len(orders),sum(r['总订单数'] for r in rows),table)
+        daily=self.rows('ads_高层经营驾驶舱')
+        for row in daily:
+            source=[o for o in orders if o['业务日期']==row['业务日期']]
+            self.assertEqual(len({o['会员ID'] for o in source if o['会员ID'] not in invalid}),row['活跃会员数'])
+        self.assertIn(('O900006','C_NULL'),{(r['订单ID'],r['券ID']) for r in self.rows('bridge_券核销订单')})
+
     def test_intermediate_runtime_error_cannot_be_pruned_by_downstream_projection(self):
         isolated=Path(self.tmp.name)/'pruned-error'
         docs=isolated/'ETL/逻辑SQL';docs.mkdir(parents=True)

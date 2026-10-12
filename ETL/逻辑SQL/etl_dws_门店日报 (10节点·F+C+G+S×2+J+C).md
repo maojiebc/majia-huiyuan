@@ -68,7 +68,7 @@ GROUP BY `门店ID`, `业务日期`
 SELECT `门店ID`, `业务日期`,
   COUNT(DISTINCT `会员ID`) AS `去重会员数`
 FROM input1
-WHERE `会员ID` IS NOT NULL AND `会员ID` <> ''
+WHERE `会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
 GROUP BY `门店ID`, `业务日期`
 ```
 - 等价SQL:
@@ -76,7 +76,7 @@ GROUP BY `门店ID`, `业务日期`
 SELECT `门店ID`, `业务日期`,
   COUNT(DISTINCT `会员ID`) AS `去重会员数`
 FROM input1
-WHERE `会员ID` IS NOT NULL AND `会员ID` <> ''
+WHERE `会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
 GROUP BY `门店ID`, `业务日期`
 ```
 
@@ -247,7 +247,7 @@ WHERE scd_rn = 1
 SELECT
   *,
   1 AS `订单计数`,
-  case when `会员ID` is not null and `会员ID` <> '' then 1 else 0 end AS `会员订单计数`,
+  case when `会员ID` is not null and LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') then 1 else 0 end AS `会员订单计数`,
   case when `是否到店` = 1 then `实付金额` else 0 end AS `到店销售`,
   case when `是否到店` = 0 then `实付金额` else 0 end AS `外卖销售`,
   case when `是否到店` = 1 then 1 else 0 end AS `到店订单计数`,

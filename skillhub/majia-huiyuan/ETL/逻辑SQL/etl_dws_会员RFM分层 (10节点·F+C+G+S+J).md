@@ -200,7 +200,7 @@ FROM input1
 ```sql
 SELECT
   *,
-  case when `会员ID` is not null and `会员ID` <> '' then 1 else 0 end AS `会员标志`,
+  case when `会员ID` is not null and LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') then 1 else 0 end AS `会员标志`,
   1 AS `订单计数`
 FROM input1
 ```

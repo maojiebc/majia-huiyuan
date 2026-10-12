@@ -82,7 +82,7 @@ member_channel AS (
   FROM input1 o
   CROSS JOIN params p
   WHERE o.`会员ID` IS NOT NULL
-    AND o.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND o.`订单状态` = '已完成'
     AND o.`业务日期` IS NOT NULL
     -- 两个互斥闭合窗口：近30天 [T-29,T]；此前60天 [T-89,T-30]
@@ -142,7 +142,7 @@ member_channel AS (
   FROM input1 o
   CROSS JOIN params p
   WHERE o.`会员ID` IS NOT NULL
-    AND o.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND o.`订单状态` = '已完成'
     AND o.`业务日期` IS NOT NULL
     -- 两个互斥闭合窗口：近30天 [T-29,T]；此前60天 [T-89,T-30]

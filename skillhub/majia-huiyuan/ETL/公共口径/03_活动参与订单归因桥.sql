@@ -9,7 +9,7 @@ valid_participation AS (
   CROSS JOIN params p
   WHERE a.`结果` = '成功'
     AND a.`会员ID` IS NOT NULL
-    AND a.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(a.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND a.`参与日期` <= p.as_of_date
 ),
 candidates AS (
@@ -29,7 +29,7 @@ candidates AS (
   CROSS JOIN params p
   WHERE o.`订单状态` = '已完成'
     AND o.`会员ID` IS NOT NULL
-    AND o.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND o.`业务日期` <= p.as_of_date
     AND o.`下单时间` < a.`参与时间` + INTERVAL 8 DAYS
 )

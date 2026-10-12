@@ -124,7 +124,7 @@ valid_touch AS (
   FROM input2 t
   CROSS JOIN params p
   WHERE t.`触达状态` = '已发送'
-    AND t.`会员ID` IS NOT NULL AND t.`会员ID` <> ''
+    AND t.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(t.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND t.`活动ID` IS NOT NULL AND t.`活动ID` <> ''
     AND t.`触达日期` <= p.`as_of_date`
 ),
@@ -179,7 +179,7 @@ valid_participation AS (
   FROM input5 a
   CROSS JOIN params p
   WHERE a.`结果` = '成功'
-    AND a.`会员ID` IS NOT NULL AND a.`会员ID` <> ''
+    AND a.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(a.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND a.`活动ID` IS NOT NULL AND a.`活动ID` <> ''
     AND a.`参与日期` <= p.`as_of_date`
 ),

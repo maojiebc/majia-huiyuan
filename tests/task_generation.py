@@ -10,7 +10,7 @@ from collections.abc import Iterable
 from datetime import date, timedelta
 from typing import Any
 
-from tests.fact_bridges import AS_OF
+from tests.fact_bridges import AS_OF, invalid_member_id
 
 
 def _blank(value: Any) -> bool:
@@ -32,10 +32,10 @@ def _rule_candidates(
     as_of: date,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    rfm_by_id = {row["member_id"]: row for row in rfm if not _blank(row.get("member_id"))}
+    rfm_by_id = {row["member_id"]: row for row in rfm if not invalid_member_id(row.get("member_id"))}
 
     for member in lifecycle:
-        if _blank(member.get("member_id")) or member.get("snapshot") not in (None, as_of):
+        if invalid_member_id(member.get("member_id")) or member.get("snapshot") not in (None, as_of):
             continue
         stage = member["stage"]
         store_id = member.get("store_id")
@@ -83,7 +83,7 @@ def _rule_candidates(
 
     review_best: dict[str, dict[str, Any]] = {}
     for review in reviews:
-        if _blank(review.get("member_id")):
+        if invalid_member_id(review.get("member_id")):
             continue
         if review["biz_date"] < as_of - timedelta(days=3) or review["biz_date"] > as_of:
             continue
@@ -107,7 +107,7 @@ def _rule_candidates(
         )
 
     for channel in channels:
-        if _blank(channel.get("member_id")) or channel.get("snapshot") not in (None, as_of):
+        if invalid_member_id(channel.get("member_id")) or channel.get("snapshot") not in (None, as_of):
             continue
         if channel["migrate"] in {"纯外卖", "堂食→外卖迁移"}:
             rows.append(
@@ -133,7 +133,7 @@ def _rule_candidates(
                 )
 
     for profile in rfm:
-        if _blank(profile.get("member_id")) or profile.get("snapshot") not in (None, as_of):
+        if invalid_member_id(profile.get("member_id")) or profile.get("snapshot") not in (None, as_of):
             continue
         if profile.get("label") == "重要价值客户":
             rows.append(
@@ -148,7 +148,7 @@ def _rule_candidates(
 
     coupon_best: dict[str, dict[str, Any]] = {}
     for coupon in coupons:
-        if _blank(coupon.get("member_id")) or coupon.get("redeemed") is not None:
+        if invalid_member_id(coupon.get("member_id")) or coupon.get("redeemed") is not None:
             continue
         if coupon["issued"] > as_of:
             continue
@@ -194,7 +194,7 @@ def generate_rule_tasks(
     recently_touched = {
         touch["member_id"]
         for touch in touches
-        if not _blank(touch.get("member_id"))
+        if not invalid_member_id(touch.get("member_id"))
         and as_of - timedelta(days=7) <= touch["biz_date"] <= as_of
     }
     reachable = [

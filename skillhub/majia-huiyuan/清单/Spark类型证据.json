@@ -3,7 +3,7 @@
   "as_of": "2026-06-24",
   "seed": 41,
   "scenario": "clean",
-  "git_sha": "d5c6a80a27c13e8a22e89455ca5b6445b9c49613",
+  "git_sha": "f639d6119f29f471007d523a222685e84276addb",
   "worktree_dirty": true,
   "provenance": "本地合成小数据执行报告的schema提取；git_sha仅标识当时HEAD，worktree_dirty记录是否含未提交修改；每节点sql_sha256为文档SQL原文指纹，as_of确定执行时日期替换。提交后CI运行报告提供对应提交的验证。",
   "etls": [
@@ -96,7 +96,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.022
+          "seconds": 0.021
         },
         {
           "id": "id_1779326818732",
@@ -105,7 +105,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.01
+          "seconds": 0.008
         },
         {
           "id": "id_1779326818733",
@@ -115,9 +115,9 @@
             "id_1779326818731",
             "id_1779326818732"
           ],
-          "sql_sha256": "892ef2a828e3ed659ae7a61e579925ec384ccdb9c01665e3d7db00e8a8c3c4b1",
+          "sql_sha256": "ca1002d8015f54c1791edb58948b1d0a380be3e0aa6fd9be44f0259a7f7174d0",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.536
+          "seconds": 0.532
         },
         {
           "id": "id_1779326818734",
@@ -128,7 +128,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.021
+          "seconds": 0.019
         }
       ]
     },
@@ -347,7 +347,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.005
+          "seconds": 0.004
         },
         {
           "id": "id_1779326818731",
@@ -365,7 +365,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.006
+          "seconds": 0.004
         },
         {
           "id": "id_1779326818733",
@@ -386,9 +386,9 @@
             "id_1779326818732",
             "id_1779326818733"
           ],
-          "sql_sha256": "fb316da367de3d595a715830e63a1d2f2f0b2167136ea499af513f99c329015a",
+          "sql_sha256": "b70f4b06da65917de5bf43b1e78cf7d1f0fa3d5354f0a6dbbc3801e4fdf2e965",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.143
+          "seconds": 0.149
         },
         {
           "id": "id_1779326818735",
@@ -399,7 +399,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.025
+          "seconds": 0.023
         }
       ]
     },
@@ -622,9 +622,9 @@
             "dim_活动主档",
             "dwd_活动参与"
           ],
-          "sql_sha256": "f50ad3052a66b478ac1f64ec6582d39ee7c67fad09ebb637528458191d610a0f",
+          "sql_sha256": "72a211853484be6b1b8f10727f4926d6030094044a9a7163c08b03cc111c59bf",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.83
+          "seconds": 0.785
         }
       ]
     },
@@ -818,9 +818,9 @@
             "id_1779326818730",
             "id_1779326818731"
           ],
-          "sql_sha256": "2982f2cd34485719162253c80054d9bdd70e6bb6ebe0dd92ed41d35151cc3f54",
+          "sql_sha256": "e06a5163e6f0c87bea62c16725883ef6c47ea4c547d4d819bb2973b6e328e673",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.484
+          "seconds": 0.447
         },
         {
           "id": "id_1779326818733",
@@ -831,7 +831,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.031
+          "seconds": 0.035
         }
       ]
     },
@@ -943,16 +943,16 @@
             "dwd_订单",
             "dwd_会员触达"
           ],
-          "sql_sha256": "04f3404f9d33c6a77a5fa1b56842cbff09ccbfc6453ca8e24eca57fd86ebb046",
+          "sql_sha256": "fd81c7b546110eb69e65e10e6653df3b19dc749465464a5ec5f9a35c2aa22d1e",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.245
+          "seconds": 0.234
         }
       ]
     },
     {
       "output": "dws_会员RFM分层",
       "path": "ETL/逻辑SQL/etl_dws_会员RFM分层 (10节点·F+C+G+S+J).md",
-      "rows": 304,
+      "rows": 303,
       "schema": {
         "type": "struct",
         "fields": [
@@ -1050,7 +1050,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.005
+          "seconds": 0.004
         },
         {
           "id": "id_1779336902431",
@@ -1059,7 +1059,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779336902432",
@@ -1070,7 +1070,7 @@
           ],
           "sql_sha256": "b194f26495870555f027bfae7e95bddc8bb5e2c2209fd4007b2eeead11b3260c",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.023
+          "seconds": 0.022
         },
         {
           "id": "id_1779336902433",
@@ -1079,9 +1079,9 @@
           "sources": [
             "id_1779336902432"
           ],
-          "sql_sha256": "fc2950e5e6218ffc5eab919a0dad4d6d50dca9eab5cf9d7b811151e929b7c587",
+          "sql_sha256": "d1f02a8b30205f47ec4fcec225767f13b78a31444cd48f65980e05274b8d5c1c",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.025
+          "seconds": 0.026
         },
         {
           "id": "id_1779336902434",
@@ -1092,7 +1092,7 @@
           ],
           "sql_sha256": "267b9b139a25cd3039b23e3fd76479852922a73f4d5f5cbb148006acf4c4893d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.028
+          "seconds": 0.024
         },
         {
           "id": "id_1779336902435",
@@ -1103,7 +1103,7 @@
           ],
           "sql_sha256": "d2c0dac505a8a4b3507680c3d639f965ac35d4b4fb34420caa4d5f17a44f0826",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.06
+          "seconds": 0.056
         },
         {
           "id": "id_1779336902436",
@@ -1114,7 +1114,7 @@
           ],
           "sql_sha256": "f7f22c09e243287ee180209b61f502c7ba80991724a93879fba5ec9c9683b0b7",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.024
+          "seconds": 0.021
         },
         {
           "id": "id_1779336902437",
@@ -1137,7 +1137,7 @@
           ],
           "sql_sha256": "79a2d4247bd1c4a983878926e0d6ae2270165ab635955b377ef3a64a33668c52",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.033
+          "seconds": 0.031
         },
         {
           "id": "id_1779336902439",
@@ -1148,7 +1148,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.016
+          "seconds": 0.015
         }
       ]
     },
@@ -1236,9 +1236,9 @@
             "id_1779326818722",
             "id_1779326818723"
           ],
-          "sql_sha256": "85a9bb5c5a6026dd48cc3c4fc4709ef597369c6080380be8b5771a07a61ab5b0",
+          "sql_sha256": "2a65d09817d9aab74de396b9b00a7830b51e9d04fd4d60d017cb5973e1573f2f",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.237
+          "seconds": 0.214
         },
         {
           "id": "id_1779326818725",
@@ -1249,7 +1249,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.017
+          "seconds": 0.016
         }
       ]
     },
@@ -1405,7 +1405,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_v141_lifecycle_params",
@@ -1414,7 +1414,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779326818719",
@@ -1425,9 +1425,9 @@
             "id_1779326818718",
             "id_v141_lifecycle_params"
           ],
-          "sql_sha256": "579405e9d6c1e32fae8bb8d1976c92b6b884ede95d566bbc8a64109221690bd9",
+          "sql_sha256": "22ac7dbd0de86479f420e24234f6ec1c3034a4a2df35db5bc0eebedeedab4221",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.296
+          "seconds": 0.267
         },
         {
           "id": "id_1779326818720",
@@ -1573,7 +1573,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.004
         },
         {
           "id": "id_1779326818727",
@@ -1604,7 +1604,7 @@
           ],
           "sql_sha256": "2c94b33d470ae9c07ccfe3033a6f2a33385b53178913ff77b53ee39daa50d7e7",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.248
+          "seconds": 0.227
         },
         {
           "id": "id_1779326818730",
@@ -1615,14 +1615,14 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.014
+          "seconds": 0.013
         }
       ]
     },
     {
       "output": "dws_券效益分析",
       "path": "ETL/逻辑SQL/etl_dws_券效益分析.md",
-      "rows": 111,
+      "rows": 112,
       "schema": {
         "type": "struct",
         "fields": [
@@ -1742,7 +1742,7 @@
           ],
           "sql_sha256": "ce8c5520e1038ed78b9533d5edde283f05f87b1362e5d7a7401b318c66f888fc",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.306
+          "seconds": 0.289
         }
       ]
     },
@@ -2009,7 +2009,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "id": "id_1779345679923",
@@ -2038,7 +2038,7 @@
           ],
           "sql_sha256": "6fe412ac979b73827d0a54468652e12fdb8868e5a5842669ca4a595e687aca6f",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.032
+          "seconds": 0.037
         },
         {
           "id": "id_1779345679924",
@@ -2049,7 +2049,7 @@
           ],
           "sql_sha256": "8f96d2a3fef7dbbab43578aa4ef43aadafebefc9b9938d74ef78ebacc8daf412",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.072
+          "seconds": 0.067
         },
         {
           "id": "id_1779345679921",
@@ -2060,7 +2060,7 @@
           ],
           "sql_sha256": "2f928d01572aa576213d937d1e5b8ab0060b0a689e08a2ed0fd8c430a9fb0267",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.03
+          "seconds": 0.026
         },
         {
           "id": "id_1779345679922",
@@ -2071,7 +2071,7 @@
           ],
           "sql_sha256": "c92dde6cd4421799d604bfd7c29b4f079b975364663f55420737430e3dfbaf1f",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.044
+          "seconds": 0.039
         },
         {
           "id": "id_1779345679925",
@@ -2084,7 +2084,7 @@
           ],
           "sql_sha256": "98a1b2279ffb22708fb28066c5bdbe53e0780669fc1dff248b09ad15e1802d4b",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.089
+          "seconds": 0.079
         },
         {
           "id": "id_1779345679927",
@@ -2096,7 +2096,7 @@
           ],
           "sql_sha256": "b18d26d304ad5c470d0b5579a16b8c18e5f085e1900419a633a3c8cd85076fc4",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.085
+          "seconds": 0.088
         },
         {
           "id": "id_1779345679928",
@@ -2107,7 +2107,7 @@
           ],
           "sql_sha256": "6ddc6c29ed03fec6a83c0501086c0b9d1604f6359408b9372c9536d892218dce",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.029
+          "seconds": 0.022
         },
         {
           "id": "id_1779345679929",
@@ -2118,7 +2118,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.018
+          "seconds": 0.015
         }
       ]
     },
@@ -2235,7 +2235,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "id": "id_1779337308219",
@@ -2244,7 +2244,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779337308220",
@@ -2264,7 +2264,7 @@
           ],
           "sql_sha256": "18c7df6f852254a8cdfcf384512012fceed5cd5263f00c817c99165af6104a91",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.014
+          "seconds": 0.012
         },
         {
           "id": "id_1779337308222",
@@ -2274,9 +2274,9 @@
             "id_1779337308218",
             "id_1779337308219"
           ],
-          "sql_sha256": "7ee3ff15c29114f527a5c5687a98e68cb4b6287f052710bb734110b8cd7e5159",
+          "sql_sha256": "d1f6a0802b69d75e75c91adc10ed76327016b999708986e37dfb92c8f550c8ca",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.155
+          "seconds": 0.135
         },
         {
           "id": "id_1779337308223",
@@ -2288,7 +2288,7 @@
           ],
           "sql_sha256": "e5b97a07716853e305378b69a3529d671e5ecd3dde30945edbbed4421e61b525",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.058
+          "seconds": 0.031
         },
         {
           "id": "id_1779337308224",
@@ -2299,7 +2299,7 @@
           ],
           "sql_sha256": "a4f128e08e408f1f54c80835bdd6830ed18e0aabd9b4896351ae821ccaf8e922",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.022
+          "seconds": 0.016
         },
         {
           "id": "id_1779337308225",
@@ -2310,14 +2310,14 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.013
+          "seconds": 0.011
         }
       ]
     },
     {
       "output": "dws_商品销售分析",
       "path": "ETL/逻辑SQL/etl_dws_商品销售分析.md",
-      "rows": 1769,
+      "rows": 1776,
       "schema": {
         "type": "struct",
         "fields": [
@@ -2433,7 +2433,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "id": "id_1779326818724",
@@ -2474,7 +2474,7 @@
           ],
           "sql_sha256": "c5633d48fce7f96d19b7431b5a6fdff853ead267660f8803e3ca0c7522f73534",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.194
+          "seconds": 0.191
         },
         {
           "id": "id_1779326818728",
@@ -2485,7 +2485,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.017
+          "seconds": 0.018
         }
       ]
     },
@@ -2617,7 +2617,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779345758792",
@@ -2640,7 +2640,7 @@
           ],
           "sql_sha256": "ae8b96f834367d1a8b58dca62dc7760b23e4b59479a25dc90203416eaa2bd4f9",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.114
+          "seconds": 0.117
         },
         {
           "id": "id_1779345758794",
@@ -2662,7 +2662,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.015
+          "seconds": 0.014
         }
       ]
     },
@@ -2797,7 +2797,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "id": "id_1779337109458",
@@ -2806,7 +2806,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779337109459",
@@ -2817,7 +2817,7 @@
           ],
           "sql_sha256": "71d133df1425fb0e81eecdd7ff0e1574217d9ade5273c10093dcdf218b8a5786",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.029
+          "seconds": 0.03
         },
         {
           "id": "id_1779337109460",
@@ -2826,7 +2826,7 @@
           "sources": [
             "id_1779337109459"
           ],
-          "sql_sha256": "d9552018490df8eee2b8646625da6fa60857c66a99fa53a58f3d23b66e948b8a",
+          "sql_sha256": "a28252c2aad734abc946390bd92ad5811426cc7e22d8f980ce7c606e6af2f0f4",
           "materialization": "eager_local_checkpoint",
           "seconds": 0.021
         },
@@ -2837,9 +2837,9 @@
           "sources": [
             "id_1779337109460"
           ],
-          "sql_sha256": "f0250f9141c5cdb8cfc7ec3743c7ee4f26a402df71b105fcf5a7c539c9a9f496",
+          "sql_sha256": "a24ab47100ebe4c01103f81f6693dbbf7b447097a125240ab55361a013aba502",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.088
+          "seconds": 0.082
         },
         {
           "id": "id_1779337109462",
@@ -2851,7 +2851,7 @@
           ],
           "sql_sha256": "32a53298257ca9a4c0609ca2c1d14628fa7397f230d7c6fce0cf7920b7ffb9cd",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.076
+          "seconds": 0.068
         },
         {
           "id": "id_1779337109463",
@@ -2862,7 +2862,7 @@
           ],
           "sql_sha256": "16a0eaf9ab148c569b2764e52f765e748d3b309b65a2b80a1eb29ee5d57e4885",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.037
+          "seconds": 0.032
         },
         {
           "id": "id_1779337109464",
@@ -2873,14 +2873,14 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.018
+          "seconds": 0.015
         }
       ]
     },
     {
       "output": "dws_渠道迁移分析",
       "path": "ETL/逻辑SQL/etl_dws_渠道迁移分析.md",
-      "rows": 287,
+      "rows": 286,
       "schema": {
         "type": "struct",
         "fields": [
@@ -2957,7 +2957,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779326818730",
@@ -2967,9 +2967,9 @@
             "id_1779326818728",
             "id_1779326818729"
           ],
-          "sql_sha256": "82f5b734d9e6bfca9a51d89dd43fdf0a25c7fd26ac8d8fb5f9ff70c78806f688",
+          "sql_sha256": "c31e3f1a38fcf68eb83e885b41eb0da3d51a81c7ae372ea28f4021b8839590ad",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.149
+          "seconds": 0.129
         },
         {
           "id": "id_1779326818731",
@@ -2980,7 +2980,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.014
+          "seconds": 0.012
         }
       ]
     },
@@ -3058,7 +3058,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779326818731",
@@ -3068,9 +3068,9 @@
             "id_1779326818729",
             "id_1779326818730"
           ],
-          "sql_sha256": "f1abbf1d5ec907ee1608789bd971bd9de2ad67fda600770f93c686cd07690f2d",
+          "sql_sha256": "a1eee2037193b6c7fda2423d5841ddb7fbe472866bddfac49ffa8ad4da3ef23b",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.128
+          "seconds": 0.113
         },
         {
           "id": "id_1779326818732",
@@ -3194,9 +3194,9 @@
             "dwd_订单",
             "dim_活动主档"
           ],
-          "sql_sha256": "949f2d82a4b8cccf185247064aca96071305e186465932e5ed99ba37335306d9",
+          "sql_sha256": "787a0ff918141f86be7af3f23f990c6e2bcff7ac844d5c311047d0ee48711a56",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.603
+          "seconds": 0.338
         }
       ]
     },
@@ -3409,7 +3409,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.006
+          "seconds": 0.004
         },
         {
           "id": "id_1779348711907",
@@ -3418,7 +3418,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.006
+          "seconds": 0.003
         },
         {
           "id": "id_1779348711908",
@@ -3429,7 +3429,7 @@
           ],
           "sql_sha256": "d98e7d8388f838f69935f2ca62a573c1df38b2de2155f89d6d08bb1ebaf4e383",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.038
+          "seconds": 0.017
         },
         {
           "id": "id_1779348711909",
@@ -3438,9 +3438,9 @@
           "sources": [
             "id_1779348711908"
           ],
-          "sql_sha256": "baee1bbaf4422d7de327cae9fccfc3332f13db4d111d45644def282eb6ed8306",
+          "sql_sha256": "417d3a1b6d10879affc06dbe5093e5533801d1b8cb8d7305afb662e2d3a5b5bd",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.024
+          "seconds": 0.023
         },
         {
           "id": "id_1779348711911",
@@ -3449,9 +3449,9 @@
           "sources": [
             "id_1779348711908"
           ],
-          "sql_sha256": "1b8f068c95d0583cfdea069a6a4d16823ac73881308e56027061304ad28b35e8",
+          "sql_sha256": "7bbc828c8d6b44a6e7430d6f1190bc14d51a7905b10fd3bad9a27c3e77ef1d5f",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.06
+          "seconds": 0.049
         },
         {
           "id": "id_1779348711910",
@@ -3462,7 +3462,7 @@
           ],
           "sql_sha256": "4746d4cbe419881804346a0fbf3ea84e663e26b6306b879f3929d7a45c0dd84c",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.053
+          "seconds": 0.047
         },
         {
           "id": "id_1779348711912",
@@ -3486,7 +3486,7 @@
           ],
           "sql_sha256": "7313f8c433a94f0f42371232b982b48e17266c164dd4c199a281e5a61583e420",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.074
+          "seconds": 0.072
         },
         {
           "id": "id_1779348711914",
@@ -3497,7 +3497,7 @@
           ],
           "sql_sha256": "d18e229dadce1f7eca1b9c9a68a34fb20d7b86d7d3a641df998844375cb8f5d4",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.035
+          "seconds": 0.028
         },
         {
           "id": "id_1779348711915",
@@ -3508,7 +3508,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.021
+          "seconds": 0.017
         }
       ]
     },
@@ -3795,7 +3795,7 @@
           ],
           "sql_sha256": "e8abd51077778e0f76f37cde7337017273b7589416323030016ffa1410a90f85",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.027
+          "seconds": 0.023
         },
         {
           "id": "id_1779346047778",
@@ -3806,7 +3806,7 @@
           ],
           "sql_sha256": "c4ce74273f7dd94363efda0d76e1670bceb9dfcfeb2c0b7854a7f9b989f82662",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.097
+          "seconds": 0.089
         },
         {
           "id": "id_1779346047779",
@@ -3817,7 +3817,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.015
+          "seconds": 0.013
         }
       ]
     },
@@ -3994,7 +3994,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "id": "id_1779345839802",
@@ -4024,7 +4024,7 @@
           ],
           "sql_sha256": "d64a11492fad5faaf02e3c5c3c378f7b2a618791589691f6b403322edb3373e0",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.125
+          "seconds": 0.105
         },
         {
           "id": "id_1779345839805",
@@ -4036,7 +4036,7 @@
           ],
           "sql_sha256": "297e3373e35f021906c366a1d6eb109db42a4787e57dc10d2e88e3d3ce6bca77",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.029
+          "seconds": 0.03
         },
         {
           "id": "id_1779345839806",
@@ -4047,7 +4047,7 @@
           ],
           "sql_sha256": "236fc5bcd3358fded4c171506cdb86f8ddb3f59047237c3feba2d0c7c6f0a4f8",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.027
+          "seconds": 0.02
         },
         {
           "id": "id_1779345839807",
@@ -4058,7 +4058,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.012
+          "seconds": 0.013
         }
       ]
     },
@@ -4256,7 +4256,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779345941092",
@@ -4265,7 +4265,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779345941093",
@@ -4276,7 +4276,7 @@
           ],
           "sql_sha256": "2f8eef1191f122a41bdb225bad9d69c77ab0119d2b34439ce3bdff21df9e290f",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.049
+          "seconds": 0.045
         },
         {
           "id": "id_1779345941094",
@@ -4287,7 +4287,7 @@
           ],
           "sql_sha256": "b4ccee2e2fb202609c63a0bcef2a53d13d57c084ddf67cfce4270489283dcc3a",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.082
+          "seconds": 0.07
         },
         {
           "id": "id_1779345941095",
@@ -4299,7 +4299,7 @@
           ],
           "sql_sha256": "a0d29649435ef59487266c9ee8e13fbc8b2af11b0b8c152f8109a98723a9077a",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.057
+          "seconds": 0.051
         },
         {
           "id": "id_1779345941096",
@@ -4311,7 +4311,7 @@
           ],
           "sql_sha256": "3a5ac0d9a415a556c7f4c41fa72206f2270a3df9f8700f9dd63d86d4eaa99589",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.068
+          "seconds": 0.09
         },
         {
           "id": "id_1779345941097",
@@ -4322,7 +4322,7 @@
           ],
           "sql_sha256": "51931f3d40367ef20d865ed1f4162b50d3b8e72b1ae08f37ffe1ef86cab6040d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.029
+          "seconds": 0.024
         },
         {
           "id": "id_1779345941098",
@@ -4333,7 +4333,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.015
+          "seconds": 0.011
         }
       ]
     },
@@ -4690,7 +4690,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "id": "id_1779346227914",
@@ -4699,7 +4699,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779346227915",
@@ -4717,7 +4717,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.003
+          "seconds": 0.002
         },
         {
           "id": "id_1779346227917",
@@ -4729,7 +4729,7 @@
           ],
           "sql_sha256": "1f6f3bf53ea8cdd9e17c3611db8325e29a399c4c873f06a4c647492b5a02a9aa",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.19
+          "seconds": 0.135
         },
         {
           "id": "id_1779346227918",
@@ -4741,7 +4741,7 @@
           ],
           "sql_sha256": "1f58b67a5634b85414e7f5313817376016c511cc571c13447cac1fcf977a3f05",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.028
+          "seconds": 0.026
         },
         {
           "id": "id_1779346227919",
@@ -4753,7 +4753,7 @@
           ],
           "sql_sha256": "a94fd079292b67df0dfd90daded58545f8ecee32efc34966070216309d5bb73d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.046
+          "seconds": 0.054
         },
         {
           "id": "id_1779346227920",
@@ -4764,7 +4764,7 @@
           ],
           "sql_sha256": "4345034af58dd02350aa61046fdf221fb5b9109b431d3448572106583ee3ff64",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.024
+          "seconds": 0.022
         },
         {
           "id": "id_1779346227921",
@@ -4775,7 +4775,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.015
+          "seconds": 0.013
         }
       ]
     },
@@ -4964,7 +4964,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.038
+          "seconds": 0.016
         }
       ]
     },
@@ -5057,7 +5057,7 @@
           "sources": [],
           "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
           "materialization": "reused_input_checkpoint",
-          "seconds": 0.002
+          "seconds": 0.001
         },
         {
           "id": "id_1006",
@@ -5082,7 +5082,7 @@
           ],
           "sql_sha256": "8359f615afd96838a4effdfea3b6d68b0475c419fdf70129a5aafbc746cda29e",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.2
+          "seconds": 0.213
         },
         {
           "id": "id_3001",
@@ -5093,7 +5093,7 @@
           ],
           "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
           "materialization": "eager_local_checkpoint",
-          "seconds": 0.015
+          "seconds": 0.013
         }
       ]
     }
@@ -5103,25 +5103,25 @@
       "output": "bridge_触达订单归因",
       "path": "ETL/公共口径/01_触达订单归因桥.sql",
       "rows": 317,
-      "sql_sha256": "4fa165867c143836263e9d365d4f1a3b0a8274766702ea3f81131f661aa79eb6"
+      "sql_sha256": "1b49a268f1f1ac2c3272a6615090c6415e0bba7007f1230861bf911738207ccb"
     },
     {
       "output": "bridge_券核销订单",
       "path": "ETL/公共口径/02_券实例核销订单桥.sql",
-      "rows": 126,
+      "rows": 127,
       "sql_sha256": "3e2b3a46241e76506dae5497367f99e81da08e83ba681deabff6af304769eefc"
     },
     {
       "output": "bridge_活动参与订单归因",
       "path": "ETL/公共口径/03_活动参与订单归因桥.sql",
       "rows": 316,
-      "sql_sha256": "47c6095e78a3b96cfc9409152925bec039599c71f7d507adfbd49050281fee00"
+      "sql_sha256": "b3a9b497092ae9f4b245c9fae62b9ab4e187bd82442599d57a691e6f0d48f8fd"
     },
     {
       "output": "bridge_规则任务生成",
       "path": "ETL/公共口径/08_规则任务生成.sql",
       "rows": 200,
-      "sql_sha256": "55189fd7ec00625441138e7cb0f6eb87134ff439619632d690888a8666352e56"
+      "sql_sha256": "8ed1e3dbb55414bcec1776d233aa6d8d78610541758f4248096717a4ca48ef28"
     },
     {
       "output": "calendar_门店营业日历",
