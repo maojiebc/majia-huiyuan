@@ -19,6 +19,10 @@ def _blank(value: Any) -> bool:
     return value is None or value == ""
 
 
+def invalid_member_id(value: Any) -> bool:
+    return value is None or str(value).strip().lower() in {"", "null"}
+
+
 def _null_safe_eq(left: Any, right: Any) -> bool:
     if left is None and right is None:
         return True
@@ -34,14 +38,14 @@ def touch_order_bridge(
         order
         for order in orders
         if order["status"] == "已完成"
-        and not _blank(order["member_id"])
+        and not invalid_member_id(order["member_id"])
         and order["biz_date"] <= as_of
     ]
     valid_touches = [
         touch
         for touch in touches
         if touch["status"] == "已发送"
-        and not _blank(touch["member_id"])
+        and not invalid_member_id(touch["member_id"])
         and touch["biz_date"] <= as_of
     ]
     winners: dict[str, dict[str, Any]] = {}
@@ -122,14 +126,14 @@ def participation_order_bridge(
         order
         for order in orders
         if order["status"] == "已完成"
-        and not _blank(order["member_id"])
+        and not invalid_member_id(order["member_id"])
         and order["biz_date"] <= as_of
     ]
     valid_parts = [
         item
         for item in participations
         if item["result"] == "成功"
-        and not _blank(item["member_id"])
+        and not invalid_member_id(item["member_id"])
         and item["biz_date"] <= as_of
     ]
     winners: dict[str, dict[str, Any]] = {}

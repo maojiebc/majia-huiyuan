@@ -5,7 +5,7 @@
 WITH params AS (
   SELECT DATE '2026-06-24' AS as_of_date
 ),
-r_流失预警 AS (
+`r_流失预警` AS (
   SELECT
     l.`会员ID`, l.`注册门店ID` AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P0' AS `任务优先级`,
@@ -16,11 +16,11 @@ r_流失预警 AS (
     ROUND(l.`总消费金额` / NULLIF(l.`总订单数`, 0), 2) AS `预计价值`
   FROM `dws_会员生命周期` l
   CROSS JOIN params p
-  WHERE l.`会员ID` IS NOT NULL AND l.`会员ID` <> ''
+  WHERE l.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(l.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND l.`生命周期阶段` = '流失预警'
     AND l.`数据快照日期` = p.as_of_date
 ),
-r_负评修复 AS (
+`r_负评修复` AS (
   SELECT
     e.`会员ID`, e.`门店ID` AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P0' AS `任务优先级`,
@@ -39,14 +39,14 @@ r_负评修复 AS (
       ) AS review_rn
     FROM `dwd_评价` x
     CROSS JOIN params p
-    WHERE x.`会员ID` IS NOT NULL AND x.`会员ID` <> ''
+    WHERE x.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(x.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
       AND (x.`评分` <= 2 OR (x.`负评标签` IS NOT NULL AND x.`负评标签` <> ''))
       AND x.`回复状态` <> '已回复'
       AND x.`评价日期` BETWEEN DATE_SUB(p.as_of_date, 3) AND p.as_of_date
   ) e
   WHERE e.review_rn = 1
 ),
-r_沉睡召回 AS (
+`r_沉睡召回` AS (
   SELECT
     l.`会员ID`, l.`注册门店ID` AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P1' AS `任务优先级`,
@@ -57,11 +57,11 @@ r_沉睡召回 AS (
     ROUND(l.`总消费金额` / NULLIF(l.`总订单数`, 0), 2) AS `预计价值`
   FROM `dws_会员生命周期` l
   CROSS JOIN params p
-  WHERE l.`会员ID` IS NOT NULL AND l.`会员ID` <> ''
+  WHERE l.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(l.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND l.`生命周期阶段` = '沉睡'
     AND l.`数据快照日期` = p.as_of_date
 ),
-r_新会员首单 AS (
+`r_新会员首单` AS (
   SELECT
     l.`会员ID`, l.`注册门店ID` AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P1' AS `任务优先级`,
@@ -72,11 +72,11 @@ r_新会员首单 AS (
     CAST(NULL AS DOUBLE) AS `预计价值`
   FROM `dws_会员生命周期` l
   CROSS JOIN params p
-  WHERE l.`会员ID` IS NOT NULL AND l.`会员ID` <> ''
+  WHERE l.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(l.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND l.`生命周期阶段` IN ('新客-未首单', '注册未消费')
     AND l.`数据快照日期` = p.as_of_date
 ),
-r_首单后二单 AS (
+`r_首单后二单` AS (
   SELECT
     l.`会员ID`, l.`注册门店ID` AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P1' AS `任务优先级`,
@@ -87,12 +87,12 @@ r_首单后二单 AS (
     ROUND(l.`总消费金额` / NULLIF(l.`总订单数`, 0), 2) AS `预计价值`
   FROM `dws_会员生命周期` l
   CROSS JOIN params p
-  WHERE l.`会员ID` IS NOT NULL AND l.`会员ID` <> ''
+  WHERE l.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(l.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND l.`生命周期阶段` = '新客-已首单'
     AND l.`总订单数` = 1
     AND l.`数据快照日期` = p.as_of_date
 ),
-r_外卖转到店 AS (
+`r_外卖转到店` AS (
   SELECT
     c.`会员ID`, CAST(NULL AS STRING) AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P2' AS `任务优先级`,
@@ -103,11 +103,11 @@ r_外卖转到店 AS (
     CAST(NULL AS DOUBLE) AS `预计价值`
   FROM `dws_渠道迁移分析` c
   CROSS JOIN params p
-  WHERE c.`会员ID` IS NOT NULL AND c.`会员ID` <> ''
+  WHERE c.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(c.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND c.`迁移类型` IN ('纯外卖', '堂食→外卖迁移')
     AND c.`数据快照日期` = p.as_of_date
 ),
-r_堂食老客召回 AS (
+`r_堂食老客召回` AS (
   SELECT
     c.`会员ID`, CAST(NULL AS STRING) AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P2' AS `任务优先级`,
@@ -119,13 +119,13 @@ r_堂食老客召回 AS (
   FROM `dws_渠道迁移分析` c
   JOIN `dws_会员RFM分层` r ON c.`会员ID` = r.`会员ID`
   CROSS JOIN params p
-  WHERE c.`会员ID` IS NOT NULL AND c.`会员ID` <> ''
+  WHERE c.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(c.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND c.`迁移类型` = '纯堂食'
     AND r.`R分` <= 2
     AND c.`数据快照日期` = p.as_of_date
     AND r.`数据快照日期` = p.as_of_date
 ),
-r_高价值维护 AS (
+`r_高价值维护` AS (
   SELECT
     r.`会员ID`, CAST(NULL AS STRING) AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P2' AS `任务优先级`,
@@ -136,11 +136,11 @@ r_高价值维护 AS (
     ROUND(r.`消费金额` / NULLIF(r.`消费次数`, 0), 2) AS `预计价值`
   FROM `dws_会员RFM分层` r
   CROSS JOIN params p
-  WHERE r.`会员ID` IS NOT NULL AND r.`会员ID` <> ''
+  WHERE r.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(r.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND r.`RFM标签` = '重要价值客户'
     AND r.`数据快照日期` = p.as_of_date
 ),
-r_领券未核销 AS (
+`r_领券未核销` AS (
   SELECT
     c.`会员ID`, c.`门店ID` AS `归属门店ID`,
     '规则生成' AS `任务来源`, 'P2' AS `任务优先级`,
@@ -158,7 +158,7 @@ r_领券未核销 AS (
       ) AS coupon_rn
     FROM `dwd_券事件` x
     CROSS JOIN params p
-    WHERE x.`会员ID` IS NOT NULL AND x.`会员ID` <> ''
+    WHERE x.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(x.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
       AND x.`核销日期` IS NULL
       AND x.`发放日期` <= p.as_of_date
       AND x.`失效日期` BETWEEN p.as_of_date AND DATE_ADD(p.as_of_date, 7)
@@ -166,21 +166,21 @@ r_领券未核销 AS (
   WHERE c.coupon_rn = 1
 ),
 candidates AS (
-  SELECT * FROM r_流失预警
-  UNION ALL SELECT * FROM r_负评修复
-  UNION ALL SELECT * FROM r_沉睡召回
-  UNION ALL SELECT * FROM r_新会员首单
-  UNION ALL SELECT * FROM r_首单后二单
-  UNION ALL SELECT * FROM r_外卖转到店
-  UNION ALL SELECT * FROM r_堂食老客召回
-  UNION ALL SELECT * FROM r_高价值维护
-  UNION ALL SELECT * FROM r_领券未核销
+  SELECT * FROM `r_流失预警`
+  UNION ALL SELECT * FROM `r_负评修复`
+  UNION ALL SELECT * FROM `r_沉睡召回`
+  UNION ALL SELECT * FROM `r_新会员首单`
+  UNION ALL SELECT * FROM `r_首单后二单`
+  UNION ALL SELECT * FROM `r_外卖转到店`
+  UNION ALL SELECT * FROM `r_堂食老客召回`
+  UNION ALL SELECT * FROM `r_高价值维护`
+  UNION ALL SELECT * FROM `r_领券未核销`
 ),
 recent_touch AS (
   SELECT DISTINCT t.`会员ID`
   FROM `dwd_会员触达` t
   CROSS JOIN params p
-  WHERE t.`会员ID` IS NOT NULL AND t.`会员ID` <> ''
+  WHERE t.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(t.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND t.`触达日期` BETWEEN DATE_SUB(p.as_of_date, 7) AND p.as_of_date
 ),
 reachable AS (

@@ -133,7 +133,7 @@ member_base AS (
   LEFT JOIN active_lifecycle_params lp
     ON m.`会员等级` = lp.`会员类型`
   WHERE m.`会员ID` IS NOT NULL
-    AND m.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(m.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND m.`注册日期` IS NOT NULL
     AND CAST(m.`注册日期` AS DATE) <= run.as_of_date
 ),
@@ -246,7 +246,7 @@ member_base AS (
   LEFT JOIN active_lifecycle_params lp
     ON m.`会员等级` = lp.`会员类型`
   WHERE m.`会员ID` IS NOT NULL
-    AND m.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(m.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND m.`注册日期` IS NOT NULL
     AND CAST(m.`注册日期` AS DATE) <= run.as_of_date
 ),

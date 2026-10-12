@@ -17,7 +17,7 @@
 | NULL / 空字符串 / 'null' 字面值三态 / 字段口径歧义 / 通用字段词典 | [07-data-quality-traps.md](07-data-quality-traps.md) |
 | **ETL 工程范式**（10-CTE DWD 宽表 / 轻节点重 SQL vs 重节点轻 SQL / 财务双源对账 / POS 归一化 / Cohort 网格）| [08-etl-engineering-patterns.md](08-etl-engineering-patterns.md) |
 | **39 个 V1 生产 ETL 索引清单**（按 11 个业务域分类 + 每 ETL 的节点/输入/输出/SQL 节点速查 + 复用决策表）| [09-etl-catalog.md](09-etl-catalog.md) |
-| **任务与触达回收**（白盒 NBA 任务池模型 / 九类任务×优先级×圈选依据 / 任务生成 SQL / 防打扰与仲裁 / 漏斗四率回收 / **差评客户挽回**）| [10-task-and-touch-recovery.md](10-task-and-touch-recovery.md) |
+| **任务与触达回收**（白盒 NBA 任务池模型 / 九类任务×优先级×圈选依据 / 任务生成 SQL / 防打扰与仲裁 / 漏斗三率回收 / **差评客户挽回**）| [10-task-and-touch-recovery.md](10-task-and-touch-recovery.md) |
 
 ## 通用字段词典
 
@@ -70,3 +70,7 @@ ETL 输入表统一称作 `input1`（观远 SmartETL 默认入参名），其余
 - 🏠 = 本仓库样板间实现（模拟数据，结构与口径可引用，数值不可当基准；主要出现在 [10 册](10-task-and-touch-recovery.md)）
 
 格式参考 [02-customer-and-membership.md](02-customer-and-membership.md) 第一段。
+
+## 代码块的适用位置
+
+`sql` 是可独立解析的 Spark SQL 示例，`guandata` 是观远卡片字段表达式，`clickhouse` 是 ClickHouse 示例，`sql-fragment` 是需放入 SELECT / WHERE 的片段。静态解析不能证明示例已在目标表上执行。批处理示例的 `${as_of_date}` 须由同一运行批次传入。

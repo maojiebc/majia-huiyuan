@@ -1,4 +1,4 @@
-"""Run the three fact-bridge oracles against workshop sample CSVs."""
+"""Run the three fact-bridge oracles against coherent synthetic mini-world CSVs."""
 
 from __future__ import annotations
 
@@ -18,17 +18,17 @@ from tests.fact_bridges import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SAMPLE = ROOT / "数据集" / "数据样本"
+SAMPLE = ROOT / "tests" / "fixtures" / "mini_world"
 
 
 def _parse_date(value: str) -> date | None:
-    if not value:
+    if not value or value == "\\N":
         return None
     return date.fromisoformat(value[:10])
 
 
 def _parse_dt(value: str) -> datetime | None:
-    if not value:
+    if not value or value == "\\N":
         return None
     return datetime.fromisoformat(value)
 
@@ -48,7 +48,7 @@ def _orders() -> list[dict]:
         rows.append(
             {
                 "order_id": row["订单ID"],
-                "member_id": row["会员ID"] or None,
+                "member_id": None if row["会员ID"] == "\\N" else row["会员ID"],
                 "time": when,
                 "biz_date": biz,
                 "status": row["订单状态"],
@@ -65,7 +65,7 @@ class SampleBridgeTests(unittest.TestCase):
         cls.touches = [
             {
                 "touch_id": row["触达ID"],
-                "member_id": row["会员ID"] or None,
+                "member_id": None if row["会员ID"] == "\\N" else row["会员ID"],
                 "time": _parse_dt(row["触达时间"]),
                 "biz_date": _parse_date(row["触达日期"]),
                 "status": row["触达状态"],
@@ -76,7 +76,7 @@ class SampleBridgeTests(unittest.TestCase):
         cls.coupons = [
             {
                 "coupon_id": row["券ID"],
-                "member_id": row["会员ID"] or None,
+                "member_id": None if row["会员ID"] == "\\N" else row["会员ID"],
                 "order_id": row["订单ID"] or None,
                 "issued": _parse_date(row["发放日期"]),
                 "expires": _parse_date(row["失效日期"]),
@@ -89,7 +89,7 @@ class SampleBridgeTests(unittest.TestCase):
         cls.parts = [
             {
                 "participation_id": row["参与ID"],
-                "member_id": row["会员ID"] or None,
+                "member_id": None if row["会员ID"] == "\\N" else row["会员ID"],
                 "time": _parse_dt(row["参与时间"]),
                 "biz_date": _parse_date(row["参与日期"]),
                 "result": row["结果"],
@@ -100,16 +100,19 @@ class SampleBridgeTests(unittest.TestCase):
 
     def test_sample_touch_bridge_is_unique_and_capped(self):
         rows = touch_order_bridge(self.orders, self.touches)
+        self.assertGreater(len(rows), 0)
         self.assertEqual([], assert_unique_orders(rows))
         self.assertLessEqual(attributed_gmv(rows), eligible_order_gmv(self.orders))
 
     def test_sample_coupon_bridge_is_unique_and_capped(self):
         rows = coupon_order_bridge(self.orders, self.coupons)
+        self.assertGreater(len(rows), 0)
         self.assertEqual([], assert_unique_orders(rows))
         self.assertLessEqual(attributed_gmv(rows), eligible_order_gmv(self.orders))
 
     def test_sample_participation_bridge_is_unique_and_capped(self):
         rows = participation_order_bridge(self.orders, self.parts)
+        self.assertGreater(len(rows), 0)
         self.assertEqual([], assert_unique_orders(rows))
         self.assertLessEqual(attributed_gmv(rows), eligible_order_gmv(self.orders))
 
@@ -117,6 +120,8 @@ class SampleBridgeTests(unittest.TestCase):
         touch_ids = {row["order_id"] for row in touch_order_bridge(self.orders, self.touches)}
         coupon_ids = {row["order_id"] for row in coupon_order_bridge(self.orders, self.coupons)}
         part_ids = {row["order_id"] for row in participation_order_bridge(self.orders, self.parts)}
+        self.assertTrue(touch_ids & coupon_ids)
+        self.assertGreater(len(touch_ids & part_ids), 0)
         self.assertLessEqual(len(touch_ids), len(self.orders))
         self.assertLessEqual(len(coupon_ids), len(self.orders))
         self.assertLessEqual(len(part_ids), len(self.orders))

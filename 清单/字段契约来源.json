@@ -1,0 +1,929 @@
+{
+  "tables": {
+    "ads_会员私域驾驶舱": {
+      "english": "ads_member_private_channel_dashboard",
+      "grain": [
+        "年月"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "ads_会员经营任务池": {
+      "english": "ads_member_task_pool",
+      "grain": [
+        "任务ID"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "ads_加盟商单店报告": {
+      "english": "ads_franchise_store_report",
+      "grain": [
+        "门店ID",
+        "月份"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "ads_单店利润健康": {
+      "english": "ads_store_profit_health",
+      "grain": [
+        "门店ID",
+        "月份"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "ads_异常归因清单": {
+      "english": "ads_anomaly_attribution_list",
+      "grain": [
+        "业务日期",
+        "粒度",
+        "门店ID",
+        "异常来源",
+        "异常类型"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "ads_活动权益复盘": {
+      "english": "ads_campaign_benefit_review",
+      "grain": [
+        "活动ID"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "ads_门店每日指挥台": {
+      "english": "ads_store_daily_command",
+      "grain": [
+        "门店ID",
+        "业务日期"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "ads_高层经营驾驶舱": {
+      "english": "ads_executive_operating_dashboard",
+      "grain": [
+        "业务日期"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dim_会员主档": {
+      "english": "dim_member",
+      "grain": [
+        "会员ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_会员身份桥": {
+      "english": "dim_member_identity_bridge",
+      "grain": [
+        "身份桥ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_券模板": {
+      "english": "dim_coupon_template",
+      "grain": [
+        "券模板ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_加盟商主档": {
+      "english": "dim_franchisee",
+      "grain": [
+        "加盟商ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_员工导购": {
+      "english": "dim_sales_associate",
+      "grain": [
+        "员工ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_商品主档": {
+      "english": "dim_product",
+      "grain": [
+        "商品ID",
+        "商品版本ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_成本科目": {
+      "english": "dim_cost_account",
+      "grain": [
+        "成本科目ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_日期": {
+      "english": "dim_date",
+      "grain": [
+        "日期"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_活动主档": {
+      "english": "dim_campaign",
+      "grain": [
+        "活动ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dim_门店主档": {
+      "english": "dim_store",
+      "grain": [
+        "门店ID",
+        "生效起始日期"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dqc_归因清单对账": {
+      "english": "dqc_attribution_reconciliation",
+      "grain": [
+        "序号"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dwd_会员注册绑定": {
+      "english": "dwd_member_registration_binding",
+      "grain": [
+        "事件ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_会员经营任务": {
+      "english": "dwd_member_task",
+      "grain": [
+        "任务ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_会员触达": {
+      "english": "dwd_member_touch",
+      "grain": [
+        "触达ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_券事件": {
+      "english": "dwd_coupon_event",
+      "grain": [
+        "券ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_加盟分账明细": {
+      "english": "dwd_franchise_revenue_share",
+      "grain": [
+        "分账明细ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_加盟合同明细": {
+      "english": "dwd_franchise_contract",
+      "grain": [
+        "合同ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_投诉": {
+      "english": "dwd_complaint",
+      "grain": [
+        "投诉ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_活动参与": {
+      "english": "dwd_campaign_participation",
+      "grain": [
+        "参与ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_私域事件": {
+      "english": "dwd_private_channel_event",
+      "grain": [
+        "事件ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_积分事件": {
+      "english": "dwd_points_event",
+      "grain": [
+        "流水ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_订单": {
+      "english": "dwd_order",
+      "grain": [
+        "订单ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_订单商品": {
+      "english": "dwd_order_item",
+      "grain": [
+        "订单ID",
+        "商品序号"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_评价": {
+      "english": "dwd_review",
+      "grain": [
+        "评价ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_门店成本明细": {
+      "english": "dwd_store_cost",
+      "grain": [
+        "成本明细ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_门店投资明细": {
+      "english": "dwd_store_investment",
+      "grain": [
+        "投资明细ID"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dwd_门店目标": {
+      "english": "dwd_store_target",
+      "grain": [
+        "门店ID",
+        "年月",
+        "目标指标"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "dws_会员RFM分层": {
+      "english": "dws_member_rfm",
+      "grain": [
+        "会员ID"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_会员同期群留存": {
+      "english": "dws_member_cohort_retention",
+      "grain": [
+        "同期群月份",
+        "留存月份序号"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_会员生命周期": {
+      "english": "dws_member_lifecycle",
+      "grain": [
+        "会员ID"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_体验口碑汇总": {
+      "english": "dws_customer_experience",
+      "grain": [
+        "门店ID",
+        "业务日期"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_券效益分析": {
+      "english": "dws_coupon_effectiveness",
+      "grain": [
+        "券模板ID",
+        "发放日期"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_加盟商经营汇总": {
+      "english": "dws_franchisee_operations",
+      "grain": [
+        "加盟商ID",
+        "月份"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_加盟回本测算": {
+      "english": "dws_franchise_payback",
+      "grain": [
+        "门店ID"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_单店利润月汇总": {
+      "english": "dws_store_monthly_profit",
+      "grain": [
+        "门店ID",
+        "月份"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_员工导购效能": {
+      "english": "dws_sales_associate_performance",
+      "grain": [
+        "员工ID",
+        "周起始"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_商品销售分析": {
+      "english": "dws_product_sales",
+      "grain": [
+        "一级类目",
+        "二级类目",
+        "商品ID",
+        "商品名称",
+        "省份",
+        "城市",
+        "城市层级",
+        "店型",
+        "销售渠道",
+        "是否到店",
+        "业务日期"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_成本结构汇总": {
+      "english": "dws_cost_structure",
+      "grain": [
+        "门店类型",
+        "月份",
+        "成本科目ID",
+        "成本科目名称",
+        "成本大类"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_新店爬坡_Comp老店": {
+      "english": "dws_store_ramp_up_and_comparable",
+      "grain": [
+        "门店ID",
+        "业务日期"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_渠道迁移分析": {
+      "english": "dws_channel_migration",
+      "grain": [
+        "会员ID"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_目标达成": {
+      "english": "dws_target_attainment",
+      "grain": [
+        "门店ID",
+        "年月",
+        "目标指标"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_私域转化漏斗": {
+      "english": "dws_private_channel_funnel",
+      "grain": [
+        "活动ID",
+        "业务日期",
+        "触达渠道"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "dws_门店日报": {
+      "english": "dws_store_daily",
+      "grain": [
+        "门店ID",
+        "业务日期"
+      ],
+      "grain_source": "ETL SQL GROUP BY/去重与事实标识；单批次结果粒度，不追加快照日期以掩盖重复"
+    },
+    "param_会员生命周期阈值": {
+      "english": "param_member_lifecycle_threshold",
+      "grain": [
+        "业务线",
+        "会员类型",
+        "生效日期"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "param_利润健康阈值": {
+      "english": "param_profit_health_threshold",
+      "grain": [
+        "门店类型"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "param_豁免日历": {
+      "english": "param_exemption_calendar",
+      "grain": [
+        "门店类型",
+        "豁免月份"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    },
+    "param_门店会员占比预警阈值": {
+      "english": "param_store_member_share_threshold",
+      "grain": [
+        "门店类型"
+      ],
+      "grain_source": "结构定义的事件标识/维度版本/参数生效期；不追加属性以掩盖重复"
+    }
+  },
+  "fields": {
+    "F分": "frequency_score",
+    "M分": "monetary_score",
+    "P90vsP50差异": "p90_p50_gap",
+    "P90占比": "p90_ratio",
+    "POS门店编码": "pos_store_code",
+    "RFM总分": "rfm_total_score",
+    "RFM标签": "rfm_segment",
+    "R分": "recency_score",
+    "一级类目": "category_level_1",
+    "上架日期": "listed_date",
+    "下单时间": "order_time",
+    "下架日期": "delisted_date",
+    "不可回收投资": "nonrecoverable_investment",
+    "业务日期": "business_date",
+    "业务线": "business_line",
+    "中位数占比": "median_ratio",
+    "事件ID": "event_id",
+    "事件日期": "event_date",
+    "事件时间": "event_time",
+    "事件类型": "event_type",
+    "二级类目": "category_level_2",
+    "亏损率": "loss_store_rate",
+    "亏损门店数": "loss_store_count",
+    "交易日期": "transaction_date",
+    "交易时间": "transaction_time",
+    "人工占比": "labor_cost_ratio",
+    "人工占比上限": "labor_ratio_limit",
+    "人工成本": "labor_cost",
+    "人工超标": "labor_over_limit",
+    "人群标签": "audience_segment",
+    "今日异常": "daily_anomaly",
+    "任务ID": "task_id",
+    "任务优先级": "task_priority",
+    "任务失效时间": "task_expiry_time",
+    "任务完成率": "task_completion_rate",
+    "任务截止时间": "task_deadline_time",
+    "任务数": "task_count",
+    "任务来源": "task_source",
+    "任务生成时间": "task_created_time",
+    "任务类型": "task_type",
+    "任务结果": "task_result",
+    "企微外部联系人ID": "wecom_external_contact_id",
+    "优惠形式": "discount_method",
+    "会员ID": "member_id",
+    "会员占比月降幅预警": "member_share_monthly_drop_alert",
+    "会员卡号": "member_card_number",
+    "会员城市": "member_city",
+    "会员状态": "member_status",
+    "会员等级": "member_level",
+    "会员类型": "member_type",
+    "会员订单占比": "member_order_ratio",
+    "会员订单数": "member_order_count",
+    "会员销售": "member_sales",
+    "会员销售占比": "member_sales_ratio",
+    "体验风险等级": "experience_risk_level",
+    "使用门槛": "minimum_spend",
+    "保证金金额": "deposit_amount",
+    "信用等级": "credit_rating",
+    "入网日期": "franchise_joined_date",
+    "入职日期": "employment_start_date",
+    "内容ID": "content_id",
+    "内容摘要Hash": "content_summary_hash",
+    "内容类型": "content_type",
+    "分成模型": "revenue_share_model",
+    "分账明细ID": "revenue_share_detail_id",
+    "利润健康等级": "profit_health_level",
+    "利润率_对中位数差": "margin_gap_to_median",
+    "到店占比": "store_visit_ratio",
+    "到店能力等级": "store_visit_capacity_level",
+    "到店订单数": "store_visit_order_count",
+    "到店销售": "store_visit_sales",
+    "到店销售额": "store_visit_sales_amount",
+    "到店销售额占比": "store_visit_sales_amount_ratio",
+    "到期日": "maturity_date",
+    "券ID": "coupon_id",
+    "券发放数": "coupons_issued_count",
+    "券名称": "coupon_name",
+    "券核销数": "coupons_redeemed_count",
+    "券核销率": "coupon_redemption_rate",
+    "券模板ID": "coupon_template_id",
+    "券类型": "coupon_type",
+    "前60天堂食": "prior_60d_dine_in_orders",
+    "前60天外卖": "prior_60d_delivery_orders",
+    "剩余回本月数": "remaining_payback_months",
+    "加盟商ID": "franchisee_id",
+    "加盟商名称": "franchisee_name",
+    "加盟商类型": "franchisee_type",
+    "加盟费金额": "franchise_fee_amount",
+    "包材成本": "packaging_cost",
+    "匹配方式": "matching_method",
+    "匹配置信度": "matching_confidence",
+    "区域": "region",
+    "区域经理": "regional_manager",
+    "半固定成本合计": "semifixed_cost_total",
+    "单价": "unit_price",
+    "单店净利润": "store_net_profit",
+    "单店净利率": "store_net_margin",
+    "历史亏损月数": "historical_loss_months",
+    "原价金额": "original_amount",
+    "原价销售额": "original_sales_amount",
+    "原料供应链利润": "ingredient_supply_chain_profit",
+    "原材料成本": "ingredient_cost",
+    "去重会员数": "distinct_member_count",
+    "参与ID": "participation_id",
+    "参与后关联GMV": "participation_associated_gmv",
+    "参与后关联下单人数": "participation_associated_buyer_count",
+    "参与后关联下单率": "participation_associated_purchase_rate",
+    "参与后关联订单数": "participation_associated_order_count",
+    "参与日期": "participation_date",
+    "参与时间": "participation_time",
+    "参数状态": "parameter_status",
+    "参数生效日期": "parameter_effective_date",
+    "发放数": "issued_count",
+    "发放日期": "issued_date",
+    "发放渠道": "issuance_channel",
+    "变动成本合计": "variable_cost_total",
+    "可回收投资": "recoverable_investment",
+    "可改进项": "improvement_items",
+    "合作状态": "partnership_status",
+    "合同ID": "contract_id",
+    "合同期年数": "contract_term_years",
+    "合同状态": "contract_status",
+    "同侪门店数": "peer_store_count",
+    "同期群人数": "cohort_size",
+    "同期群月份": "cohort_month",
+    "员工ID": "employee_id",
+    "员工姓名": "employee_name",
+    "员工导购ID": "sales_associate_id",
+    "员工等级": "employee_level",
+    "周": "week",
+    "周起始": "week_start",
+    "品牌线": "brand_line",
+    "售价": "selling_price",
+    "商品ID": "product_id",
+    "商品件数": "item_count",
+    "商品件数合计": "total_item_count",
+    "商品名称": "product_name",
+    "商品序号": "item_sequence",
+    "商品版本ID": "product_version_id",
+    "商品编码": "product_code",
+    "商圈": "trade_area",
+    "回复状态": "reply_status",
+    "回收性质": "recovery_type",
+    "回本偏离度": "payback_deviation",
+    "回本状态": "payback_status",
+    "回本风险等级": "payback_risk_level",
+    "固定成本合计": "fixed_cost_total",
+    "城市": "city",
+    "城市同店型_利润率_P25": "city_store_type_margin_p25",
+    "城市同店型_利润率_P75": "city_store_type_margin_p75",
+    "城市同店型_利润率_中位数": "city_store_type_margin_median",
+    "城市同店型_堂食占比_中位数": "city_store_type_dine_in_ratio_median",
+    "城市同店型_营收_P25": "city_store_type_revenue_p25",
+    "城市同店型_营收_P75": "city_store_type_revenue_p75",
+    "城市同店型_营收_中位数": "city_store_type_revenue_median",
+    "城市层级": "city_tier",
+    "堂食占比": "dine_in_ratio",
+    "堂食占比_对中位数差": "dine_in_ratio_gap_to_median",
+    "堂食占比下限": "dine_in_ratio_floor",
+    "堂食营收": "dine_in_revenue",
+    "堂食衰减": "dine_in_decline",
+    "增量GMV": "incremental_gmv",
+    "增量ROI": "incremental_roi",
+    "增量测算状态": "increment_estimation_status",
+    "处理人ID": "handler_id",
+    "处理时长_小时": "handling_hours",
+    "处理状态": "handling_status",
+    "备注": "notes",
+    "外卖占比": "delivery_ratio",
+    "外卖平台门店编码": "delivery_platform_store_code",
+    "外卖营收": "delivery_revenue",
+    "外卖订单数": "delivery_order_count",
+    "外卖销售额": "delivery_sales_amount",
+    "失效日期": "expiry_date",
+    "好评数": "positive_review_count",
+    "姓名": "name",
+    "季度": "quarter",
+    "定标方法": "calibration_method",
+    "实付金额": "paid_amount",
+    "实际值": "actual_value",
+    "客单价": "average_order_value",
+    "对账状态": "reconciliation_status",
+    "履约方式": "fulfillment_method",
+    "岗位": "job_position",
+    "已开业月数": "months_since_opening",
+    "已核销优惠成本": "redeemed_discount_cost",
+    "已触达任务": "touched_task_count",
+    "已记录权益成本": "recorded_benefit_cost",
+    "平台抽佣": "platform_commission",
+    "平均件数": "average_item_count",
+    "平均占比": "average_ratio",
+    "平均堂食占比": "average_dine_in_ratio",
+    "平均处理时长": "average_handling_hours",
+    "平均客单价": "mean_order_value",
+    "平均评分": "average_rating",
+    "平均贡献利润率": "average_contribution_margin",
+    "年份": "year",
+    "年加盟费": "annual_franchise_fee",
+    "年加盟费分摊": "annual_franchise_fee_allocation",
+    "年月": "year_month",
+    "年龄段": "age_group",
+    "序号": "sequence_number",
+    "店型": "store_format",
+    "店长姓名": "store_manager_name",
+    "店面贡献利润": "store_contribution_profit",
+    "店面贡献利润率": "store_contribution_margin",
+    "座位数": "seat_count",
+    "建议动作": "suggested_action",
+    "开业天数": "days_since_opening",
+    "开业日期": "opening_date",
+    "开始日期": "start_date",
+    "异常来源": "anomaly_source",
+    "异常类型": "anomaly_type",
+    "异常详情": "anomaly_details",
+    "归因窗口天数": "attribution_window_days",
+    "归因规则": "attribution_rule",
+    "归属门店ID": "assigned_store_id",
+    "当前版本标记": "is_current_version",
+    "当日评分": "daily_rating",
+    "当月活跃会员": "monthly_active_member_count",
+    "录入日期": "entry_date",
+    "待处理投诉": "pending_complaint_count",
+    "微信OpenID": "wechat_open_id",
+    "微信UnionID": "wechat_union_id",
+    "性别": "gender",
+    "总成本": "total_cost",
+    "总投资额": "total_investment",
+    "总消费金额": "total_spend",
+    "总订单数": "total_order_count",
+    "总部分摊": "headquarters_allocation",
+    "总部当月净收益": "headquarters_monthly_net_income",
+    "总部当月收入": "headquarters_monthly_revenue",
+    "总部本月支持": "headquarters_monthly_support",
+    "总销售": "total_sales",
+    "成本": "cost",
+    "成本占比": "cost_ratio",
+    "成本大类": "cost_category",
+    "成本性质": "cost_behavior",
+    "成本总计": "cost_grand_total",
+    "成本总额": "total_cost_amount",
+    "成本明细ID": "cost_detail_id",
+    "成本科目ID": "cost_account_id",
+    "成本科目名称": "cost_account_name",
+    "成本金额": "cost_amount",
+    "房租占比": "rent_cost_ratio",
+    "房租占比上限": "rent_ratio_limit",
+    "房租物业": "rent_property_cost",
+    "房租超标": "rent_over_limit",
+    "手机号": "masked_phone_number",
+    "手机号Hash": "phone_number_hash",
+    "打开率": "open_rate",
+    "执行状态": "execution_status",
+    "投诉ID": "complaint_id",
+    "投诉数": "complaint_count",
+    "投诉时间": "complaint_time",
+    "投诉类型": "complaint_type",
+    "投资日期": "investment_date",
+    "投资明细ID": "investment_detail_id",
+    "投资类型": "investment_type",
+    "投资起始日": "investment_start_date",
+    "投资金额": "investment_amount",
+    "投资项": "investment_item",
+    "折扣率": "discount_rate",
+    "折扣金额": "discount_amount",
+    "折扣金额合计": "total_discount_amount",
+    "招商承诺回本月数": "promised_payback_months",
+    "持续亏损标签": "sustained_loss_label",
+    "持续亏损预警月数": "sustained_loss_alert_months",
+    "推荐动作": "recommended_action",
+    "推荐原因": "recommendation_reason",
+    "推荐权益": "recommended_benefit",
+    "支付方式": "payment_method",
+    "支付渠道用户ID": "payment_channel_user_id",
+    "收入口径金额": "recognized_revenue_amount",
+    "数据快照日期": "snapshot_date",
+    "数据来源": "data_source",
+    "数据状态": "data_status",
+    "数量": "quantity",
+    "新增会员数": "new_member_count",
+    "新增首单会员": "new_first_order_member_count",
+    "新店标签": "new_store_label",
+    "日": "day",
+    "日期": "date",
+    "星期": "weekday",
+    "星期名称": "weekday_name",
+    "是否90天内新店": "is_new_store_within_90_days",
+    "是否主商品": "is_main_product",
+    "是否会员首单": "is_member_first_order",
+    "是否到店": "is_store_visit",
+    "是否周末": "is_weekend",
+    "是否在售": "is_on_sale",
+    "是否季节限定": "is_seasonal_exclusive",
+    "是否完整观察期": "is_observation_complete",
+    "是否按店型差异化": "varies_by_store_type",
+    "是否有效": "is_valid",
+    "是否查看": "is_viewed",
+    "是否用券": "is_coupon_used",
+    "是否节假日": "is_holiday",
+    "最低占比": "minimum_ratio",
+    "最近出现时间": "last_seen_time",
+    "最近活跃日期": "last_active_date",
+    "最近消费日期": "last_purchase_date",
+    "最高占比": "maximum_ratio",
+    "月份": "month",
+    "月均店面贡献利润": "monthly_average_contribution_profit",
+    "月总单店净利润": "monthly_total_store_net_profit",
+    "月总堂食营收": "monthly_total_dine_in_revenue",
+    "月总外卖营收": "monthly_total_delivery_revenue",
+    "月总店面贡献利润": "monthly_total_contribution_profit",
+    "月总毛利": "monthly_total_gross_profit",
+    "月总营收": "monthly_total_revenue",
+    "月总订单数": "monthly_total_order_count",
+    "月营收": "monthly_revenue",
+    "月营收基数": "monthly_revenue_base",
+    "期望值": "expected_value",
+    "未回复负评数": "unreplied_negative_review_count",
+    "末单日期": "last_order_date",
+    "本店位置标签": "store_position_label",
+    "本月亏损": "monthly_loss_flag",
+    "来源活动ID": "source_campaign_id",
+    "来源渠道": "source_channel",
+    "查看人数": "viewer_count",
+    "查看人次": "view_person_times",
+    "查看数": "view_count",
+    "标杆门店标志": "is_benchmark_store",
+    "标签": "tag",
+    "核销GMV成本比": "redemption_gmv_cost_ratio",
+    "核销数": "redeemed_count",
+    "核销日期": "redeemed_date",
+    "核销率": "redemption_rate",
+    "核销订单GMV": "redeemed_order_gmv",
+    "核销订单数": "redeemed_order_count",
+    "检查类别": "check_category",
+    "检查项": "check_item",
+    "毛利": "gross_profit",
+    "毛利率": "gross_margin",
+    "毛利率塌方阈值pp": "gross_margin_drop_threshold_pp",
+    "沉睡天数上限": "dormant_days_limit",
+    "注册天数": "days_since_registration",
+    "注册日期": "registration_date",
+    "注册渠道": "registration_channel",
+    "注册门店ID": "registration_store_id",
+    "活动ID": "campaign_id",
+    "活动参与人数": "campaign_participant_count",
+    "活动参与归因规则": "campaign_participation_attribution_rule",
+    "活动名称": "campaign_name",
+    "活动渠道": "campaign_channel",
+    "活动类型": "campaign_type",
+    "活跃会员数": "active_member_count",
+    "活跃天数上限": "active_days_limit",
+    "流失天数上限": "churn_days_limit",
+    "流水ID": "ledger_entry_id",
+    "流水抽成率": "revenue_share_rate",
+    "流水抽成金额": "revenue_share_amount",
+    "流水类型": "ledger_entry_type",
+    "消费次数": "purchase_count",
+    "消费金额": "purchase_amount",
+    "渠道": "channel",
+    "爬坡阶段": "ramp_up_stage",
+    "状态": "status",
+    "生命周期阶段": "lifecycle_stage",
+    "生效截止日期": "effective_end_date",
+    "生效日期": "effective_date",
+    "生效起始日期": "effective_start_date",
+    "生日": "birth_date",
+    "留存人数": "retained_member_count",
+    "留存月份": "retention_month",
+    "留存月份序号": "retention_month_index",
+    "留存率": "retention_rate",
+    "盈利门店数": "profitable_store_count",
+    "目标ID": "target_id",
+    "目标人群标签": "target_audience_segment",
+    "目标人群等级": "target_audience_level",
+    "目标值": "target_value",
+    "目标指标": "target_metric",
+    "目标缺口": "target_gap",
+    "直营加盟类型": "ownership_type",
+    "省份": "province",
+    "督导费用": "supervision_cost",
+    "离散度": "dispersion",
+    "科目营收占比": "account_revenue_ratio",
+    "积分变化": "points_change",
+    "等级升级日期": "level_upgrade_date",
+    "签约日期": "contract_signed_date",
+    "签约省份": "contracted_province",
+    "粒度": "grain",
+    "累计回本率": "cumulative_payback_ratio",
+    "累计店面贡献利润": "cumulative_contribution_profit",
+    "累计营收": "cumulative_revenue",
+    "经营健康等级": "operating_health_level",
+    "经营月数": "operating_months",
+    "经营门店数": "operating_store_count",
+    "绑定状态": "binding_status",
+    "结束日期": "end_date",
+    "结果": "result",
+    "结算日期": "settlement_date",
+    "续约状态": "renewal_status",
+    "续约风险": "renewal_risk",
+    "联系人": "contact_person",
+    "能耗水电": "utilities_cost",
+    "节假日名称": "holiday_name",
+    "营业状态": "operating_status",
+    "营收_对中位数比": "revenue_ratio_to_median",
+    "营收基数": "revenue_base",
+    "营收总额": "total_revenue_amount",
+    "营销周期标签": "marketing_cycle_label",
+    "行为类型": "behavior_type",
+    "行金额": "line_amount",
+    "装修投入金额": "renovation_investment",
+    "装修标准": "renovation_standard",
+    "角色标签": "role_label",
+    "触达ID": "touch_id",
+    "触达人数": "touched_person_count",
+    "触达人次": "touch_person_times",
+    "触达会员数": "touched_member_count",
+    "触达后下单": "ordered_after_touch",
+    "触达后下单金额": "order_amount_after_touch",
+    "触达后关联GMV": "touch_associated_gmv",
+    "触达后关联下单人数": "touch_associated_buyer_count",
+    "触达后关联下单率": "touch_associated_purchase_rate",
+    "触达后关联订单数": "touch_associated_order_count",
+    "触达后关联销售": "touch_associated_sales",
+    "触达后关联销售占比": "touch_associated_sales_ratio",
+    "触达后转化率": "post_touch_conversion_rate",
+    "触达归因规则": "touch_attribution_rule",
+    "触达数": "touch_count",
+    "触达方式": "touch_method",
+    "触达日期": "touch_date",
+    "触达时间": "touch_time",
+    "触达次数": "touch_frequency",
+    "触达渠道": "touch_channel",
+    "触达状态": "touch_status",
+    "订单ID": "order_id",
+    "订单归因规则": "order_attribution_rule",
+    "订单数": "order_count",
+    "订单状态": "order_status",
+    "设备投入金额": "equipment_investment",
+    "设备折旧": "equipment_depreciation",
+    "评价ID": "review_id",
+    "评价平台": "review_platform",
+    "评价数": "review_count",
+    "评价日期": "review_date",
+    "评价时间": "review_time",
+    "评分": "rating",
+    "豁免原因": "exemption_reason",
+    "豁免月份": "exempt_month",
+    "豁免标记": "is_exempt",
+    "负评数": "negative_review_count",
+    "负评标签": "negative_review_tag",
+    "负评率": "negative_review_rate",
+    "财务门店编码": "finance_store_code",
+    "距今天数": "days_since_last_purchase",
+    "距末单天数": "days_since_last_order",
+    "身份匹配置信度": "identity_matching_confidence",
+    "身份桥ID": "identity_bridge_id",
+    "身份类型": "identity_type",
+    "转化任务数": "converted_task_count",
+    "转化金额": "conversion_amount",
+    "转化阶段": "conversion_stage",
+    "达成率": "attainment_rate",
+    "迁移类型": "migration_type",
+    "近30天堂食": "recent_30d_dine_in_orders",
+    "近30天外卖": "recent_30d_delivery_orders",
+    "近30天订单": "recent_30d_order_count",
+    "近3月有亏损": "had_loss_in_recent_3_months",
+    "近7天订单": "recent_7d_order_count",
+    "连续亏损月数": "consecutive_loss_months",
+    "适用品类": "applicable_category",
+    "适用场景": "applicable_scenario",
+    "适用范围": "applicable_scope",
+    "销售渠道": "sales_channel",
+    "销售额": "sales_amount",
+    "销量": "units_sold",
+    "门均营收": "revenue_per_store",
+    "门均贡献利润": "contribution_profit_per_store",
+    "门店ID": "store_id",
+    "门店名称": "store_name",
+    "门店城市": "store_city",
+    "门店成长类型": "store_growth_type",
+    "门店数": "store_count",
+    "门店数量": "number_of_stores",
+    "门店版本ID": "store_version_id",
+    "门店类型": "store_type",
+    "门店编码": "store_code",
+    "闭店日期": "closing_date",
+    "面值": "face_value",
+    "面积_平方米": "area_square_meters",
+    "顾客识别键": "customer_identity_key",
+    "预算": "budget",
+    "预警条数": "alert_count",
+    "预计价值": "expected_value_amount",
+    "预计完整回本日期": "projected_full_payback_date",
+    "预计完整回本月数": "projected_full_payback_months",
+    "风险等级": "risk_level",
+    "首单日期": "first_order_date",
+    "首次出现时间": "first_seen_time",
+    "默认营收占比": "default_revenue_ratio"
+  }
+}

@@ -4,3 +4,8 @@ __pycache__/
 .pytest_cache/
 .venv/
 dist/
+
+.venv-spark/
+.spark-warehouse/
+spark-warehouse/
+work/

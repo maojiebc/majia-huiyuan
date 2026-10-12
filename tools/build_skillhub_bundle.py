@@ -30,6 +30,8 @@ ROOT_FILES = (
 
 DIRECTORIES = (
     "公式库",
+    "口径卡片",
+    "DDL",
     "清单",
     "数据集/结构定义",
     "ETL/逻辑SQL",
@@ -58,11 +60,7 @@ _SKILL_MD_PATCHES: list[tuple[str, str]] = [
         "> SkillHub 为文本精简包：保留结构定义、ETL 逻辑、看板文档、公式库与方法论正文；"
         "数据样本、原始 JSON 和图片请从 GitHub 完整版读取。",
     ),
-    (
-        "`数据集/数据样本/*.csv` 表头 + `数据集/结构定义/*.md` 的类型信息推 schema",
-        "`数据集/结构定义/*.md` 的字段与类型信息推 schema；"
-        "需要取值样本时读取 GitHub 完整版的 `数据集/数据样本/*.csv`",
-    ),
+
 ]
 
 

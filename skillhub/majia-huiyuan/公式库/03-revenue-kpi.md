@@ -4,7 +4,7 @@
 
 ## 客单价 AC ⚪
 
-```sql
+```guandata
 SUM([去税营业额 NS]) / COUNT(DISTINCT [订单号])
 ```
 
@@ -16,7 +16,7 @@ SUM([去税营业额 NS]) / COUNT(DISTINCT [订单号])
 
 **变体**：
 
-```sql
+```guandata
 -- 仅外卖 AC
 SUM(IF([业务渠道划分] = 'HD外卖', [去税营业额 NS], NULL))
   / COUNT(IF([业务渠道划分] = 'HD外卖', [订单号], NULL))
@@ -26,7 +26,7 @@ SUM(IF([业务渠道划分] = 'HD外卖', [去税营业额 NS], NULL))
 
 ## 店均日营收 ADS ⚪
 
-```sql
+```guandata
 SUM([去税营业额 NS]) / COUNT(DISTINCT [StoreDate])
 ```
 
@@ -34,14 +34,14 @@ SUM([去税营业额 NS]) / COUNT(DISTINCT [StoreDate])
 
 **关键字段**：`StoreDate = CONCAT([StoreID], '_', [businessDate])`，作为门店×日的唯一键。这是餐饮 BI 平台里"分母去重"的标准做法。
 
-```sql
+```guandata
 -- 衍生：店天数（StoreDays）
 COUNT(DISTINCT [StoreDate])
 ```
 
 ### 店均日营收 - 仅外卖 ADS_HD ⚪
 
-```sql
+```guandata
 SUM(IF([业务渠道划分] = 'HD外卖', [去税营业额 NS], 0))
   / COUNT(DISTINCT [StoreDate])
 ```
@@ -50,13 +50,13 @@ SUM(IF([业务渠道划分] = 'HD外卖', [去税营业额 NS], 0))
 
 ## 店均日订单 ADT ⚪
 
-```sql
+```guandata
 COUNT(DISTINCT [订单号]) / COUNT(DISTINCT [StoreDate])
 ```
 
 ## 店均日销量 AUD ⚪
 
-```sql
+```guandata
 SUM([销量QTY]) / COUNT(DISTINCT [StoreDate])
 ```
 
@@ -64,7 +64,7 @@ SUM([销量QTY]) / COUNT(DISTINCT [StoreDate])
 
 ## Comp 标记 ⚪
 
-```sql
+```guandata
 IF([IsComp] = TRUE, 'Y', 'N')
 ```
 
@@ -74,7 +74,7 @@ IF([IsComp] = TRUE, 'Y', 'N')
 
 ## TC_CRM% / NS_CRM%（会员渗透）🅰️
 
-```sql
+```guandata
 -- TC_CRM%（会员订单数 / 总订单数）
 COUNT(DISTINCT IF([日用户类型] != '非会员', [订单号], NULL))
   / COUNT(DISTINCT [订单号])
@@ -94,7 +94,7 @@ SUM(IF([日用户类型] != '非会员', [去税营业额 NS], 0))
 
 ### 堂食营收占比
 
-```sql
+```guandata
 IF(
   (SUM([堂食营收]) + SUM([外卖营收])) = 0,
   0,
@@ -104,7 +104,7 @@ IF(
 
 ### 外卖订单占比
 
-```sql
+```guandata
 IF(
   (SUM([堂食订单数]) + SUM([外卖订单数])) = 0,
   0,
@@ -114,7 +114,7 @@ IF(
 
 ### 堂食订单占比
 
-```sql
+```guandata
 IF(
   (SUM([堂食订单数]) + SUM([外卖订单数])) = 0,
   0,
@@ -155,13 +155,13 @@ FROM input1;
 
 ### 顾客累计金额（不分时间）
 
-```sql
+```guandata
 SUM([含税营业额 GS]) OVER (PARTITION BY [会员号MemberShipID])
 ```
 
 ## 客单类型（价格分桶）🅰️
 
-```sql
+```guandata
 CASE
   WHEN [Gross_sales] < 20  THEN '[0 ,20) 元'
   WHEN [Gross_sales] < 30  THEN '[20,30) 元'
@@ -178,7 +178,7 @@ END
 
 ## 折扣率 ⚪
 
-```sql
+```guandata
 -- 简版（Discount + ALA_Sales 都是 SUM 后的值）
 SUM([Discount]) / SUM([ALA_Sales])
 
@@ -190,7 +190,7 @@ SUM([原价金额 ALA_Sales] - [含税营业额 GS]) / SUM([原价金额 ALA_Sal
 
 ## 频次（汇总版）⚪
 
-```sql
+```guandata
 COUNT(DISTINCT [订单号]) / COUNT(DISTINCT [会员号MemberShipID])
 ```
 
@@ -198,7 +198,7 @@ COUNT(DISTINCT [订单号]) / COUNT(DISTINCT [会员号MemberShipID])
 
 ## 共消费几笔订单 / 多少钱（顾客明细）⚪
 
-```sql
+```guandata
 -- 共消费几笔订单
 COUNT([订单日期]) OVER (PARTITION BY [会员号MemberShipID])
 
@@ -210,7 +210,7 @@ SUM([含税营业额 GS]) OVER (PARTITION BY [会员号MemberShipID])
 
 ## 累计人数（注册时序）⚪
 
-```sql
+```guandata
 SUM(1) OVER (PARTITION BY 1 ORDER BY [注册时间])
 ```
 
@@ -220,7 +220,7 @@ SUM(1) OVER (PARTITION BY 1 ORDER BY [注册时间])
 
 ## 折扣率（完整业务版）⚪
 
-```sql
+```guandata
 SUM([原价金额 ALA_Sales] - [含税营业额 GS]) / SUM([原价金额 ALA_Sales])
 ```
 

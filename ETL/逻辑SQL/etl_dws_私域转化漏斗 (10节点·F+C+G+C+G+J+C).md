@@ -47,7 +47,7 @@ valid_touch AS (
   FROM input1 t
   CROSS JOIN params p
   WHERE t.`触达状态` = '已发送'
-    AND t.`会员ID` IS NOT NULL AND t.`会员ID` <> ''
+    AND t.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(t.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND t.`活动ID` IS NOT NULL AND t.`活动ID` <> ''
     AND t.`触达日期` <= p.`as_of_date`
 ),
@@ -61,7 +61,7 @@ valid_order AS (
   FROM input2 o
   CROSS JOIN params p
   WHERE o.`订单状态` = '已完成'
-    AND o.`会员ID` IS NOT NULL AND o.`会员ID` <> ''
+    AND o.`会员ID` IS NOT NULL AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND o.`业务日期` <= p.`as_of_date`
 ),
 touch_daily AS (
@@ -97,7 +97,7 @@ touch_order_candidates AS (
    AND o.`下单时间` >= t.`触达时间`
    AND o.`下单时间` < t.`触达时间` + INTERVAL 8 DAYS
 ),
-bridge_触达订单归因 AS (
+`bridge_触达订单归因` AS (
   SELECT
     `订单ID`, `触达ID`, `触达时间`, `下单时间`, `订单发生日期`,
     `会员ID`, `实付金额`, `活动ID`, `触达渠道`, `归因规则`, `归因优先级`
@@ -112,7 +112,7 @@ order_daily AS (
     COUNT(DISTINCT b.`会员ID`) AS `触达后关联下单人数`,
     COUNT(DISTINCT b.`订单ID`) AS `触达后关联订单数`,
     SUM(b.`实付金额`) AS `触达后关联GMV`
-  FROM bridge_触达订单归因 b
+  FROM `bridge_触达订单归因` b
   GROUP BY b.`活动ID`, b.`订单发生日期`, b.`触达渠道`
 ),
 date_keys AS (

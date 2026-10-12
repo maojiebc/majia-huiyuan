@@ -120,7 +120,7 @@ FROM (
   SELECT `员工ID`,
     date_sub(`触达日期`, dayofweek(`触达日期`) - 1) AS `周起始`,
     COUNT(DISTINCT `触达ID`) AS `触达数`,
-    COUNT(DISTINCT `会员ID`) AS `触达会员数`,
+    COUNT(DISTINCT CASE WHEN LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `会员ID` END) AS `触达会员数`,
     SUM(`是否查看`) AS `查看数`
   FROM input1 CROSS JOIN params p1
   WHERE `触达状态` = '已发送' AND `触达日期` <= p1.as_of_date
@@ -135,6 +135,7 @@ FULL OUTER JOIN (
     SUM(`触达后下单金额`) AS `转化金额`
   FROM input2 CROSS JOIN params p2
   WHERE DATE(`任务生成时间`) <= p2.as_of_date
+    AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
   GROUP BY `员工导购ID`, date_sub(DATE(`任务生成时间`), dayofweek(DATE(`任务生成时间`)) - 1)
 ) k
 ON t.`员工ID` = k.`员工导购ID` AND t.`周起始` = k.`周起始`
@@ -158,7 +159,7 @@ FROM (
   SELECT `员工ID`,
     date_sub(`触达日期`, dayofweek(`触达日期`) - 1) AS `周起始`,
     COUNT(DISTINCT `触达ID`) AS `触达数`,
-    COUNT(DISTINCT `会员ID`) AS `触达会员数`,
+    COUNT(DISTINCT CASE WHEN LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null') THEN `会员ID` END) AS `触达会员数`,
     SUM(`是否查看`) AS `查看数`
   FROM input1 CROSS JOIN params p1
   WHERE `触达状态` = '已发送' AND `触达日期` <= p1.as_of_date
@@ -173,6 +174,7 @@ FULL OUTER JOIN (
     SUM(`触达后下单金额`) AS `转化金额`
   FROM input2 CROSS JOIN params p2
   WHERE DATE(`任务生成时间`) <= p2.as_of_date
+    AND LOWER(REGEXP_REPLACE(`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
   GROUP BY `员工导购ID`, date_sub(DATE(`任务生成时间`), dayofweek(DATE(`任务生成时间`)) - 1)
 ) k
 ON t.`员工ID` = k.`员工导购ID` AND t.`周起始` = k.`周起始`

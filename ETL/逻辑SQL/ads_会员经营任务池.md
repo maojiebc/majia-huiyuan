@@ -119,6 +119,7 @@ LEFT JOIN store_current s ON t.`归属门店ID` = s.`门店ID`
 LEFT JOIN input4 m ON t.`会员ID` = m.`会员ID`
 CROSS JOIN params p
 WHERE t.`任务生成时间` < CAST(p.as_of_date AS TIMESTAMP) + INTERVAL 1 DAY
+  AND LOWER(REGEXP_REPLACE(t.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
 ```
 - 等价SQL:
 ```sql
@@ -154,6 +155,7 @@ LEFT JOIN store_current s ON t.`归属门店ID` = s.`门店ID`
 LEFT JOIN input4 m ON t.`会员ID` = m.`会员ID`
 CROSS JOIN params p
 WHERE t.`任务生成时间` < CAST(p.as_of_date AS TIMESTAMP) + INTERVAL 1 DAY
+  AND LOWER(REGEXP_REPLACE(t.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
 ```
 
 

@@ -1,6 +1,6 @@
 # majia-huiyuan · 会员运营家底（开源样板间）
 
-[![Skill Version](https://img.shields.io/badge/skill-v1.4.5-blue)](./SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v1.5.0-blue)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![skills.sh](https://skills.sh/b/maojiebc/majia-huiyuan)](https://skills.sh/maojiebc/majia-huiyuan)
 [![Release](https://img.shields.io/github/v/release/maojiebc/majia-huiyuan?label=release&color=success)](https://github.com/maojiebc/majia-huiyuan/releases)
@@ -35,7 +35,10 @@
 | 发布到 WorkBuddy 开放平台 | [workbuddy/README.md](./workbuddy/README.md) → 生成自包含单专家 ZIP，并先跑平台契约测试 |
 | 先看故事再翻表 | [分享/区域运营的一天/](./分享/区域运营的一天/README.md) |
 
-> **v1.4.5 可信边界：**`ETL/逻辑SQL/`、[`ETL/公共口径/`](./ETL/公共口径/) 与 `看板/页面文档/` 是当前校正后的参考口径；本次补充门店经营口径与实战问题入口，数仓参考逻辑沿用 v1.4.2，仍需用自家数据验证后再生产化。`*/原始JSON/` 和 `看板/页面JSON/` 是 2026-06-24 的 workshop 历史快照，保留用于审计原 DAG / 布局，**未同步改造成可直接导入包**，其中仍可能出现旧字段名。当前 SQL 定位是“待验证示例”，不是标准答案。未做 Spark 全量回放。
+> **v1.5.0 可信边界：**25 条 ETL 的 147 个节点及公共口径已在 Spark 3.4.4 本地模式、合成 small 数据上逐节点执行，25 个输出非空；正常场景 19 项业务验收为 0。三条事实桥的订单/事件键与 Python 参照一致，规则任务的类型/优先级/holdout、时间规范和同期群也做了差分；14 个手算答案通过。故意放入未来事实与 SCD2 重叠的独立反例应触发第 20、21 项。55 张英文 Spark 持久表已建表、严格载入和完整读回；其他三种 DDL 仅做语法解析。中文持久表名受默认 Spark 目录限制，见 [DDL 说明](DDL/README.md)。这些证据限于本地合成小数据；当前 SQL 仍是待验证示例，仍需用自家数据完成字段映射、小样本回放和业务验收后才能上生产。原始/页面 JSON 保留历史快照，未作为当前导入包改造。
+
+会员身份口径已由作者确认：NULL、空白和忽略大小写/首尾空白的字面量 `null` 都视为未识别会员；订单仍计总销售，但不计会员统计、画像、任务和按会员身份的触达/活动归因。任务漏斗更正为三率。具体判断见 [公共口径](ETL/公共口径/README.md#会员身份有效性)。
+
 
 ---
 
@@ -174,7 +177,7 @@
 | [07 数据质量坑](./公式库/07-data-quality-traps.md) | NULL / 空串 / 'null' 三态、口径歧义、通用字段词典 |
 | [08 ETL 工程范式](./公式库/08-etl-engineering-patterns.md) | DWD 宽表底座、财务双源对账、POS 归一化、Cohort 网格 |
 | [09 生产 ETL 索引](./公式库/09-etl-catalog.md) | 39 个生产 ETL 按 11 个业务域的索引与复用决策表 |
-| [10 任务与触达回收](./公式库/10-task-and-touch-recovery.md) | 白盒 NBA 任务池模型、九类任务×圈选依据、防打扰与仲裁、漏斗四率回收、差评客户挽回 |
+| [10 任务与触达回收](./公式库/10-task-and-touch-recovery.md) | 白盒 NBA 任务池模型、九类任务×圈选依据、防打扰与仲裁、漏斗三率回收、差评客户挽回 |
 
 总入口和"5 条最容易踩的坑"见 [公式库/README.md](./公式库/README.md)。**样板间的表结构 + 公式库的算法，两样凑齐，是方案评审和二次开发的图纸；生产上线还要完成字段映射、口径确认和回归验收。**
 
@@ -250,7 +253,7 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 - JSON 里的资源 ID 是 workshop 实例私有的，复刻时会生成你自己的
 - 快照时间 2026-06-24，导出工具为观远官方 `guancli`；统一运行参数 `as_of_date` 也默认使用该日
 - `原始JSON` 与 `看板/页面JSON` 保留的是历史平台快照；v1.4.1 的修复以 `ETL/逻辑SQL`、`ETL/公共口径`、`看板/页面文档` 和自动验收为准
-- 结构定义若同时保留平台历史字段，会在文件顶部标出 `v1.4.1 结构覆盖`；当前 CSV 样本表头已按该覆盖口径同步，不能用下方明确标注的 v1.4.0 历史字段反推新表
+- 结构定义若同时保留平台历史字段，会在文件顶部标出 `v1.4.1 结构覆盖`；当前类型、中英名和粒度以 `清单/字段契约.csv` 为准，原 CSV 表头保持当前字段顺序，不能用下方明确标注的 v1.4.0 历史字段反推新表
 
 ## 兄弟项目
 
@@ -259,21 +262,38 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.codex/skills/majia-hu
 | [majia-siyu](https://github.com/maojiebc/majia-siyu-team) | 私域经营动作入口。**朋友圈、群发、欢迎语、社群触达与整盘经营诊断在那边；指标、公式、SQL 与看板在本库。** |
 | [majia-guanyuan](https://github.com/maojiebc/majia-guanyuan) | 观远 BI 实战增益层 skill。**工具与踩坑手册在那边，数据与公式在这边**；本库的模拟中台和公式库都源自它，现独立迭代 |
 
+## 开发者验证
+
+轻量检查只需 `python -m pip install -r requirements-dev.txt` 后运行 `python -m unittest discover -s tests -v`；没有 PySpark 时执行测试明确 skip。Spark 放在独立环境和独立 CI job，不把轻量贡献流程变成 Java 依赖。
+
+本地执行验证需 Java 17、Python 3.11 与锁定的 PySpark 3.4.4。macOS 可先安装 `brew install openjdk@17`，再运行：
+
+```bash
+uv venv --python 3.11 .venv-spark
+uv pip install --python .venv-spark/bin/python -r requirements-spark.txt
+export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
+REQUIRE_SPARK=1 SPARK_LOCAL_IP=127.0.0.1 .venv-spark/bin/python -m unittest tests.test_spark_pipeline tests.test_spark_ddl -v
+```
+
+逐表输出和运行报告可用 `.venv-spark/bin/python tools/run_pipeline.py --as-of 2026-06-24 --out work/spark-run` 生成。模拟数据用 `python tools/build_mini_world.py --seed 41 --as-of 2026-06-24 --out tests/fixtures/mini_world` 重建；默认 `clean` 场景执行 19 项零值验收，`--scenario adversarial` 另放入未来事实和 SCD2 重叠，要求第 20、21 项检出异常。执行器不隐式清洗输入，异常不要求假装为 0。`--scale full` 仅提供手动生成入口，本版本的执行证据限于 small 合成数据。
+
+运行报告记录真实字段类型、输出行数、每个节点的物化与 SQL 指纹、统一快照、种子、Git SHA 和未提交状态。中间计算节点也物化，防止未使用的错误列被优化剪除；CSV 类型错误直接失败，不静默变成空值。
+
 ## 路线图
 
-- [ ] **口径卡片**：每张核心表配一页"这张表回答什么业务问题"
-- [ ] **通用建表 DDL**：不用观远也能一键建表的 SQL 版本
+- [x] **口径卡片**：[16 个核心指标定义](口径卡片/README.md)，包含观察窗、口径选项、来源和明确的数据缺口
+- [x] **通用建表 DDL**：[四种方言与生成命令](DDL/README.md)，Spark 默认目录建持久表使用 `--naming en`；其他引擎尚需实际验证
 - [x] **实战问题入口**：[从门店问题开始](公式库/实战问题入口.md)，覆盖注册归因、激励、核销、开业留客、读数、召回与储值事件；内容为脱敏整理和方法建议，非经营效果证明
 - [ ] **行业变体**：茶饮 / 正餐 / 零售的差异字段说明
-- [ ] 字段词典中英对照
+- [x] 字段词典中英对照：[55 表 / 866 列字段契约](清单/字段契约.csv)
 
 想看哪个先做，[提个 issue](https://github.com/maojiebc/majia-huiyuan/issues) 投票。
 
 ## 📋 版本记录
 
+- **v1.5.0**（2026-10-12）Spark 本地合成小数据逐节点执行、核心字段差分、55 表字段契约与四方言 DDL、16 张口径卡片。
 - **v1.4.5**（2026-09-14）补齐有效新增、奖励结算、券批次与观察期、开业回收和储值事件；明确模拟示例与经营效果边界。
 - **v1.4.4**（2026-09-07）实战问题入口、包内链接与 WorkBuddy ZIP 检查。
-- **v1.4.3**（2026-09-03）WorkBuddy 单专家适配与平台契约检查。
 
 完整历史见 [CHANGELOG](https://github.com/maojiebc/majia-huiyuan/blob/main/CHANGELOG.md)。
 

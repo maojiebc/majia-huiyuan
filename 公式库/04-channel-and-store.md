@@ -4,7 +4,7 @@
 
 ## 业务渠道（一级归类）🅰️
 
-```sql
+```guandata
 CASE
   WHEN [Channel] = '03.HomeDelivery' THEN 'HD外卖'
   ELSE                                    'Din堂食'
@@ -17,7 +17,7 @@ END
 
 这段是 doc 1 里最复杂的渠道 case，覆盖了**渠道 ID + 订单类型 + 时间分界 + FromType + OrderSource** 五个字段的组合判断。值得作为"渠道归一化"模板单独保留。
 
-```sql
+```guandata
 CASE
   /* 2024 跨年的渠道-订单类型重新映射 */
   WHEN [CHANNEL_ID] = 2 AND [OrderType] = 4 AND [businessDate] < '2024-01-01' THEN '微信_外送'
@@ -70,7 +70,7 @@ END
 
 把"即时单 / 预约单 / 长时效"统一处理 NULL 和空值：
 
-```sql
+```guandata
 CASE
   WHEN [订单时效类型_R] IS NULL                   THEN '即时单'
   WHEN LENGTH(TRIM([订单时效类型_R])) = 0         THEN '即时单'
@@ -103,7 +103,7 @@ FROM input1
 
 ## StoreDate（门店日键）⚪
 
-```sql
+```guandata
 CONCAT([StoreID], '_', [businessDate])
 ```
 
@@ -113,7 +113,7 @@ CONCAT([StoreID], '_', [businessDate])
 
 ## 加盟类型 🅰️
 
-```sql
+```guandata
 IF([门店类型] = '某门店类型', [加盟直营], "")
 ```
 
@@ -123,7 +123,7 @@ IF([门店类型] = '某门店类型', [加盟直营], "")
 
 ## 截止日期 🅰️
 
-```sql
+```guandata
 IF([门店状态] = 'Closed', TO_DATE([停业时间]), DATE_SUB(now(), 1))
 ```
 
@@ -135,7 +135,7 @@ IF([门店状态] = 'Closed', TO_DATE([停业时间]), DATE_SUB(now(), 1))
 
 ## 成长类型（新店 / Comp 老店 / 次新店 / 非 Comp 老店）🅰️ {#成长类型}
 
-```sql
+```guandata
 CASE
   WHEN [停业时间] IS NOT NULL AND CURRENT_DATE() > [停业时间]
     THEN '非Comp计算老店'
@@ -166,7 +166,7 @@ END
 
 ## 营业天数（累计窗口）🅰️
 
-```sql
+```guandata
 SUM([营业]) OVER (
   PARTITION BY [门店]
   ORDER BY [门店], [日期] ASC
@@ -180,7 +180,7 @@ SUM([营业]) OVER (
 
 ## 排序（门店内日期倒序）🅰️
 
-```sql
+```guandata
 ROW_NUMBER() OVER (
   PARTITION BY [门店]
   ORDER BY [门店], [日期] DESC
@@ -248,7 +248,7 @@ FROM input1;
 
 ## 分公司简称 🅱️
 
-```sql
+```guandata
 REPLACE([注册所属分公司], "分公司", "")
 ```
 
@@ -256,7 +256,7 @@ REPLACE([注册所属分公司], "分公司", "")
 
 ## 日均拉新门店数 🅱️
 
-```sql
+```guandata
 COUNT(DISTINCT [StoreDate]) / COUNT(DISTINCT [注册日期])
 ```
 

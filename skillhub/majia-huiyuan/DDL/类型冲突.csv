@@ -1,0 +1,30 @@
+表名,字段名,历史类型,当前类型,采用依据
+ads_加盟商单店报告,预计完整回本月数,DOUBLE,INTEGER,清单/Spark类型证据.json#ads_加盟商单店报告；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_ads_加盟商单店报告 (9节点·S+J×2+C).md
+ads_加盟商单店报告,已开业月数,INT,INTEGER,清单/Spark类型证据.json#ads_加盟商单店报告；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_ads_加盟商单店报告 (9节点·S+J×2+C).md
+ads_加盟商单店报告,招商承诺回本月数,DOUBLE,INTEGER,清单/Spark类型证据.json#ads_加盟商单店报告；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_ads_加盟商单店报告 (9节点·S+J×2+C).md
+ads_加盟商单店报告,回本偏离度,DOUBLE,INTEGER,清单/Spark类型证据.json#ads_加盟商单店报告；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_ads_加盟商单店报告 (9节点·S+J×2+C).md
+ads_单店利润健康,预警条数,LONG,INTEGER,清单/Spark类型证据.json#ads_单店利润健康；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_ads_单店利润健康 (6节点·J+C+S).md
+ads_单店利润健康,近3月有亏损,INT,INTEGER,清单/Spark类型证据.json#ads_单店利润健康；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_ads_单店利润健康 (6节点·J+C+S).md
+ads_门店每日指挥台,会员订单占比,DECIMAL,"DECIMAL(38,16)",清单/Spark类型证据.json#ads_门店每日指挥台；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/ads_门店每日指挥台.md
+ads_门店每日指挥台,到店占比,DECIMAL,"DECIMAL(38,16)",清单/Spark类型证据.json#ads_门店每日指挥台；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/ads_门店每日指挥台.md
+dim_会员主档,手机号,LONG,STRING,数据集/结构定义/dim_会员主档.md历史LONG与打码文本不兼容；已裁定STRING；tools/build_mini_world.py:field_types显式例外
+dws_会员RFM分层,距今天数,INT,INTEGER,清单/Spark类型证据.json#dws_会员RFM分层；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_会员RFM分层 (10节点·F+C+G+S+J).md
+dws_会员RFM分层,R分,INT,INTEGER,清单/Spark类型证据.json#dws_会员RFM分层；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_会员RFM分层 (10节点·F+C+G+S+J).md
+dws_会员RFM分层,F分,INT,INTEGER,清单/Spark类型证据.json#dws_会员RFM分层；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_会员RFM分层 (10节点·F+C+G+S+J).md
+dws_会员RFM分层,M分,INT,INTEGER,清单/Spark类型证据.json#dws_会员RFM分层；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_会员RFM分层 (10节点·F+C+G+S+J).md
+dws_会员RFM分层,RFM总分,LONG,INTEGER,清单/Spark类型证据.json#dws_会员RFM分层；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_会员RFM分层 (10节点·F+C+G+S+J).md
+dws_会员生命周期,注册天数,INT,INTEGER,清单/Spark类型证据.json#dws_会员生命周期；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_会员生命周期.md
+dws_会员生命周期,距末单天数,INT,INTEGER,清单/Spark类型证据.json#dws_会员生命周期；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_会员生命周期.md
+dws_体验口碑汇总,负评率,DECIMAL,"DECIMAL(38,16)",清单/Spark类型证据.json#dws_体验口碑汇总；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_体验口碑汇总.md
+dws_加盟商经营汇总,亏损率,DOUBLE,"DECIMAL(38,16)",清单/Spark类型证据.json#dws_加盟商经营汇总；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_加盟商经营汇总 (7节点·S+J+C).md
+dws_加盟回本测算,预计完整回本月数,INT,INTEGER,清单/Spark类型证据.json#dws_加盟回本测算；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_加盟回本测算 (9节点·S×3+J+C).md
+dws_加盟回本测算,已开业月数,INT,INTEGER,清单/Spark类型证据.json#dws_加盟回本测算；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_加盟回本测算 (9节点·S×3+J+C).md
+dws_加盟回本测算,招商承诺回本月数,DOUBLE,INTEGER,清单/Spark类型证据.json#dws_加盟回本测算；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_加盟回本测算 (9节点·S×3+J+C).md
+dws_加盟回本测算,回本偏离度,DOUBLE,INTEGER,清单/Spark类型证据.json#dws_加盟回本测算；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_加盟回本测算 (9节点·S×3+J+C).md
+dws_员工导购效能,任务完成率,DOUBLE,"DECIMAL(38,16)",清单/Spark类型证据.json#dws_员工导购效能；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_员工导购效能 (8节点·F+S+J+C).md
+dws_员工导购效能,触达后转化率,DOUBLE,"DECIMAL(38,16)",清单/Spark类型证据.json#dws_员工导购效能；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_员工导购效能 (8节点·F+S+J+C).md
+dws_门店日报,是否90天内新店,STRING,BOOLEAN,清单/Spark类型证据.json#dws_门店日报；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_门店日报 (10节点·F+C+G+S×2+J+C).md
+dws_门店日报,会员订单占比,DOUBLE,"DECIMAL(38,16)",清单/Spark类型证据.json#dws_门店日报；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_门店日报 (10节点·F+C+G+S×2+J+C).md
+dws_门店日报,到店占比,DOUBLE,"DECIMAL(38,16)",清单/Spark类型证据.json#dws_门店日报；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_门店日报 (10节点·F+C+G+S×2+J+C).md
+dws_门店日报,外卖占比,DOUBLE,"DECIMAL(38,16)",清单/Spark类型证据.json#dws_门店日报；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_门店日报 (10节点·F+C+G+S×2+J+C).md
+dws_门店日报,平均件数,DOUBLE,"DECIMAL(38,16)",清单/Spark类型证据.json#dws_门店日报；Spark 3.4.4实际schema；SQL ETL/逻辑SQL/etl_dws_门店日报 (10节点·F+C+G+S×2+J+C).md

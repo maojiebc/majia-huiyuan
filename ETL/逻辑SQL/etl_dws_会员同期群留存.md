@@ -76,7 +76,7 @@ member_base AS (
   FROM input1 m
   CROSS JOIN params p
   WHERE m.`会员ID` IS NOT NULL
-    AND m.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(m.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND m.`注册日期` IS NOT NULL
     AND CAST(m.`注册日期` AS DATE) <= p.as_of_date
 ),
@@ -95,7 +95,7 @@ completed_orders AS (
   CROSS JOIN params p
   WHERE o.`订单状态` = '已完成'
     AND o.`会员ID` IS NOT NULL
-    AND o.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND o.`业务日期` IS NOT NULL
     AND CAST(o.`业务日期` AS DATE) <= p.as_of_date
 ),
@@ -178,7 +178,7 @@ member_base AS (
   FROM input1 m
   CROSS JOIN params p
   WHERE m.`会员ID` IS NOT NULL
-    AND m.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(m.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND m.`注册日期` IS NOT NULL
     AND CAST(m.`注册日期` AS DATE) <= p.as_of_date
 ),
@@ -197,7 +197,7 @@ completed_orders AS (
   CROSS JOIN params p
   WHERE o.`订单状态` = '已完成'
     AND o.`会员ID` IS NOT NULL
-    AND o.`会员ID` <> ''
+    AND LOWER(REGEXP_REPLACE(o.`会员ID`, r'(?U)^[\s\x1c-\x1f]+|[\s\x1c-\x1f]+$', '')) NOT IN ('', 'null')
     AND o.`业务日期` IS NOT NULL
     AND CAST(o.`业务日期` AS DATE) <= p.as_of_date
 ),
