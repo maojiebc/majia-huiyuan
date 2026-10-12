@@ -438,10 +438,10 @@ class RepositoryContractTests(unittest.TestCase):
         coupon = self.read("ETL/逻辑SQL/etl_dws_券效益分析.md")
         activity = self.read("ETL/逻辑SQL/etl_ads_活动权益复盘 (17节点·C+G+F+C+G×2+S+J×3+C).md")
         for text in (funnel, cockpit, activity):
-            self.assertIn("bridge_触达订单归因 AS", text)
-        self.assertIn("bridge_券核销订单 AS", coupon)
-        self.assertIn("bridge_券核销订单 AS", activity)
-        self.assertIn("bridge_活动参与订单归因 AS", activity)
+            self.assertRegex(text, r"`?bridge_触达订单归因`?\s+AS\s*\(")
+        self.assertRegex(coupon, r"`?bridge_券核销订单`?\s+AS\s*\(")
+        self.assertRegex(activity, r"`?bridge_券核销订单`?\s+AS\s*\(")
+        self.assertRegex(activity, r"`?bridge_活动参与订单归因`?\s+AS\s*\(")
         self.assertNotIn("touch_order_bridge AS", funnel)
         self.assertNotIn("coupon_order_bridge AS", coupon)
 
@@ -491,9 +491,9 @@ class RepositoryContractTests(unittest.TestCase):
         import sqlglot
 
         blocks = []
-        for path in (ROOT / "ETL/逻辑SQL").glob("*.md"):
+        for path in list((ROOT / "ETL/逻辑SQL").glob("*.md")) + list((ROOT / "公式库").glob("*.md")):
             text = path.read_text(encoding="utf-8")
-            blocks.extend((path, sql) for sql in re.findall(r"```sql\s*(.*?)```", text, re.DOTALL))
+            blocks.extend((path, sql) for sql in re.findall(r"```sql[ \t]*\n(.*?)```", text, re.DOTALL))
         for path in (ROOT / "ETL/公共口径").glob("*.sql"):
             blocks.append((path, path.read_text(encoding="utf-8")))
 
@@ -504,10 +504,18 @@ class RepositoryContractTests(unittest.TestCase):
             except sqlglot.errors.ParseError as exc:
                 self.fail(f"Spark SQL 静态解析失败: {path.name}: {exc}")
 
+    def test_batch_formula_sql_uses_one_snapshot_clock(self):
+        for filename in ("02-customer-and-membership.md", "05-coupon-and-discount.md", "10-task-and-touch-recovery.md"):
+            text = self.read(f"公式库/{filename}")
+            for sql in re.findall(r"```sql[ \t]*\n(.*?)```", text, re.DOTALL):
+                self.assertNotRegex(sql, r"(?i)CURRENT_DATE|CURRENT_TIMESTAMP|\bnow\s*\(", filename)
+                if "params.as_of_date" in sql:
+                    self.assertRegex(sql, r"(?i)WITH\s+params\s+AS\s*\(", filename)
+
     def test_each_sql_block_defines_its_own_runtime_params(self):
         for path in (ROOT / "ETL/逻辑SQL").glob("*.md"):
             text = path.read_text(encoding="utf-8")
-            for sql in re.findall(r"```sql\s*(.*?)```", text, re.DOTALL):
+            for sql in re.findall(r"```sql[ \t]*\n(.*?)```", text, re.DOTALL):
                 if re.search(r"CROSS\s+JOIN\s+params\b", sql, re.IGNORECASE):
                     self.assertRegex(sql, r"(?i)WITH\s+params\s+AS\s*\(", path.name)
 

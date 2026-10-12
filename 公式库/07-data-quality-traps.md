@@ -6,7 +6,7 @@
 
 ### 陷阱：`IF(cond, x, 0)` 在 COUNT DISTINCT 里会多算一个 0
 
-```sql
+```guandata
 -- ❌ 错误写法（0 也被当独立值计数一个）
 COUNT(DISTINCT IF([门店状态] = 'Open', [门店], 0))
 
@@ -30,7 +30,7 @@ COUNT(DISTINCT IF([门店状态] = 'Open', [门店], NULL))
 
 **例外**：当你用 SUM 而非 COUNT 时，`IF(cond, x, 0)` 反而是安全的（0 求和不影响结果）：
 
-```sql
+```guandata
 -- 这种 OK
 SUM(IF([业务渠道划分] = 'HD外卖', [去税营业额 NS], 0))
 
@@ -66,7 +66,7 @@ SUM(IF([业务渠道划分] = 'HD外卖', [去税营业额 NS], NULL))
 
 ### 正确的"三态判断"模板 🅱️
 
-```sql
+```guandata
 -- ❌ 只判 NULL，漏掉 '' 和 'null'
 WHERE [顾客标识] IS NOT NULL
 
@@ -81,7 +81,7 @@ WHERE [顾客标识] IS NOT NULL
 
 ### 实战例子（来自餐饮连锁 A）🅰️
 
-```sql
+```guandata
 -- 统计"微信支付但 openid 为空"的订单数
 COUNT(
   IF(
@@ -101,10 +101,12 @@ COUNT(
 
 ### 顾客标识有效性判定 🅱️
 
-```sql
+```guandata
 -- 卡片表达式中"有效顾客"的标准判定
 [顾客标识] IS NOT NULL AND TRIM([顾客标识]) <> ''
+```
 
+```sql-fragment
 -- ETL 中更严格的版本
 WHERE `顾客标识` IS NOT NULL
   AND TRIM(`顾客标识`) <> ''
@@ -125,7 +127,7 @@ WHERE `顾客标识` IS NOT NULL
 
 ### TC（客流数）的三个口径
 
-```sql
+```guandata
 -- 口径 1：去重订单数（最常见）
 COUNT(DISTINCT [订单号])
 
@@ -209,7 +211,7 @@ LEFT JOIN input2 b ON a.订单号 = b.订单号;
 
 ### 用 `>= + <` 而非 `BETWEEN`
 
-```sql
+```guandata
 -- ❌ BETWEEN 可能漏算或重算边界
 WHERE [订单日期] BETWEEN '2024-01-01' AND '2024-01-31'
 

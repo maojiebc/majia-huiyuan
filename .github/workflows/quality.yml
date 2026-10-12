@@ -22,9 +22,49 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
       - name: Run business-contract regression tests
         run: python -m unittest discover -s tests -v
+      - name: Verify field contract and four generated DDL dialects
+        run: |
+          python tools/build_field_contract.py --check
+          python tools/build_ddl.py --check
       - name: Verify deterministic SkillHub bundle
         run: python tools/build_skillhub_bundle.py --check
       - name: Build and verify WorkBuddy ZIP
         run: |
           python tools/build_workbuddy_bundle.py
           python tools/build_workbuddy_bundle.py --check
+
+  spark-execution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-spark.txt
+      - name: Install Spark verification dependencies
+        run: python -m pip install -r requirements-spark.txt
+      - name: Execute synthetic pipeline and differential tests
+        env:
+          REQUIRE_SPARK: "1"
+          SPARK_LOCAL_IP: "127.0.0.1"
+          SPARK_REPORT_DIR: work/spark-report
+        run: python -m unittest tests.test_spark_pipeline -v
+      - name: Create Spark DDL tables and verify complete row readback
+        env:
+          REQUIRE_SPARK: "1"
+          SPARK_LOCAL_IP: "127.0.0.1"
+          SPARK_REPORT_DIR: work/spark-report
+        run: python -m unittest tests.test_spark_ddl -v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spark-execution-report
+          path: |
+            work/spark-report/run-report.json
+            work/spark-report/ddl-readback-report.json
+            work/spark-report/ddl-pipeline/run-report.json

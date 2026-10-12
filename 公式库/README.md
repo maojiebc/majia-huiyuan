@@ -70,3 +70,7 @@ ETL 输入表统一称作 `input1`（观远 SmartETL 默认入参名），其余
 - 🏠 = 本仓库样板间实现（模拟数据，结构与口径可引用，数值不可当基准；主要出现在 [10 册](10-task-and-touch-recovery.md)）
 
 格式参考 [02-customer-and-membership.md](02-customer-and-membership.md) 第一段。
+
+## 代码块的适用位置
+
+`sql` 是可独立解析的 Spark SQL 示例，`guandata` 是观远卡片字段表达式，`clickhouse` 是 ClickHouse 示例，`sql-fragment` 是需放入 SELECT / WHERE 的片段。静态解析不能证明示例已在目标表上执行。批处理示例的 `${as_of_date}` 须由同一运行批次传入。

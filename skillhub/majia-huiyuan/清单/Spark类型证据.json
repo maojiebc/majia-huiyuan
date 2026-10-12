@@ -1,0 +1,5145 @@
+{
+  "spark_version": "3.4.4",
+  "as_of": "2026-06-24",
+  "seed": 41,
+  "scenario": "clean",
+  "git_sha": "d5c6a80a27c13e8a22e89455ca5b6445b9c49613",
+  "worktree_dirty": true,
+  "provenance": "本地合成小数据执行报告的schema提取；git_sha仅标识当时HEAD，worktree_dirty记录是否含未提交修改；每节点sql_sha256为文档SQL原文指纹，as_of确定执行时日期替换。提交后CI运行报告提供对应提交的验证。",
+  "etls": [
+    {
+      "output": "ads_会员私域驾驶舱",
+      "path": "ETL/逻辑SQL/ads_会员私域驾驶舱.md",
+      "rows": 12,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "年月",
+            "type": "timestamp",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "当月活跃会员",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "新增首单会员",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "总销售",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员销售",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到店销售",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "总订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达次数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达会员数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "会员销售占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到店销售额占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818731",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.022
+        },
+        {
+          "id": "id_1779326818732",
+          "name": "dwd_会员触达",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.01
+        },
+        {
+          "id": "id_1779326818733",
+          "name": "SQL处理",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818731",
+            "id_1779326818732"
+          ],
+          "sql_sha256": "892ef2a828e3ed659ae7a61e579925ec384ccdb9c01665e3d7db00e8a8c3c4b1",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.536
+        },
+        {
+          "id": "id_1779326818734",
+          "name": "ads_会员私域驾驶舱",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818733"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.021
+        }
+      ]
+    },
+    {
+      "output": "ads_会员经营任务池",
+      "path": "ETL/逻辑SQL/ads_会员经营任务池.md",
+      "rows": 2,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "任务ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "任务优先级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "任务类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "任务来源",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员等级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "归属门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "员工导购ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "员工姓名",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "岗位",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "角色标签",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "人群标签",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "推荐动作",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "推荐权益",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "推荐原因",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "预计价值",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "任务生成时间",
+            "type": "timestamp",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "任务截止时间",
+            "type": "timestamp",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "任务失效时间",
+            "type": "timestamp",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达状态",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达时间",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达方式",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达后下单",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达后下单金额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "任务结果",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "执行状态",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "转化阶段",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818730",
+          "name": "dwd_会员经营任务",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.005
+        },
+        {
+          "id": "id_1779326818731",
+          "name": "dim_员工导购",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779326818732",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.006
+        },
+        {
+          "id": "id_1779326818733",
+          "name": "dim_会员主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818734",
+          "name": "SQL处理",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818730",
+            "id_1779326818731",
+            "id_1779326818732",
+            "id_1779326818733"
+          ],
+          "sql_sha256": "fb316da367de3d595a715830e63a1d2f2f0b2167136ea499af513f99c329015a",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.143
+        },
+        {
+          "id": "id_1779326818735",
+          "name": "ads_会员经营任务池",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818734"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.025
+        }
+      ]
+    },
+    {
+      "output": "ads_活动权益复盘",
+      "path": "ETL/逻辑SQL/etl_ads_活动权益复盘 (17节点·C+G+F+C+G×2+S+J×3+C).md",
+      "rows": 4,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "活动ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "活动名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "活动类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "活动渠道",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "开始日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "结束日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "预算",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "券发放数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "券核销数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "已记录权益成本",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "核销订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "核销订单GMV",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达人数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "查看人数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "活动参与人数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联下单人数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联GMV",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "参与后关联下单人数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "参与后关联订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "参与后关联GMV",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "券核销率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "打开率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联下单率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "参与后关联下单率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "核销GMV成本比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "增量GMV",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "增量ROI",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "增量测算状态",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "归因窗口天数",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达归因规则",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "活动参与归因规则",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "sql",
+          "name": "SQL",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "dwd_券事件",
+            "dwd_会员触达",
+            "dwd_订单",
+            "dim_活动主档",
+            "dwd_活动参与"
+          ],
+          "sql_sha256": "f50ad3052a66b478ac1f64ec6582d39ee7c67fad09ebb637528458191d610a0f",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.83
+        }
+      ]
+    },
+    {
+      "output": "ads_门店每日指挥台",
+      "path": "ETL/逻辑SQL/ads_门店每日指挥台.md",
+      "rows": 3954,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "省份",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市层级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商圈",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "是否90天内新店",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "新店标签",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "业务日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "销售额",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "平均客单价",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "会员订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "到店订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "外卖订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "会员订单占比",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到店占比",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "折扣率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "当日评分",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "未回复负评数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "今日异常",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818729",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.005
+        },
+        {
+          "id": "id_1779326818730",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779326818731",
+          "name": "dwd_评价",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818732",
+          "name": "营业日历骨架+日指标+自然日基线",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818729",
+            "id_1779326818730",
+            "id_1779326818731"
+          ],
+          "sql_sha256": "2982f2cd34485719162253c80054d9bdd70e6bb6ebe0dd92ed41d35151cc3f54",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.484
+        },
+        {
+          "id": "id_1779326818733",
+          "name": "ads_门店每日指挥台",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818732"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.031
+        }
+      ]
+    },
+    {
+      "output": "ads_高层经营驾驶舱",
+      "path": "ETL/逻辑SQL/ads_高层经营驾驶舱.md",
+      "rows": 318,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "业务日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "总销售",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员销售",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到店销售",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "总订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "活跃会员数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "新增会员数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联销售",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "会员销售占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到店销售额占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联销售占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "归因窗口天数",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "归因规则",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "sql",
+          "name": "SQL",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "dwd_订单",
+            "dwd_会员触达"
+          ],
+          "sql_sha256": "04f3404f9d33c6a77a5fa1b56842cbff09ccbfc6453ca8e24eca57fd86ebb046",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.245
+        }
+      ]
+    },
+    {
+      "output": "dws_会员RFM分层",
+      "path": "ETL/逻辑SQL/etl_dws_会员RFM分层 (10节点·F+C+G+S+J).md",
+      "rows": 304,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "会员ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员等级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "注册渠道",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "最近消费日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "距今天数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "消费次数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "消费金额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "R分",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "F分",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "M分",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "RFM总分",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "RFM标签",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779336902430",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.005
+        },
+        {
+          "id": "id_1779336902431",
+          "name": "dim_会员主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779336902432",
+          "name": "筛选已完成订单",
+          "kind": "FILTER_ROWS",
+          "sources": [
+            "id_1779336902430"
+          ],
+          "sql_sha256": "b194f26495870555f027bfae7e95bddc8bb5e2c2209fd4007b2eeead11b3260c",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.023
+        },
+        {
+          "id": "id_1779336902433",
+          "name": "标记会员订单+订单计数",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779336902432"
+          ],
+          "sql_sha256": "fc2950e5e6218ffc5eab919a0dad4d6d50dca9eab5cf9d7b811151e929b7c587",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.025
+        },
+        {
+          "id": "id_1779336902434",
+          "name": "筛选会员订单",
+          "kind": "FILTER_ROWS",
+          "sources": [
+            "id_1779336902433"
+          ],
+          "sql_sha256": "267b9b139a25cd3039b23e3fd76479852922a73f4d5f5cbb148006acf4c4893d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.028
+        },
+        {
+          "id": "id_1779336902435",
+          "name": "会员级聚合",
+          "kind": "GROUP_BY",
+          "sources": [
+            "id_1779336902434"
+          ],
+          "sql_sha256": "d2c0dac505a8a4b3507680c3d639f965ac35d4b4fb34420caa4d5f17a44f0826",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.06
+        },
+        {
+          "id": "id_1779336902436",
+          "name": "计算R/F/M评分",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779336902435"
+          ],
+          "sql_sha256": "f7f22c09e243287ee180209b61f502c7ba80991724a93879fba5ec9c9683b0b7",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.024
+        },
+        {
+          "id": "id_1779336902437",
+          "name": "RFM标签",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779336902436"
+          ],
+          "sql_sha256": "6ff742f439436db8c3b7debd1dc20dad343c0b3ff7057712a1abe3f8e57a03da",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.021
+        },
+        {
+          "id": "id_1779336902438",
+          "name": "关联会员维度",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779336902437",
+            "id_1779336902431"
+          ],
+          "sql_sha256": "79a2d4247bd1c4a983878926e0d6ae2270165ab635955b377ef3a64a33668c52",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.033
+        },
+        {
+          "id": "id_1779336902439",
+          "name": "dws_会员RFM分层",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779336902438"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.016
+        }
+      ]
+    },
+    {
+      "output": "dws_会员同期群留存",
+      "path": "ETL/逻辑SQL/etl_dws_会员同期群留存.md",
+      "rows": 76,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "同期群月份",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "同期群人数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "留存月份序号",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "留存月份",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "留存人数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "留存率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "是否完整观察期",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818722",
+          "name": "dim_会员主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779326818723",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818724",
+          "name": "SQL处理",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818722",
+            "id_1779326818723"
+          ],
+          "sql_sha256": "85a9bb5c5a6026dd48cc3c4fc4709ef597369c6080380be8b5771a07a61ab5b0",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.237
+        },
+        {
+          "id": "id_1779326818725",
+          "name": "dws_会员同期群留存",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818724"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.017
+        }
+      ]
+    },
+    {
+      "output": "dws_会员生命周期",
+      "path": "ETL/逻辑SQL/etl_dws_会员生命周期.md",
+      "rows": 306,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "会员ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员等级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "注册日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "注册渠道",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "注册门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "注册天数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "首单日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "末单日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "总订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "总消费金额",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "近30天订单",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "近7天订单",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "距末单天数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "生命周期阶段",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "活跃天数上限",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "沉睡天数上限",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "流失天数上限",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "参数生效日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "参数状态",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818717",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779326818718",
+          "name": "dim_会员主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_v141_lifecycle_params",
+          "name": "param_会员生命周期阈值",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818719",
+          "name": "SQL处理",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818717",
+            "id_1779326818718",
+            "id_v141_lifecycle_params"
+          ],
+          "sql_sha256": "579405e9d6c1e32fae8bb8d1976c92b6b884ede95d566bbc8a64109221690bd9",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.296
+        },
+        {
+          "id": "id_1779326818720",
+          "name": "dws_会员生命周期",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818719"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.017
+        }
+      ]
+    },
+    {
+      "output": "dws_体验口碑汇总",
+      "path": "ETL/逻辑SQL/etl_dws_体验口碑汇总.md",
+      "rows": 2,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "省份",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市层级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "业务日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "评价数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "平均评分",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "负评数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "好评数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "未回复负评数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "负评率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "投诉数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "待处理投诉",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "平均处理时长",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "体验风险等级",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818726",
+          "name": "dwd_评价",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818727",
+          "name": "dwd_投诉",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779326818728",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818729",
+          "name": "评价投诉事件日全量合并+SCD2关联",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818726",
+            "id_1779326818727",
+            "id_1779326818728"
+          ],
+          "sql_sha256": "2c94b33d470ae9c07ccfe3033a6f2a33385b53178913ff77b53ee39daa50d7e7",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.248
+        },
+        {
+          "id": "id_1779326818730",
+          "name": "dws_体验口碑汇总",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818729"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.014
+        }
+      ]
+    },
+    {
+      "output": "dws_券效益分析",
+      "path": "ETL/逻辑SQL/etl_dws_券效益分析.md",
+      "rows": 111,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "券模板ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "券名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "券类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "优惠形式",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "发放日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "发放数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "核销数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "核销率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "已核销优惠成本",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "核销订单GMV",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "核销订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "核销GMV成本比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "增量GMV",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "增量ROI",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "增量测算状态",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "订单归因规则",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "sql",
+          "name": "SQL",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "dwd_券事件",
+            "dwd_订单",
+            "dim_券模板"
+          ],
+          "sql_sha256": "ce8c5520e1038ed78b9533d5edde283f05f87b1362e5d7a7401b318c66f888fc",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.306
+        }
+      ]
+    },
+    {
+      "output": "dws_单店利润月汇总",
+      "path": "ETL/逻辑SQL/etl_dws_单店利润月汇总 (11节点·F+C+G+S×2+J+C).md",
+      "rows": 133,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "省份",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市层级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商圈",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "品牌线",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "直营加盟类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "是否90天内新店",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "新店标签",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "开业日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月份",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "月营收",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "堂食营收",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "外卖营收",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "原材料成本",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "包材成本",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "平台抽佣",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "人工成本",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "房租物业",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "能耗水电",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "设备折旧",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "总部分摊",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "变动成本合计",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "半固定成本合计",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "固定成本合计",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "成本总计",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "毛利",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "店面贡献利润",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "单店净利润",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "毛利率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店面贡献利润率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "单店净利率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "堂食占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "外卖占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "人工占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "房租占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "客单价",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779345679919",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779345679923",
+          "name": "dwd_门店成本明细",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779345679926",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779345679920",
+          "name": "筛选已完成订单",
+          "kind": "FILTER_ROWS",
+          "sources": [
+            "id_1779345679919"
+          ],
+          "sql_sha256": "6fe412ac979b73827d0a54468652e12fdb8868e5a5842669ca4a595e687aca6f",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.032
+        },
+        {
+          "id": "id_1779345679924",
+          "name": "成本透视(8 大科目)",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779345679923"
+          ],
+          "sql_sha256": "8f96d2a3fef7dbbab43578aa4ef43aadafebefc9b9938d74ef78ebacc8daf412",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.072
+        },
+        {
+          "id": "id_1779345679921",
+          "name": "派生月份+营收分流",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779345679920"
+          ],
+          "sql_sha256": "2f928d01572aa576213d937d1e5b8ab0060b0a689e08a2ed0fd8c430a9fb0267",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.03
+        },
+        {
+          "id": "id_1779345679922",
+          "name": "门店月营收聚合",
+          "kind": "GROUP_BY",
+          "sources": [
+            "id_1779345679921"
+          ],
+          "sql_sha256": "c92dde6cd4421799d604bfd7c29b4f079b975364663f55420737430e3dfbaf1f",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.044
+        },
+        {
+          "id": "id_1779345679925",
+          "name": "营业门店月份骨架+营收成本",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779345679922",
+            "id_1779345679924",
+            "id_1779345679926"
+          ],
+          "sql_sha256": "98a1b2279ffb22708fb28066c5bdbe53e0780669fc1dff248b09ad15e1802d4b",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.089
+        },
+        {
+          "id": "id_1779345679927",
+          "name": "关联门店维度",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779345679925",
+            "id_1779345679926"
+          ],
+          "sql_sha256": "b18d26d304ad5c470d0b5579a16b8c18e5f085e1900419a633a3c8cd85076fc4",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.085
+        },
+        {
+          "id": "id_1779345679928",
+          "name": "PnL 四层 + 占比指标",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779345679927"
+          ],
+          "sql_sha256": "6ddc6c29ed03fec6a83c0501086c0b9d1604f6359408b9372c9536d892218dce",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.029
+        },
+        {
+          "id": "id_1779345679929",
+          "name": "dws_单店利润月汇总",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779345679928"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.018
+        }
+      ]
+    },
+    {
+      "output": "dws_员工导购效能",
+      "path": "ETL/逻辑SQL/etl_dws_员工导购效能 (8节点·F+S+J+C).md",
+      "rows": 56,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "员工ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "姓名",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "归属门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "岗位",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "角色标签",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "周起始",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达会员数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "查看数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "任务数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "已触达任务",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "转化任务数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "转化金额",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "任务完成率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达后转化率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779337308218",
+          "name": "dwd_会员触达",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779337308219",
+          "name": "dwd_会员经营任务",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779337308220",
+          "name": "dim_员工导购",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779337308221",
+          "name": "筛选在职员工",
+          "kind": "FILTER_ROWS",
+          "sources": [
+            "id_1779337308220"
+          ],
+          "sql_sha256": "18c7df6f852254a8cdfcf384512012fceed5cd5263f00c817c99165af6104a91",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.014
+        },
+        {
+          "id": "id_1779337308222",
+          "name": "触达+任务双聚合",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779337308218",
+            "id_1779337308219"
+          ],
+          "sql_sha256": "7ee3ff15c29114f527a5c5687a98e68cb4b6287f052710bb734110b8cd7e5159",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.155
+        },
+        {
+          "id": "id_1779337308223",
+          "name": "关联员工维度",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779337308221",
+            "id_1779337308222"
+          ],
+          "sql_sha256": "e5b97a07716853e305378b69a3529d671e5ecd3dde30945edbbed4421e61b525",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.058
+        },
+        {
+          "id": "id_1779337308224",
+          "name": "计算完成率+转化率",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779337308223"
+          ],
+          "sql_sha256": "a4f128e08e408f1f54c80835bdd6830ed18e0aabd9b4896351ae821ccaf8e922",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.022
+        },
+        {
+          "id": "id_1779337308225",
+          "name": "dws_员工导购效能",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779337308224"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.013
+        }
+      ]
+    },
+    {
+      "output": "dws_商品销售分析",
+      "path": "ETL/逻辑SQL/etl_dws_商品销售分析.md",
+      "rows": 1769,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "一级类目",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "二级类目",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商品ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商品名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "省份",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市层级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "销售渠道",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "是否到店",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "业务日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "销量",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "销售额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "总成本",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "毛利",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818723",
+          "name": "dwd_订单商品",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779326818724",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779326818725",
+          "name": "dim_商品主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779326818726",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779326818727",
+          "name": "SQL处理",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818723",
+            "id_1779326818724",
+            "id_1779326818725",
+            "id_1779326818726"
+          ],
+          "sql_sha256": "c5633d48fce7f96d19b7431b5a6fdff853ead267660f8803e3ca0c7522f73534",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.194
+        },
+        {
+          "id": "id_1779326818728",
+          "name": "dws_商品销售分析",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818727"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.017
+        }
+      ]
+    },
+    {
+      "output": "dws_成本结构汇总",
+      "path": "ETL/逻辑SQL/etl_dws_成本结构汇总 (7节点·J+S+C).md",
+      "rows": 752,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月份",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "成本科目ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "成本科目名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "成本大类",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "成本总额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "营收总额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "平均占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "中位数占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "P90占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "最低占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "最高占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "科目营收占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "离散度",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "P90vsP50差异",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779345758790",
+          "name": "dwd_门店成本明细",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779345758791",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779345758792",
+          "name": "关联门店类型",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779345758790",
+            "id_1779345758791"
+          ],
+          "sql_sha256": "f105f0b8f3355578da8738737ca8c36a7c42a6f7a3f124e9275db6a583d0d38b",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.07
+        },
+        {
+          "id": "id_1779345758793",
+          "name": "按店型+月份+科目 分位数聚合",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779345758792"
+          ],
+          "sql_sha256": "ae8b96f834367d1a8b58dca62dc7760b23e4b59479a25dc90203416eaa2bd4f9",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.114
+        },
+        {
+          "id": "id_1779345758794",
+          "name": "算占比+离散度",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779345758793"
+          ],
+          "sql_sha256": "5887e02705f132051d79e5318827fc8926c9ae2bbfa20b82e59d8814d606aa7f",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.019
+        },
+        {
+          "id": "id_1779345758795",
+          "name": "dws_成本结构汇总",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779345758794"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.015
+        }
+      ]
+    },
+    {
+      "output": "dws_新店爬坡_Comp老店",
+      "path": "ETL/逻辑SQL/etl_dws_新店爬坡_Comp老店 (8节点·F+C+G+J).md",
+      "rows": 1241,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市层级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商圈",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "新店标签",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "是否90天内新店",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "开业日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "业务日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "销售额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "开业天数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "爬坡阶段",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "门店成长类型",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "平均客单价",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员订单占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779337109457",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779337109458",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779337109459",
+          "name": "筛选已完成订单",
+          "kind": "FILTER_ROWS",
+          "sources": [
+            "id_1779337109457"
+          ],
+          "sql_sha256": "71d133df1425fb0e81eecdd7ff0e1574217d9ade5273c10093dcdf218b8a5786",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.029
+        },
+        {
+          "id": "id_1779337109460",
+          "name": "标记订单/会员订单",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779337109459"
+          ],
+          "sql_sha256": "d9552018490df8eee2b8646625da6fa60857c66a99fa53a58f3d23b66e948b8a",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.021
+        },
+        {
+          "id": "id_1779337109461",
+          "name": "门店日聚合",
+          "kind": "GROUP_BY",
+          "sources": [
+            "id_1779337109460"
+          ],
+          "sql_sha256": "f0250f9141c5cdb8cfc7ec3743c7ee4f26a402df71b105fcf5a7c539c9a9f496",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.088
+        },
+        {
+          "id": "id_1779337109462",
+          "name": "关联门店维度",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779337109461",
+            "id_1779337109458"
+          ],
+          "sql_sha256": "32a53298257ca9a4c0609ca2c1d14628fa7397f230d7c6fce0cf7920b7ffb9cd",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.076
+        },
+        {
+          "id": "id_1779337109463",
+          "name": "计算爬坡阶段+成长类型",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779337109462"
+          ],
+          "sql_sha256": "16a0eaf9ab148c569b2764e52f765e748d3b309b65a2b80a1eb29ee5d57e4885",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.037
+        },
+        {
+          "id": "id_1779337109464",
+          "name": "dws_新店爬坡_Comp老店",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779337109463"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.018
+        }
+      ]
+    },
+    {
+      "output": "dws_渠道迁移分析",
+      "path": "ETL/逻辑SQL/etl_dws_渠道迁移分析.md",
+      "rows": 287,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "会员ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员等级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "近30天堂食",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "近30天外卖",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "前60天堂食",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "前60天外卖",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "迁移类型",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818728",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818729",
+          "name": "dim_会员主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818730",
+          "name": "SQL处理",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818728",
+            "id_1779326818729"
+          ],
+          "sql_sha256": "82f5b734d9e6bfca9a51d89dd43fdf0a25c7fd26ac8d8fb5f9ff70c78806f688",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.149
+        },
+        {
+          "id": "id_1779326818731",
+          "name": "dws_渠道迁移分析",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818730"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.014
+        }
+      ]
+    },
+    {
+      "output": "dws_目标达成",
+      "path": "ETL/逻辑SQL/etl_dws_目标达成.md",
+      "rows": 133,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "年月",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "目标指标",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "目标值",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "实际值",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "达成率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "目标缺口",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779326818729",
+          "name": "dwd_门店目标",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818730",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779326818731",
+          "name": "SQL处理",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779326818729",
+            "id_1779326818730"
+          ],
+          "sql_sha256": "f1abbf1d5ec907ee1608789bd971bd9de2ad67fda600770f93c686cd07690f2d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.128
+        },
+        {
+          "id": "id_1779326818732",
+          "name": "dws_目标达成",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779326818731"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.013
+        }
+      ]
+    },
+    {
+      "output": "dws_私域转化漏斗",
+      "path": "ETL/逻辑SQL/etl_dws_私域转化漏斗 (10节点·F+C+G+C+G+J+C).md",
+      "rows": 178,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "活动ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "活动名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "活动类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "业务日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达渠道",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达人次",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "查看人次",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达人数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "打开率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联下单人数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "触达后关联GMV",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "归因窗口天数",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "归因规则",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "sql",
+          "name": "SQL",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "dwd_会员触达",
+            "dwd_订单",
+            "dim_活动主档"
+          ],
+          "sql_sha256": "949f2d82a4b8cccf185247064aca96071305e186465932e5ed99ba37335306d9",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.603
+        }
+      ]
+    },
+    {
+      "output": "dws_门店日报",
+      "path": "ETL/逻辑SQL/etl_dws_门店日报 (10节点·F+C+G+S×2+J+C).md",
+      "rows": 1241,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "省份",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市层级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商圈",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "品牌线",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "直营加盟类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "是否90天内新店",
+            "type": "boolean",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "新店标签",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "业务日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "订单数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "销售额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "原价销售额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "折扣金额合计",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商品件数合计",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员订单数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到店销售额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "外卖销售额",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到店订单数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "外卖订单数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "去重会员数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "平均客单价",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "会员订单占比",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "折扣率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到店占比",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "外卖占比",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "平均件数",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店版本ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779348711906",
+          "name": "dwd_订单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.006
+        },
+        {
+          "id": "id_1779348711907",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.006
+        },
+        {
+          "id": "id_1779348711908",
+          "name": "筛选已完成订单",
+          "kind": "FILTER_ROWS",
+          "sources": [
+            "id_1779348711906"
+          ],
+          "sql_sha256": "d98e7d8388f838f69935f2ca62a573c1df38b2de2155f89d6d08bb1ebaf4e383",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.038
+        },
+        {
+          "id": "id_1779348711909",
+          "name": "派生标志字段",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779348711908"
+          ],
+          "sql_sha256": "baee1bbaf4422d7de327cae9fccfc3332f13db4d111d45644def282eb6ed8306",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.024
+        },
+        {
+          "id": "id_1779348711911",
+          "name": "去重会员数旁路",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779348711908"
+          ],
+          "sql_sha256": "1b8f068c95d0583cfdea069a6a4d16823ac73881308e56027061304ad28b35e8",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.06
+        },
+        {
+          "id": "id_1779348711910",
+          "name": "门店日聚合(主)",
+          "kind": "GROUP_BY",
+          "sources": [
+            "id_1779348711909"
+          ],
+          "sql_sha256": "4746d4cbe419881804346a0fbf3ea84e663e26b6306b879f3929d7a45c0dd84c",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.053
+        },
+        {
+          "id": "id_1779348711912",
+          "name": "合并去重会员数(2表 SQL JOIN)",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779348711910",
+            "id_1779348711911"
+          ],
+          "sql_sha256": "3511a7b2b4cda0b774f1e478c22ca2b55475d2b38f2ac9d7a6fda2bd3c5780ff",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.033
+        },
+        {
+          "id": "id_1779348711913",
+          "name": "关联门店信息",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779348711912",
+            "id_1779348711907"
+          ],
+          "sql_sha256": "7313f8c433a94f0f42371232b982b48e17266c164dd4c199a281e5a61583e420",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.074
+        },
+        {
+          "id": "id_1779348711914",
+          "name": "计算占比和均值",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779348711913"
+          ],
+          "sql_sha256": "d18e229dadce1f7eca1b9c9a68a34fb20d7b86d7d3a641df998844375cb8f5d4",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.035
+        },
+        {
+          "id": "id_1779348711915",
+          "name": "dws_门店日报",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779348711914"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.021
+        }
+      ]
+    },
+    {
+      "output": "ads_单店利润健康",
+      "path": "ETL/逻辑SQL/etl_ads_单店利润健康 (6节点·J+C+S).md",
+      "rows": 133,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "省份",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市层级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商圈",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "直营加盟类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月份",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "月营收",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "毛利",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "店面贡献利润",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "单店净利润",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "毛利率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店面贡献利润率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "单店净利率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "堂食占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "外卖占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "人工占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "房租占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "客单价",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "房租占比上限",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "人工占比上限",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "堂食占比下限",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "持续亏损预警月数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "毛利率塌方阈值pp",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "适用范围",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "房租超标",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "人工超标",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "堂食衰减",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "本月亏损",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "利润健康等级",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "预警条数",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "建议动作",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "历史亏损月数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "近3月有亏损",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "连续亏损月数",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "持续亏损标签",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779346047774",
+          "name": "dws_单店利润月汇总",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779346047775",
+          "name": "param_利润健康阈值",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779346047776",
+          "name": "关联店型阈值表",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779346047774",
+            "id_1779346047775"
+          ],
+          "sql_sha256": "9f2396880162f0268e2343a1d487b09d9ba827c1125f996abf078f09bdb18878",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.03
+        },
+        {
+          "id": "id_1779346047777",
+          "name": "利润健康标签+建议动作",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779346047776"
+          ],
+          "sql_sha256": "e8abd51077778e0f76f37cde7337017273b7589416323030016ffa1410a90f85",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.027
+        },
+        {
+          "id": "id_1779346047778",
+          "name": "连续亏损窗口分析",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779346047777"
+          ],
+          "sql_sha256": "c4ce74273f7dd94363efda0d76e1670bceb9dfcfeb2c0b7854a7f9b989f82662",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.097
+        },
+        {
+          "id": "id_1779346047779",
+          "name": "ads_单店利润健康",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779346047778"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.015
+        }
+      ]
+    },
+    {
+      "output": "dws_加盟商经营汇总",
+      "path": "ETL/逻辑SQL/etl_dws_加盟商经营汇总 (7节点·S+J+C).md",
+      "rows": 36,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "加盟商ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "加盟商名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "加盟商类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "签约省份",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "合作状态",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "信用等级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "入网日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月份",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "经营门店数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "月总营收",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月总堂食营收",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月总外卖营收",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月总订单数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月总毛利",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月总店面贡献利润",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月总单店净利润",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "平均贡献利润率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "平均堂食占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "亏损门店数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "盈利门店数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门均营收",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门均贡献利润",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "亏损率",
+            "type": "decimal(38,16)",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "经营健康等级",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "续约风险",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779345839801",
+          "name": "dws_单店利润月汇总",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779345839802",
+          "name": "dwd_加盟合同明细",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779345839803",
+          "name": "dim_加盟商主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779345839804",
+          "name": "加盟商月度聚合 (JOIN 合同+利润)",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779345839801",
+            "id_1779345839802"
+          ],
+          "sql_sha256": "d64a11492fad5faaf02e3c5c3c378f7b2a618791589691f6b403322edb3373e0",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.125
+        },
+        {
+          "id": "id_1779345839805",
+          "name": "关联加盟商维度",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779345839804",
+            "id_1779345839803"
+          ],
+          "sql_sha256": "297e3373e35f021906c366a1d6eb109db42a4787e57dc10d2e88e3d3ce6bca77",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.029
+        },
+        {
+          "id": "id_1779345839806",
+          "name": "加盟商健康+风险打标",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779345839805"
+          ],
+          "sql_sha256": "236fc5bcd3358fded4c171506cdb86f8ddb3f59047237c3feba2d0c7c6f0a4f8",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.027
+        },
+        {
+          "id": "id_1779345839807",
+          "name": "dws_加盟商经营汇总",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779345839806"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.012
+        }
+      ]
+    },
+    {
+      "output": "dws_加盟回本测算",
+      "path": "ETL/逻辑SQL/etl_dws_加盟回本测算 (9节点·S×3+J+C).md",
+      "rows": 6,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "加盟商ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "签约日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "合同期年数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "到期日",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "分成模型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "续约状态",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "总投资额",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "可回收投资",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "不可回收投资",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "投资起始日",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "经营月数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "累计营收",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "累计店面贡献利润",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "月均店面贡献利润",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "平均贡献利润率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "累计回本率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "预计完整回本月数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "已开业月数",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "剩余回本月数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "回本状态",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "预计完整回本日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "招商承诺回本月数",
+            "type": "integer",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "回本偏离度",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "回本风险等级",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "标杆门店标志",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779345941090",
+          "name": "dwd_门店投资明细",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779345941091",
+          "name": "dws_单店利润月汇总",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779345941092",
+          "name": "dwd_加盟合同明细",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779345941093",
+          "name": "门店总投资聚合",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779345941090"
+          ],
+          "sql_sha256": "2f8eef1191f122a41bdb225bad9d69c77ab0119d2b34439ce3bdff21df9e290f",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.049
+        },
+        {
+          "id": "id_1779345941094",
+          "name": "门店累计利润+月均",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779345941091"
+          ],
+          "sql_sha256": "b4ccee2e2fb202609c63a0bcef2a53d13d57c084ddf67cfce4270489283dcc3a",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.082
+        },
+        {
+          "id": "id_1779345941095",
+          "name": "投资起点回本周期+剩余月数",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779345941093",
+            "id_1779345941094"
+          ],
+          "sql_sha256": "a0d29649435ef59487266c9ee8e13fbc8b2af11b0b8c152f8109a98723a9077a",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.057
+        },
+        {
+          "id": "id_1779345941096",
+          "name": "关联合同信息",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779345941095",
+            "id_1779345941092"
+          ],
+          "sql_sha256": "3a5ac0d9a415a556c7f4c41fa72206f2270a3df9f8700f9dd63d86d4eaa99589",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.068
+        },
+        {
+          "id": "id_1779345941097",
+          "name": "回本健康打标",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779345941096"
+          ],
+          "sql_sha256": "51931f3d40367ef20d865ed1f4162b50d3b8e72b1ae08f37ffe1ef86cab6040d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.029
+        },
+        {
+          "id": "id_1779345941098",
+          "name": "dws_加盟回本测算",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779345941097"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.015
+        }
+      ]
+    },
+    {
+      "output": "ads_加盟商单店报告",
+      "path": "ETL/逻辑SQL/etl_ads_加盟商单店报告 (9节点·S+J×2+C).md",
+      "rows": 72,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "省份",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市层级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "商圈",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "加盟商ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "加盟商名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "加盟商类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "合作状态",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "信用等级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "签约日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "月份",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "月营收",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "堂食营收",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "外卖营收",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "订单数",
+            "type": "long",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "毛利",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "店面贡献利润",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "单店净利润",
+            "type": "double",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "毛利率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店面贡献利润率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "堂食占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "外卖占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "人工占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "房租占比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "客单价",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "同侪门店数",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市同店型_营收_P25",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市同店型_营收_中位数",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市同店型_营收_P75",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市同店型_利润率_P25",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市同店型_利润率_中位数",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市同店型_利润率_P75",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市同店型_堂食占比_中位数",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "营收_对中位数比",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "利润率_对中位数差",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "堂食占比_对中位数差",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "总投资额",
+            "type": "long",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "累计店面贡献利润",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "累计回本率",
+            "type": "double",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "预计完整回本月数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "已开业月数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "投资起始日",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "剩余回本月数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "回本状态",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "预计完整回本日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "招商承诺回本月数",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "回本偏离度",
+            "type": "integer",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "回本风险等级",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "标杆门店标志",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "本店位置标签",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "可改进项",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "总部本月支持",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1779346227913",
+          "name": "dws_单店利润月汇总",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.004
+        },
+        {
+          "id": "id_1779346227914",
+          "name": "dwd_加盟合同明细",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779346227915",
+          "name": "dim_加盟商主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1779346227916",
+          "name": "dws_加盟回本测算",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1779346227917",
+          "name": "franchise_profit+同城同店型同侪",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1779346227913",
+            "id_1779346227914"
+          ],
+          "sql_sha256": "1f6f3bf53ea8cdd9e17c3611db8325e29a399c4c873f06a4c647492b5a02a9aa",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.19
+        },
+        {
+          "id": "id_1779346227918",
+          "name": "关联加盟商信息",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779346227917",
+            "id_1779346227915"
+          ],
+          "sql_sha256": "1f58b67a5634b85414e7f5313817376016c511cc571c13447cac1fcf977a3f05",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.028
+        },
+        {
+          "id": "id_1779346227919",
+          "name": "关联回本测算",
+          "kind": "JOIN_DATA",
+          "sources": [
+            "id_1779346227918",
+            "id_1779346227916"
+          ],
+          "sql_sha256": "a94fd079292b67df0dfd90daded58545f8ecee32efc34966070216309d5bb73d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.046
+        },
+        {
+          "id": "id_1779346227920",
+          "name": "同侪定位+改进建议+总部支持",
+          "kind": "CALCULATOR",
+          "sources": [
+            "id_1779346227919"
+          ],
+          "sql_sha256": "4345034af58dd02350aa61046fdf221fb5b9109b431d3448572106583ee3ff64",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.024
+        },
+        {
+          "id": "id_1779346227921",
+          "name": "ads_加盟商单店报告",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_1779346227920"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.015
+        }
+      ]
+    },
+    {
+      "output": "ads_异常归因清单",
+      "path": "ETL/逻辑SQL/etl_ads_异常归因清单.md",
+      "rows": 4026,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "业务日期",
+            "type": "date",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "粒度",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "门店ID",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店名称",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "门店类型",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "城市",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "店长姓名",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "区域经理",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "异常来源",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "异常类型",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "异常详情",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "风险等级",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "豁免标记",
+            "type": "string",
+            "nullable": true,
+            "metadata": {}
+          },
+          {
+            "name": "处理状态",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "建议动作",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "数据快照日期",
+            "type": "date",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1001",
+          "name": "ads_门店每日指挥台",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1002",
+          "name": "ads_单店利润健康",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1003",
+          "name": "dws_体验口碑汇总",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1004",
+          "name": "dim_门店主档",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1005",
+          "name": "param_豁免日历",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.001
+        },
+        {
+          "id": "id_1006",
+          "name": "param_门店会员占比预警阈值",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.001
+        },
+        {
+          "id": "id_2001",
+          "name": "四路异常合流归因",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1001",
+            "id_1002",
+            "id_1003",
+            "id_1004",
+            "id_1005",
+            "id_1006"
+          ],
+          "sql_sha256": "c3a59defa5bdc1399ce44507253d990dc02ec8b3b9211937f9ba09dc8b9fcb5c",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.203
+        },
+        {
+          "id": "id_3001",
+          "name": "ads_异常归因清单",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_2001"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.038
+        }
+      ]
+    },
+    {
+      "output": "dqc_归因清单对账",
+      "path": "ETL/逻辑SQL/etl_dqc_归因清单对账.md",
+      "rows": 9,
+      "schema": {
+        "type": "struct",
+        "fields": [
+          {
+            "name": "序号",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "检查类别",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "检查项",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "期望值",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "实际值",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          },
+          {
+            "name": "状态",
+            "type": "string",
+            "nullable": false,
+            "metadata": {}
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "id_1001",
+          "name": "ads_异常归因清单",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.003
+        },
+        {
+          "id": "id_1002",
+          "name": "ads_门店每日指挥台",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1003",
+          "name": "ads_单店利润健康",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1004",
+          "name": "dws_体验口碑汇总",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1005",
+          "name": "param_利润健康阈值",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_1006",
+          "name": "param_门店会员占比预警阈值",
+          "kind": "INPUT_DATASET",
+          "sources": [],
+          "sql_sha256": "9b45c0c1485c108071085fcd4604e16ecee3b6ac39851843b2ec6c764d18c119",
+          "materialization": "reused_input_checkpoint",
+          "seconds": 0.002
+        },
+        {
+          "id": "id_2001",
+          "name": "合流对账自检",
+          "kind": "SQL_SCRIPT",
+          "sources": [
+            "id_1001",
+            "id_1002",
+            "id_1003",
+            "id_1004",
+            "id_1005",
+            "id_1006"
+          ],
+          "sql_sha256": "8359f615afd96838a4effdfea3b6d68b0475c419fdf70129a5aafbc746cda29e",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.2
+        },
+        {
+          "id": "id_3001",
+          "name": "dqc_归因清单对账",
+          "kind": "OUTPUT_DATASET",
+          "sources": [
+            "id_2001"
+          ],
+          "sql_sha256": "cdad971cf0914960b194db871402ade805b91675bb28209bf80291b958c1c39d",
+          "materialization": "eager_local_checkpoint",
+          "seconds": 0.015
+        }
+      ]
+    }
+  ],
+  "public_sql": [
+    {
+      "output": "bridge_触达订单归因",
+      "path": "ETL/公共口径/01_触达订单归因桥.sql",
+      "rows": 317,
+      "sql_sha256": "4fa165867c143836263e9d365d4f1a3b0a8274766702ea3f81131f661aa79eb6"
+    },
+    {
+      "output": "bridge_券核销订单",
+      "path": "ETL/公共口径/02_券实例核销订单桥.sql",
+      "rows": 126,
+      "sql_sha256": "3e2b3a46241e76506dae5497367f99e81da08e83ba681deabff6af304769eefc"
+    },
+    {
+      "output": "bridge_活动参与订单归因",
+      "path": "ETL/公共口径/03_活动参与订单归因桥.sql",
+      "rows": 316,
+      "sql_sha256": "47c6095e78a3b96cfc9409152925bec039599c71f7d507adfbd49050281fee00"
+    },
+    {
+      "output": "bridge_规则任务生成",
+      "path": "ETL/公共口径/08_规则任务生成.sql",
+      "rows": 200,
+      "sql_sha256": "55189fd7ec00625441138e7cb0f6eb87134ff439619632d690888a8666352e56"
+    },
+    {
+      "output": "calendar_门店营业日历",
+      "path": "ETL/公共口径/05_门店营业日历.sql",
+      "rows": 3954,
+      "sql_sha256": "aa5fe7f834a7c0d2f87188b7bf234b11770ac778f503ca98eca1b9626006b058"
+    },
+    {
+      "output": "calendar_门店月份骨架",
+      "path": "ETL/公共口径/06_门店月份骨架.sql",
+      "rows": 133,
+      "sql_sha256": "c28f501e7b961359fba8a38942138a8ccf64be88e2ed43484c873aa1236b8344"
+    },
+    {
+      "output": "scd2_门店时点关联",
+      "path": "ETL/公共口径/07_SCD2门店时点关联.sql",
+      "rows": 1241,
+      "sql_sha256": "7b29902203730a3cdd7d66a04e4d55e7423355a92c0d2cdd268331c389cae5aa"
+    }
+  ]
+}

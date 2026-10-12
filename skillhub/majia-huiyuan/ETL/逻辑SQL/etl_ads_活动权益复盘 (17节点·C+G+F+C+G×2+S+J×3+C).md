@@ -104,7 +104,7 @@ coupon_order_candidates AS (
                           AND COALESCE(c.`失效日期`, DATE '9999-12-31')
     AND c.`核销日期` <= p.`as_of_date`
 ),
-bridge_券核销订单 AS (
+`bridge_券核销订单` AS (
   SELECT
     `券ID`, `活动ID`, `订单ID`, `订单发生日期`, `实付金额`, `归因规则`, `归因优先级`
   FROM coupon_order_candidates
@@ -115,7 +115,7 @@ coupon_order_agg AS (
     b.`活动ID`,
     COUNT(DISTINCT b.`订单ID`) AS `核销订单数`,
     SUM(b.`实付金额`) AS `核销订单GMV`
-  FROM bridge_券核销订单 b
+  FROM `bridge_券核销订单` b
   GROUP BY b.`活动ID`
 ),
 valid_touch AS (
@@ -157,7 +157,7 @@ touch_order_candidates AS (
    AND o.`下单时间` >= t.`触达时间`
    AND o.`下单时间` < t.`触达时间` + INTERVAL 8 DAYS
 ),
-bridge_触达订单归因 AS (
+`bridge_触达订单归因` AS (
   SELECT
     `订单ID`, `触达ID`, `触达时间`, `下单时间`, `订单发生日期`,
     `会员ID`, `实付金额`, `活动ID`, `归因规则`, `归因优先级`
@@ -170,7 +170,7 @@ touch_order_agg AS (
     COUNT(DISTINCT b.`会员ID`) AS `触达后关联下单人数`,
     COUNT(DISTINCT b.`订单ID`) AS `触达后关联订单数`,
     SUM(b.`实付金额`) AS `触达后关联GMV`
-  FROM bridge_触达订单归因 b
+  FROM `bridge_触达订单归因` b
   GROUP BY b.`活动ID`
 ),
 valid_participation AS (
@@ -211,7 +211,7 @@ participation_order_candidates AS (
    AND o.`下单时间` >= a.`参与时间`
    AND o.`下单时间` < a.`参与时间` + INTERVAL 8 DAYS
 ),
-bridge_活动参与订单归因 AS (
+`bridge_活动参与订单归因` AS (
   SELECT
     `订单ID`, `参与ID`, `参与时间`, `下单时间`, `订单发生日期`,
     `会员ID`, `实付金额`, `活动ID`, `归因规则`, `归因优先级`
@@ -224,7 +224,7 @@ participation_order_agg AS (
     COUNT(DISTINCT b.`会员ID`) AS `参与后关联下单人数`,
     COUNT(DISTINCT b.`订单ID`) AS `参与后关联订单数`,
     SUM(b.`实付金额`) AS `参与后关联GMV`
-  FROM bridge_活动参与订单归因 b
+  FROM `bridge_活动参与订单归因` b
   GROUP BY b.`活动ID`
 )
 SELECT

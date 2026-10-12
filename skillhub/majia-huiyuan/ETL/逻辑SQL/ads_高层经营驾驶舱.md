@@ -82,7 +82,7 @@ touch_order_candidates AS (
    AND o.`下单时间` >= t.`触达时间`
    AND o.`下单时间` < t.`触达时间` + INTERVAL 8 DAYS
 ),
-bridge_触达订单归因 AS (
+`bridge_触达订单归因` AS (
   SELECT
     `订单ID`, `触达ID`, `触达时间`, `下单时间`, `订单发生日期`,
     `实付金额`, `归因规则`, `归因优先级`
@@ -94,7 +94,7 @@ touch_order_daily AS (
     b.`订单发生日期` AS `业务日期`,
     COUNT(DISTINCT b.`订单ID`) AS `触达后关联订单数`,
     SUM(b.`实付金额`) AS `触达后关联销售`
-  FROM bridge_触达订单归因 b
+  FROM `bridge_触达订单归因` b
   GROUP BY b.`订单发生日期`
 )
 SELECT

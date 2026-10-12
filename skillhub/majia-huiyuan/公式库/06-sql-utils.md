@@ -6,7 +6,7 @@
 
 ### LEFT + INSTR：截取分隔符前段 ⚪
 
-```sql
+```guandata
 -- 拆"门店编号_门店名称"取门店编号
 LEFT([关联活动], INSTR([关联活动], '_') - 1)
 
@@ -18,20 +18,20 @@ LEFT([渠道活码名称], INSTR([渠道活码名称], '.') - 1)
 
 ### SUBSTR：取分隔符后段 ⚪
 
-```sql
+```guandata
 SUBSTR([关联活动], INSTR([关联活动], '_') + 1)
 ```
 
 ### 取前 N 字符 ⚪
 
-```sql
+```guandata
 -- 注册门店取前两字（如"北京三里屯店" → "北京"）
 SUBSTR([SHOP_NAME], 1, 2)
 ```
 
 ### 正则提取数字 🅰️
 
-```sql
+```guandata
 -- 从"123.活码A" 抽出 "123"
 regexp_extract([渠道活码名称], '^(\\d+)', 1)
 ```
@@ -40,7 +40,7 @@ regexp_extract([渠道活码名称], '^(\\d+)', 1)
 
 ### REPLACE：替换 ⚪
 
-```sql
+```guandata
 -- 去掉货币符号
 REPLACE([券售卖金额], '¥', '')
 
@@ -50,14 +50,14 @@ REPLACE([注册所属分公司], "分公司", "")
 
 ### 用 CONCAT 拼字段 ⚪
 
-```sql
+```guandata
 CONCAT(HOUR([下单时间]), '点')              -- 整点字符串
 CONCAT([StoreID], '_', [businessDate])       -- StoreDate 门店日键
 ```
 
 ### 文本日期转日期 🅱️
 
-```sql
+```guandata
 to_date([日期], 'yyyyMMdd')          -- "20241101" → DATE
 to_timestamp([交易日期], 'yyyyMMdd') -- "20241101" → TIMESTAMP
 ```
@@ -66,7 +66,7 @@ to_timestamp([交易日期], 'yyyyMMdd') -- "20241101" → TIMESTAMP
 
 ### explode + split：一列拆多行 🅰️
 
-```sql
+```guandata
 -- 把"tag1,tag2,tag3" 一列拆成 3 行
 explode(split([tags], ','))
 ```
@@ -104,7 +104,7 @@ GROUP BY 1;
 
 ### collect_set 窗口版（不收敛行数）⚪
 
-```sql
+```guandata
 -- 每个明细行带上"同地区的所有门店列表"
 concat_ws(',', collect_set([门店]) OVER (PARTITION BY [地区]))
 ```
@@ -128,7 +128,7 @@ concat_ws(',', collect_set([门店]) OVER (PARTITION BY [地区]))
 
 ### 标准模板
 
-```sql
+```guandata
 -- 每会员的下单顺序
 ROW_NUMBER() OVER (
   PARTITION BY [会员号]
@@ -151,7 +151,7 @@ ROW_NUMBER() OVER (
 
 ### 累计窗口 ⚪
 
-```sql
+```guandata
 -- 每门店按日期累计的"营业天数"
 SUM([营业]) OVER (
   PARTITION BY [门店]
@@ -174,7 +174,7 @@ SUM(1) OVER (
 
 ### 不分区聚合 ⚪
 
-```sql
+```guandata
 -- 顾客累计消费几笔订单
 COUNT([订单日期]) OVER (PARTITION BY [会员号MemberShipID])
 
@@ -192,7 +192,7 @@ IF(
 
 ## 条件去重计数 ⚪
 
-```sql
+```guandata
 -- 去重 + 且的关系
 COUNT(DISTINCT CASE WHEN [门店类型] = '金枫店' AND [门店状态] = 'Open' THEN [门店] END)
 
@@ -218,7 +218,7 @@ COUNT(DISTINCT IF([大区] = '华东', [券包订单ID], NULL))
 
 **餐饮 BI 常用模式**：
 
-```sql
+```sql-fragment
 -- 1. 日期×门店网格作为左表，业务事实作为右表 LEFT JOIN
 --    保证"没产生订单的店天数据"也出现在结果里（默认 0 而非缺行）
 -- 详见 02 章 · 累计会员总数
@@ -231,7 +231,7 @@ COUNT(DISTINCT IF([大区] = '华东', [券包订单ID], NULL))
 
 doc 2 里有一段完整的 ClickHouse 业务库取数 SQL，作为"主表 + 多明细 LEFT JOIN"的模板：
 
-```sql
+```clickhouse
 WITH
     toDateTime('2025-04-01 00:00:00') AS start_time,
     toDateTime('2025-05-01 00:00:00') AS end_time,
@@ -310,7 +310,7 @@ FROM input1;
 
 **等价写法**：
 
-```sql
+```guandata
 IFNULL(`字段`, 0)         -- MySQL / Hive 通用
 COALESCE(`字段`, 0)       -- 标准 SQL，更推荐
 IF([字段] IS NULL, 0, [字段])  -- 老式写法，繁琐
@@ -318,7 +318,7 @@ IF([字段] IS NULL, 0, [字段])  -- 老式写法，繁琐
 
 ## 不等于 0 标记 🅱️
 
-```sql
+```guandata
 CASE
   WHEN [字段A&字段B有差异] <> 0 THEN '异常'
   ELSE                               '正常'
@@ -331,7 +331,7 @@ END
 
 虽然完整 SQL 太长（见 [04 章末尾](04-channel-and-store.md#评价分类情绪--标签-)），但核心**文本归一化**技巧值得单列：
 
-```sql
+```sql-fragment
 LOWER(
   REGEXP_REPLACE(
     REGEXP_REPLACE(

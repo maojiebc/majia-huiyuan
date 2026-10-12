@@ -76,12 +76,15 @@ SELECT * FROM r2_外卖转到店;
 多条规则同时命中一个会员是常态（沉睡的人往往也在"领券未核销"里）。两步收敛：
 
 ```sql
+WITH params AS (SELECT DATE '${as_of_date}' AS as_of_date)
 -- 步骤 1：排除近 N 天已触达的会员（防打扰）
 SELECT t.* FROM `任务候选` t
-LEFT ANTI JOIN (
+LEFT JOIN (
   SELECT DISTINCT `会员ID` FROM `dwd_会员触达`
-  WHERE `触达日期` >= date_sub(CURRENT_DATE, 7)    -- 打扰间隔按业务定，7~14 天常见
-) d ON t.`会员ID` = d.`会员ID`;
+  WHERE `触达日期` BETWEEN date_sub((SELECT params.as_of_date FROM params), 7)
+                       AND (SELECT params.as_of_date FROM params)
+) d ON t.`会员ID` = d.`会员ID`
+WHERE t.`任务类型` = '负评修复' OR d.`会员ID` IS NULL;
 
 -- 步骤 2：同一会员只留最高优先级一条（优先级仲裁）
 SELECT * FROM (
@@ -96,16 +99,18 @@ SELECT * FROM (
 
 **坑**：
 - 防打扰要查的是**触达事实表**（`dwd_会员触达`），不是任务表——人工指派的触达也算打扰。
-- 两步顺序（先防打扰、后仲裁）不影响正确性——防打扰拦的是整个人，不是某条任务——但**先拦人再仲裁省计算**：窗口函数只在可触达的人上跑。
+- 必须先排除受防打扰限制的营销候选、保留豁免的负评修复，再做优先级仲裁。若先仲裁选中营销任务、随后把它挡掉，可能丢失本应保留的负评修复；顺序以 `ETL/公共口径/08_规则任务生成.sql` 为准。
 
 ## 执行状态与转化阶段（ADS 层派生口径）🏠
 
-样板间 `ads_会员经营任务池` 的两个派生字段，原样可抄：
+样板间 `ads_会员经营任务池` 的两个派生字段，以下按统一快照日终判断过期：
 
 ```sql
+WITH params AS (SELECT DATE '${as_of_date}' AS as_of_date)
+SELECT
 CASE
   WHEN `任务结果` LIKE '已完成%' THEN '已完结'
-  WHEN `任务失效时间` < CURRENT_TIMESTAMP() THEN '已过期'
+  WHEN `任务失效时间` < (CAST((SELECT params.as_of_date FROM params) AS TIMESTAMP) + INTERVAL 1 DAY) THEN '已过期'
   ELSE '进行中'
 END AS `执行状态`,
 
@@ -114,6 +119,7 @@ CASE
   WHEN `触达状态` = '已触达' THEN '已触达未转化'
   ELSE '未触达'
 END AS `转化阶段`
+FROM input1;
 ```
 
 **口径解读**：`执行状态`管流程（做没做），`转化阶段`管效果（做了有没有用），**两个维度必须分开建字段**——只有一个"状态"字段的任务系统，月底一定算不清"完成率 90% 但转化率 8%"到底是执行问题还是规则问题。
@@ -139,7 +145,7 @@ GROUP BY `任务类型`;
 **三个必须提醒业务方的坑**：
 
 1. **归因窗口要有限**。"触达后下单"必须限定"触达后 N 天内"（7 天常见），无限窗口会把自然回流全记成任务功劳，转化率虚高到没法用。
-2. **没有对照组，转化率≠增量**。沉睡客即使不触达也有自然回流率；严谨做法是每期留 5%~10% 圈中但不触达的对照组（holdout），**增量 = 触达组转化率 − 对照组转化率**。样板间未内置对照组字段，落地时在任务表加一列 `是否对照组` 即可。
+2. **没有对照组，转化率≠增量**。沉睡客即使不触达也有自然回流率；严谨做法是每期留 5%~10% 圈中但不触达的对照组（holdout），**增量 = 触达组转化率 − 对照组转化率**。公共口径 `08_规则任务生成.sql` 的候选结果已有示例 `是否对照组`；已分派任务表仍需保留分组与结果证据，不能仅凭字段存在就声称完成实验。
 3. **按"任务类型 × 权益"双维度看转化**，只按类型看会掩盖"动作对了、券力度不对"的情况——同是沉睡召回，9 折券和 6 折券可能差三倍转化。
 
 **员工侧回收**：同一张表按 `员工导购ID` 分组即得导购效能排行（任务数 / 触达率 / 触达后下单金额），样板间实现见 `etl_dws_员工导购效能`。考核用**触达率**（执行力，导购可控），不要用转化率（受圈选规则质量影响，导购不可控）。
@@ -151,6 +157,7 @@ GROUP BY `任务类型`;
 ### 圈选（从 dwd_评价 生成 P0 任务）
 
 ```sql
+WITH params AS (SELECT DATE '${as_of_date}' AS as_of_date)
 SELECT
   e.`会员ID`,
   e.`门店ID` AS `归属门店ID`,
@@ -165,7 +172,8 @@ FROM `dwd_评价` e
 WHERE (e.`评分` <= 2 OR (e.`负评标签` IS NOT NULL AND e.`负评标签` <> ''))
   AND e.`回复状态` <> '已回复'
   AND e.`会员ID` IS NOT NULL AND e.`会员ID` <> ''      -- 非会员差评走门店客服流程，进不了会员任务池
-  AND e.`评价日期` >= date_sub(CURRENT_DATE, 3);        -- 只圈近 3 天：差评修复拼时效
+  AND e.`评价日期` BETWEEN date_sub((SELECT params.as_of_date FROM params), 3)
+                         AND (SELECT params.as_of_date FROM params);        -- 只圈近 3 天：差评修复拼时效
 ```
 
 **口径要点**：
@@ -174,7 +182,7 @@ WHERE (e.`评分` <= 2 OR (e.`负评标签` IS NOT NULL AND e.`负评标签` <> 
 
 ### 挽回效果口径
 
-```sql
+```sql-fragment
 -- 挽回成功率：负评修复任务触达后 90 天内该会员是否再消费
 COUNT(DISTINCT IF(t.`触达状态` = '已触达' AND o.`会员ID` IS NOT NULL, t.`会员ID`, NULL)) * 1.0
 / NULLIF(COUNT(DISTINCT IF(t.`触达状态` = '已触达', t.`会员ID`, NULL)), 0) AS `挽回成功率`

@@ -68,12 +68,12 @@ WITH params AS (SELECT DATE '2026-06-24' AS as_of_date),
 order_agg AS (
   SELECT
     `门店ID`,
-    SUBSTR(CAST(`业务日期` AS STRING), 1, 7) AS `年月`,
+    TRUNC(CAST(`业务日期` AS DATE), 'MM') AS `年月`,
     SUM(`实付金额`) AS `实际销售额`,
     COUNT(DISTINCT CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `订单ID` END) AS `实际会员订单数`
   FROM input2 CROSS JOIN params p
   WHERE `订单状态` = '已完成' AND `业务日期` <= p.as_of_date
-  GROUP BY `门店ID`, SUBSTR(CAST(`业务日期` AS STRING), 1, 7)
+  GROUP BY `门店ID`, TRUNC(CAST(`业务日期` AS DATE), 'MM')
 )
 SELECT
   t.`门店ID`, t.`年月`, t.`目标指标`, t.`目标值`,
@@ -100,7 +100,7 @@ SELECT
 FROM input1 t
 LEFT JOIN order_agg o ON t.`门店ID` = o.`门店ID` AND t.`年月` = o.`年月`
 CROSS JOIN params p
-WHERE CAST(CONCAT(t.`年月`, '-01') AS DATE) <= TRUNC(p.as_of_date, 'MM')
+WHERE TRUNC(CAST(t.`年月` AS DATE), 'MM') <= TRUNC(p.as_of_date, 'MM')
 ```
 - 等价SQL:
 ```sql
@@ -108,12 +108,12 @@ WITH params AS (SELECT DATE '2026-06-24' AS as_of_date),
 order_agg AS (
   SELECT
     `门店ID`,
-    SUBSTR(CAST(`业务日期` AS STRING), 1, 7) AS `年月`,
+    TRUNC(CAST(`业务日期` AS DATE), 'MM') AS `年月`,
     SUM(`实付金额`) AS `实际销售额`,
     COUNT(DISTINCT CASE WHEN (`会员ID` IS NOT NULL AND `会员ID` <> '') THEN `订单ID` END) AS `实际会员订单数`
   FROM input2 CROSS JOIN params p
   WHERE `订单状态` = '已完成' AND `业务日期` <= p.as_of_date
-  GROUP BY `门店ID`, SUBSTR(CAST(`业务日期` AS STRING), 1, 7)
+  GROUP BY `门店ID`, TRUNC(CAST(`业务日期` AS DATE), 'MM')
 )
 SELECT
   t.`门店ID`, t.`年月`, t.`目标指标`, t.`目标值`,
@@ -140,7 +140,7 @@ SELECT
 FROM input1 t
 LEFT JOIN order_agg o ON t.`门店ID` = o.`门店ID` AND t.`年月` = o.`年月`
 CROSS JOIN params p
-WHERE CAST(CONCAT(t.`年月`, '-01') AS DATE) <= TRUNC(p.as_of_date, 'MM')
+WHERE TRUNC(CAST(t.`年月` AS DATE), 'MM') <= TRUNC(p.as_of_date, 'MM')
 ```
 
 

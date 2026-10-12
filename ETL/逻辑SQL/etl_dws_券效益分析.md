@@ -101,7 +101,7 @@ coupon_order_candidates AS (
                           AND COALESCE(c.`失效日期`, DATE '9999-12-31')
     AND c.`核销日期` <= p.`as_of_date`
 ),
-bridge_券核销订单 AS (
+`bridge_券核销订单` AS (
   SELECT
     `券ID`, `券模板ID`, `发放日期`, `核销日期`, `折扣金额`,
     `订单ID`, `订单发生日期`, `实付金额`, `归因规则`, `归因优先级`
@@ -114,7 +114,7 @@ redemption_order_agg AS (
     b.`发放日期`,
     COUNT(DISTINCT b.`订单ID`) AS `核销订单数`,
     SUM(b.`实付金额`) AS `核销订单GMV`
-  FROM bridge_券核销订单 b
+  FROM `bridge_券核销订单` b
   GROUP BY b.`券模板ID`, b.`发放日期`
 )
 SELECT

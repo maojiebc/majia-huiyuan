@@ -2,6 +2,8 @@
 
 > 餐饮 BI 60% 的 ETL 问题第一步都卡在"时间范围怎么写"。本节按**实时 / T-1 / 用餐时段 / 时间宏 / 跨月对齐**五类罗列，可直接抄。
 
+实时看板可以用 `current_date()`；ETL 批处理、任务和归因必须显式传入同一个 `as_of_date`。下文实时表达式不作为批处理时钟；批次参数约定见 [公共口径](../ETL/公共口径/README.md)。
+
 ## 实时日期范围（now 类）⚪
 
 适用于流式刷新表、当日实时看板。`current_date()` 和 `now()` 都按当前服务器时刻取值。
@@ -88,7 +90,7 @@ WHERE ORDER_DATE >= CURDATE() - INTERVAL 6 DAY
 
 老板汇报场景常用。配合 KPI 用，"本月营收完成率 = 已营收 / (目标 × 本月已过比例)"。
 
-```sql
+```sql-fragment
 IF(
   MONTH(DATE_SUB(CURRENT_DATE(), 1)) <> MONTH(CURRENT_DATE()),
   0,
@@ -104,7 +106,7 @@ IF(
 
 按下单整点（0~23 整数）分早餐 / 午餐 / 下午茶 / 晚餐 / 宵夜。
 
-```sql
+```guandata
 -- 字符串版（前置已把 hour 拼成 "6点"/"7点"…）
 CASE
   WHEN [下单整点] IN ('6点','7点','8点','9点') THEN '早餐'
@@ -116,7 +118,7 @@ CASE
 END
 ```
 
-```sql
+```guandata
 -- 数字版（直接传 hour 整数 6/7/8…）
 CASE
   WHEN [下单整点] IN ('6','7','8','9') THEN '早餐'
@@ -128,7 +130,7 @@ CASE
 END
 ```
 
-```sql
+```guandata
 -- 拼接整点的辅助表达式（卡片字段）
 CONCAT(HOUR([下单时间]), '点')
 ```
@@ -137,7 +139,7 @@ CONCAT(HOUR([下单时间]), '点')
 
 ## 月份截取 ⚪
 
-```sql
+```guandata
 -- 按月聚合
 DATE_TRUNC("month", [report_date])
 
@@ -150,7 +152,7 @@ to_timestamp([交易日期], 'yyyyMMdd')  -- 返回 TIMESTAMP
 
 ## 日期距离 ⚪
 
-```sql
+```guandata
 -- 某门店"统计日期距今天"的窗口表达式
 DATEDIFF(MAX([订单日期]) OVER (PARTITION BY [门店编号]), 'today')
 

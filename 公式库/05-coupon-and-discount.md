@@ -4,7 +4,7 @@
 
 ## 核销率 ⚪
 
-```sql
+```guandata
 COUNT([核券日期]) * 1.0 / NULLIF(COUNT([发券日期]), 0)
 ```
 
@@ -14,7 +14,7 @@ COUNT([核券日期]) * 1.0 / NULLIF(COUNT([发券日期]), 0)
 
 **变体（卡片字段）**：
 
-```sql
+```guandata
 -- 仅数已核销的券数
 COUNT(DISTINCT IF([券状态] = '已使用', [券号], NULL))
 ```
@@ -25,7 +25,7 @@ COUNT(DISTINCT IF([券状态] = '已使用', [券号], NULL))
 
 ### 聚合级折扣率（卡片 KPI）
 
-```sql
+```guandata
 -- 简版
 SUM([Discount]) / SUM([ALA_Sales])
 
@@ -39,14 +39,14 @@ SUM([原价金额 ALA_Sales] - [含税营业额 GS]) / SUM([原价金额 ALA_Sal
 
 通常预先算好 `Disct%` 字段（在 ETL 阶段），值域 0~1：
 
-```sql
+```guandata
 [Disct%] = 1 - [含税营业额 GS] / [原价金额 ALA_Sales]
 -- 0 = 没折扣，1 = 全免，0.3 = 打 7 折
 ```
 
 ## 折扣类型（分桶）🅰️ {#折扣类型}
 
-```sql
+```guandata
 CASE
   WHEN [Disct%] <= 0   THEN '无优惠'
   WHEN [Disct%] <= 0.1 THEN '(0%,10%]'
@@ -68,7 +68,7 @@ END
 
 ## 券类型分流（活动归因大 case）🅰️
 
-```sql
+```guandata
 CASE
   WHEN [活动编号] = 'XX20220026' THEN '0次客35天未消费V6'
   WHEN [券名] LIKE '%品牌好礼%' THEN '面对面发券'
@@ -86,7 +86,7 @@ END
 
 ## 注册第一张券 🅰️
 
-```sql
+```guandata
 CASE
   WHEN [FirstCoupon_DisDate] = [注册日期]
     THEN [FirstCoupon_typeName]
@@ -100,7 +100,7 @@ END
 
 ## 会员的第一张券 🅰️
 
-```sql
+```guandata
 ROW_NUMBER() OVER (PARTITION BY [dis_cardno] ORDER BY [dis_disDate])
 ```
 
@@ -113,6 +113,7 @@ ROW_NUMBER() OVER (PARTITION BY [dis_cardno] ORDER BY [dis_disDate])
 ## 过去 30 日优惠订单比例 🅰️
 
 ```sql
+WITH params AS (SELECT DATE '${as_of_date}' AS as_of_date)
 SELECT
   user_id AS id,
   MAX(distinct_id) AS distinct_id,
@@ -124,8 +125,8 @@ SELECT
   END AS value
 FROM events
 WHERE event = 'pay_order'
-  AND time BETWEEN FROM_TIMESTAMP(days_sub(now(), 30), 'yyyy-MM-dd')
-              AND FROM_TIMESTAMP(days_sub(now(), 1),  'yyyy-MM-dd')
+  AND time BETWEEN DATE_FORMAT(DATE_SUB((SELECT params.as_of_date FROM params), 30), 'yyyy-MM-dd')
+              AND DATE_FORMAT(DATE_SUB((SELECT params.as_of_date FROM params), 1),  'yyyy-MM-dd')
 GROUP BY user_id;
 ```
 
@@ -139,7 +140,7 @@ GROUP BY user_id;
 
 简单卡片字段（不用 ETL）：
 
-```sql
+```guandata
 -- 已使用券数
 COUNT(DISTINCT IF([券状态] = '已使用', [券号], NULL))
 
@@ -155,8 +156,9 @@ COUNT(DISTINCT IF([券状态] = '已使用', [券号], NULL))
 ## 发券时间近 3 个月 ⚪
 
 ```sql
+WITH params AS (SELECT DATE '${as_of_date}' AS as_of_date)
 SELECT * FROM input1
-WHERE input1.`发券日期` >= add_months(concat(substr(current_date(), 1, 7), '-01'), -3);
+WHERE input1.`发券日期` >= add_months(concat(substr((SELECT params.as_of_date FROM params), 1, 7), '-01'), -3);
 ```
 
 **用途**：分析"近 3 月发券效果"，配合后续按月分桶计算"发券月 → 核销月"的核销时滞。

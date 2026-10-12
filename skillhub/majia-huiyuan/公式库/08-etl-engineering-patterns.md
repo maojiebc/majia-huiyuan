@@ -172,7 +172,7 @@ WHERE ABS(COALESCE(a.amt_a, 0) - COALESCE(b.amt_b, 0)) > 0.01;
 
 DWD 宽表里的"POS 系统识别"段是渠道归一化的好范例（**POS 厂商名已脱敏为 POS_A ~ POS_E**，实际命名可按你方采购的 POS 厂商替换）：
 
-```sql
+```sql-fragment
 CASE
   WHEN order_no LIKE '%AB%'        THEN 'POS_A'   -- 订单号有 AB 前缀的是 POS_A 厂商
   WHEN pos_type_raw = 'linux'      THEN 'POS_Linux'
