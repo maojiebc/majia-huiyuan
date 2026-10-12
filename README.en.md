@@ -51,7 +51,7 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.claude/skills/majia-h
 - Up to 200 simulated rows per table (parameter and naturally small tables keep their actual sample size); full scale (80k members, 1.29M orders) is noted in each structure-definition file.
 - Structures, fields, and calibers are citable; **numbers must never be used as real business data**.
 - SQL dialect is Spark 3.4 — mind function differences on other engines.
-- v1.5.0 is release preparation, not a published release. Spark 3.4.4 local mode has executed 25 documented ETLs (147 materialized nodes) plus public SQL on small synthetic fixtures. All outputs are nonempty, clean acceptance has 19 zero checks, key-field Python differentials and 14 known answers pass. Separate adverse fixtures intentionally trigger future-fact and SCD2-overlap checks. This remains a reference example requiring validation against your own data and controls.
+- v1.5.0 adds executable verification. Spark 3.4.4 local mode has executed 25 documented ETLs (147 materialized nodes) plus public SQL on small synthetic fixtures. All outputs are nonempty, clean acceptance has 19 zero checks, key-field Python differentials and 14 known answers pass. Separate adverse fixtures intentionally trigger future-fact and SCD2-overlap checks. This remains a reference example requiring validation against your own data and controls.
 - `*/原始JSON/` and `看板/页面JSON/` are historical v1.4.0 workshop snapshots and do not contain the v1.4.1 logic or field corrections; they are not drop-in import bundles.
 - The [field contract](清单/字段契约.csv) now covers all 55 tables and 866 fields with types, bilingual names, nullable flags and logical grain. Historical exports remain available. [DDL](DDL/README.md) supports four dialects; 55 English-named Spark persistent tables have been created, strictly loaded and read back. Other engines were parse-tested only; Spark SessionCatalog rejects Chinese persistent table names even when quoted.
 - [16 metric cards](口径卡片/README.md) explain denominators, windows, sources and gaps. The task funnel has three rates. Missing member IDs (SQL NULL, empty/whitespace strings, and case-insensitive literal null) are excluded from member metrics, profiles, tasks and member-based attribution; their orders remain in total sales.
@@ -65,7 +65,7 @@ git clone https://github.com/maojiebc/majia-huiyuan.git ~/.claude/skills/majia-h
 
 ## Version History
 
-- **v1.5.0** (2026-10-12, release preparation): Spark local synthetic execution, key-field differentials, a 55-table contract with bilingual names and four DDL dialects, and 16 metric cards. Not published.
+- **v1.5.0** (2026-10-12): Spark local synthetic execution, key-field differentials, a 55-table contract with bilingual names and four DDL dialects, and 16 metric cards.
 - **v1.4.5** (2026-09-14): Valid registrations, coupon cohorts, observation windows, incentive costs and stored-value events; simulated examples stay separate from verified outcomes.
 - **v1.4.4** (2026-09-07): Practical entry scenarios and reproducible WorkBuddy packaging.
 
