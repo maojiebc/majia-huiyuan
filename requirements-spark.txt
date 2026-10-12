@@ -1,0 +1,2 @@
+pyspark==3.4.4
+sqlglot==30.15.0

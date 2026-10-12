@@ -34,6 +34,7 @@ class MiniWorldTests(unittest.TestCase):
             self.assertEqual(31, len(files))  # 30 base tables plus independent known answers
             for path in files:
                 self.assertEqual(path.read_bytes(), (right/path.name).read_bytes())
+                self.assertNotIn(b'\r\n', path.read_bytes(), path.name)
                 if path.name != 'expected.csv':
                     with path.open() as f, (ROOT/'数据集/数据样本'/path.name).open() as g:
                         self.assertEqual(next(csv.reader(g)), next(csv.reader(f)))

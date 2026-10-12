@@ -185,7 +185,7 @@ def build_world(out=DEFAULT_OUT, seed=41, scale='small', as_of='2026-06-24', sce
         add('dwd_券事件',券ID='C999999',券模板ID='CT1',会员ID='M900001',发放日期=as_of,失效日期=future,核销日期=future,门店ID='S900001',订单ID='O999999',折扣金额=10)
     for table, rows in tables.items():
         with (out/f'{table}.csv').open('w',encoding='utf-8',newline='') as f:
-            writer=csv.DictWriter(f,fieldnames=headers(table),quoting=csv.QUOTE_ALL);writer.writeheader()
+            writer=csv.DictWriter(f,fieldnames=headers(table),quoting=csv.QUOTE_ALL,lineterminator="\n");writer.writeheader()
             for row in rows:
                 normalized=dict(row)
                 for key,value in normalized.items():
@@ -211,7 +211,7 @@ def build_world(out=DEFAULT_OUT, seed=41, scale='small', as_of='2026-06-24', sce
         ('S900001|'+as_of.strftime('%Y-%m'),'ads_单店利润健康','门店ID|月份','连续亏损月数','3','四五月六月每月变动成本比销售多100'),
     ]
     with (out/'expected.csv').open('w',newline='') as f:
-        w=csv.writer(f);w.writerow(('埋点对象','表','键字段','字段','期望值','手算说明'));w.writerows(expected)
+        w=csv.writer(f,lineterminator="\n");w.writerow(('埋点对象','表','键字段','字段','期望值','手算说明'));w.writerows(expected)
     (out/'manifest.json').write_text(json.dumps({'seed':seed,'scale':scale,'as_of':str(as_of),'scenario':scenario,'counts':{k:len(v) for k,v in tables.items()}},ensure_ascii=False,indent=2)+'\n')
     (out/'EDGE_CASES.md').write_text('''# 合成边界案例
 
